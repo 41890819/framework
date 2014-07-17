@@ -18,6 +18,8 @@ package android.app;
 
 import com.android.internal.app.ActionBarImpl;
 import com.android.internal.policy.PolicyManager;
+import com.android.internal.view.menu.CardMenu;
+import com.android.internal.view.menu.CardMenuItem;
 
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
@@ -2620,12 +2622,39 @@ public class Activity extends ContextThemeWrapper
         }
     }
 
+	private CardMenu mCardMenu = null;
+	private boolean mIsCardMenuEnabled = true;
+	private boolean mIsCardMenuOpened = false;
+	private boolean mIsCreateOptionsMenuEnabled = true;
+	private MyCardMenuListener mCardMenuListener = new MyCardMenuListener();
+	public class MyCardMenuListener implements CardMenu.CardMenuListener {
+		@Override
+		public void onItemSelected(MenuItem item) {
+			onOptionsItemSelected(item);
+			closeOptionsMenu();
+		}
+
+		@Override
+		public void onDownSlideBack() {
+			closeOptionsMenu();
+		}
+									 
+	}
+	
     /**
      * Declare that the options menu has changed, so should be recreated.
      * The {@link #onCreateOptionsMenu(Menu)} method will be called the next
      * time it needs to be displayed.
      */
     public void invalidateOptionsMenu() {
+		//////////////////////
+		if(mIsCardMenuEnabled){
+			mIsCreateOptionsMenuEnabled = true;
+			onPrepareOptionsMenu(mCardMenu);
+			return;
+		}
+		//////////////////////
+		
         mWindow.invalidatePanelMenu(Window.FEATURE_OPTIONS_PANEL);
     }
     
@@ -2658,6 +2687,13 @@ public class Activity extends ContextThemeWrapper
      * @see #onOptionsItemSelected
      */
     public boolean onCreateOptionsMenu(Menu menu) {
+		//////////////////////
+		if(mIsCardMenuEnabled){
+
+			return true;
+		}
+		//////////////////////
+		
         if (mParent != null) {
             return mParent.onCreateOptionsMenu(menu);
         }
@@ -2683,6 +2719,13 @@ public class Activity extends ContextThemeWrapper
      * @see #onCreateOptionsMenu
      */
     public boolean onPrepareOptionsMenu(Menu menu) {
+		//////////////////////
+		if(mIsCardMenuEnabled){
+			
+			return true;
+		}
+		//////////////////////
+		
         if (mParent != null) {
             return mParent.onPrepareOptionsMenu(menu);
         }
@@ -2708,6 +2751,13 @@ public class Activity extends ContextThemeWrapper
      * @see #onCreateOptionsMenu
      */
     public boolean onOptionsItemSelected(MenuItem item) {
+		//////////////////////
+		if(mIsCardMenuEnabled){
+			
+			return true;
+		}
+		//////////////////////
+		
         if (mParent != null) {
             return mParent.onOptionsItemSelected(item);
         }
@@ -2826,6 +2876,11 @@ public class Activity extends ContextThemeWrapper
      *             onCreateOptionsMenu().
      */
     public void onOptionsMenuClosed(Menu menu) {
+		//////////////////////
+		if(mIsCardMenuEnabled) {
+			return;
+		}
+
         if (mParent != null) {
             mParent.onOptionsMenuClosed(menu);
         }
@@ -2836,16 +2891,61 @@ public class Activity extends ContextThemeWrapper
      * open, this method does nothing.
      */
     public void openOptionsMenu() {
+		//////////////////////
+		if(mIsCardMenuEnabled) {
+			if(mIsCreateOptionsMenuEnabled) {				
+				mCardMenu = new CardMenu(this, mCardMenuListener);//JIM
+
+				mIsCreateOptionsMenuEnabled = false;
+
+				boolean res = onCreateOptionsMenu(mCardMenu);
+				if(!res)
+					return;
+			}
+
+			if(!mIsCardMenuOpened){
+				boolean res = onPrepareOptionsMenu(mCardMenu);
+				if(!res)
+					return;
+				
+				onShowCardMenu(mCardMenu);
+				mIsCardMenuOpened = true;
+			}
+			
+			return;
+		}
+		/////////////////////
+		
         mWindow.openPanel(Window.FEATURE_OPTIONS_PANEL, null);
     }
+
+	private void onShowCardMenu(CardMenu menu){		
+		menu.show();
+	}
     
     /**
      * Progammatically closes the options menu. If the options menu is already
      * closed, this method does nothing.
      */
     public void closeOptionsMenu() {
+		//////////////////////
+		if(mIsCardMenuEnabled) {
+			if(mIsCardMenuOpened){
+				onDismissCardMenu(mCardMenu);
+				mIsCardMenuOpened = false;
+				onOptionsMenuClosed(mCardMenu);
+			}
+
+			return;
+		}
+		/////////////////////
+		
         mWindow.closePanel(Window.FEATURE_OPTIONS_PANEL);
     }
+
+	private void onDismissCardMenu(CardMenu menu){
+		menu.dismiss();
+	}
 
     /**
      * Called when a context menu for the {@code view} is about to be shown.

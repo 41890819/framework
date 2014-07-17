@@ -347,6 +347,7 @@ class ServerThread extends Thread {
 
         DevicePolicyManagerService devicePolicy = null;
         StatusBarManagerService statusBar = null;
+        MessageCenterManagerService msgCenter = null;
         InputMethodManagerService imm = null;
         AppWidgetService appWidget = null;
         NotificationManagerService notification = null;
@@ -433,6 +434,14 @@ class ServerThread extends Thread {
                 ServiceManager.addService(Context.STATUS_BAR_SERVICE, statusBar);
             } catch (Throwable e) {
                 reportWtf("starting StatusBarManagerService", e);
+            }
+
+            try {
+                Slog.i(TAG, "Message Center");
+                msgCenter = new MessageCenterManagerService(context, wm);
+                ServiceManager.addService(Context.STATUS_MSGCENTER_SERVICE, msgCenter);
+            } catch (Throwable e) {
+                reportWtf("starting MessageCenterManagerService", e);
             }
 
             try {
@@ -548,7 +557,7 @@ class ServerThread extends Thread {
 
             try {
                 Slog.i(TAG, "Notification Manager");
-                notification = new NotificationManagerService(context, statusBar, lights);
+                notification = new NotificationManagerService(context, statusBar, lights, msgCenter);
                 ServiceManager.addService(Context.NOTIFICATION_SERVICE, notification);
                 networkPolicy.bindNotificationManager(notification);
             } catch (Throwable e) {
@@ -1007,6 +1016,13 @@ class ServerThread extends Thread {
                     "com.android.systemui.SystemUIService"));
         //Slog.d(TAG, "Starting service: " + intent);
         context.startServiceAsUser(intent, UserHandle.OWNER);
+
+        Intent msgintent = new Intent();
+        msgintent.setComponent(new ComponentName("com.android.msgcenter",
+                    "com.android.msgcenter.MessageCenterService"));
+        Slog.d(TAG, "Starting service: " + msgintent);
+        context.startServiceAsUser(msgintent, UserHandle.OWNER);
+
     }
 }
 

@@ -35,6 +35,15 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import android.widget.ImageView;
+import android.graphics.Color;
+
+import android.view.MotionEvent;
+import android.widget.IngGestureDetectListener;
+import android.widget.IngGestureDetector;
+import java.util.ArrayList;
+import android.util.Log;
+
 /**
  * A subclass of Dialog that can display one, two or three buttons. If you only want to
  * display a String in this dialog box, use the setMessage() method.  If you
@@ -110,11 +119,182 @@ public class AlertDialog extends Dialog implements DialogInterface {
         this(context, theme, true);
     }
 
+	////////////////////////////////////jim add for view above the alert dialog to capture gestures.
+	private AlertCoverView mCoverView = null;
+	public class AlertCoverView extends ImageView implements IngGestureDetectListener {
+		public AlertCoverView(Context context) {
+			super(context);
+			mGestureDetector = new IngGestureDetector(context, this);
+		}
+		
+		private String TAG = "AlertCoverView";
+		private IngGestureDetector mGestureDetector = null;
+		
+		@Override
+		public boolean onTouchEvent(MotionEvent event) {
+			if (mGestureDetector.onTouchEvent(event))
+				return true;
+			else
+				return false;
+		}
+	
+		@Override
+		public boolean onDoubleTap() {
+			//Log.e(TAG, "onDoubleTap");
+			
+			return false;
+		}
+		
+		@Override
+		public boolean onLongPress() {
+			//Log.e(TAG, "onLongPress");
+			return false;
+		}
+		
+		@Override
+		public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
+									float arg3) {
+			//Log.e(TAG, "onScroll");
+			return false;
+		}
+		
+		@Override
+		public boolean onSlideDown() {
+			//Log.e(TAG, "onSlideDown");
+			
+			onCoverSlideDown();
+			
+			return true;
+		}
+		
+		@Override
+		public boolean onSlideLeft() {
+			//Log.e(TAG, "onSlideLeft");
+			
+			onCoverSlideLeft();
+			
+			return true;
+		}
+		
+		@Override
+		public boolean onSlideRight() {
+			//Log.e(TAG, "onSlideRight");
+			
+			onCoverSlideRight();
+			
+			return true;
+		}
+		
+		@Override
+		public boolean onSlideUp() {
+			//Log.e(TAG, "onSlideUp");
+			return false;
+		}
+		
+		@Override
+		public boolean onTap() {
+			onCoverTap();
+			
+			return true;
+		}
+	}
+
+	public void onCoverSlideDown(){
+		dismiss();
+	}
+
+	public void onCoverSlideLeft(){
+		Button b = getLeftButton();
+		if(b != null)
+			b.performClick();
+	}
+
+	public void onCoverSlideRight(){
+		Button b = getRightButton();
+		if(b != null)
+			b.performClick();
+	}
+
+	public void onCoverTap(){
+		Button b = getCenterButton();
+		if(b != null)
+			b.performClick();
+	}
+
+	public Button getLeftButton(){
+		ArrayList<Button> buttons = getOrderedButtons();
+		if(buttons.size() >= 2){
+			return buttons.get(0);
+		}else{
+			return null;
+		}
+	}
+
+	public Button getCenterButton(){
+		ArrayList<Button> buttons = getOrderedButtons();
+		if(buttons.size() == 3){
+			return buttons.get(1);
+		}else if(buttons.size() == 1){
+			return buttons.get(0);
+		}else{
+			return null;
+		}
+	}
+
+	public Button getRightButton(){
+		ArrayList<Button> buttons = getOrderedButtons();
+		if(buttons.size() >= 2){
+			return buttons.get(buttons.size()-1);
+		}else{
+			return null;
+		}
+	}
+
+	private ArrayList<Button> mOrderedButtonList = new ArrayList<Button>();
+	private boolean mOrderedButtonListInited = false;
+	
+	public ArrayList<Button> getOrderedButtons(){
+		if(mOrderedButtonListInited)
+			return mOrderedButtonList;
+		
+		Button mButtons[] = { getButton(BUTTON_POSITIVE), getButton(BUTTON_NEUTRAL), getButton(BUTTON_NEGATIVE) };
+		
+		for(int i = 0; i < 3; ++i){			
+			if(mButtons[i] == null || mButtons[i].getVisibility() != View.VISIBLE){
+				continue;
+			}
+			
+			if(mOrderedButtonList.size() == 0){
+				mOrderedButtonList.add(mButtons[i]);
+				continue;
+			}
+			
+			for(int j = 0; j < mOrderedButtonList.size(); ++j){
+				if(mButtons[i].getX() < mOrderedButtonList.get(j).getX()){
+					mOrderedButtonList.add(j, mButtons[i]);
+					break;
+				}
+			}
+		}
+		
+		mOrderedButtonListInited = true;
+
+		return mOrderedButtonList;
+	}
+	////////////////////////////////////
+	
     AlertDialog(Context context, int theme, boolean createThemeContextWrapper) {
         super(context, resolveDialogTheme(context, theme), createThemeContextWrapper);
 
         mWindow.alwaysReadCloseOnTouchAttr();
         mAlert = new AlertController(getContext(), this, getWindow());
+
+		////////////////////////////////////jim add for view above the alert dialog to capture gestures.
+		mCoverView = new AlertCoverView(mContext);
+		mCoverView.setAlpha(0.0F);
+		mCoverView.setBackgroundColor(Color.BLUE);
+		setCoverView(mCoverView);
+		////////////////////////////////////
     }
 
     protected AlertDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {

@@ -436,6 +436,11 @@ public class Notification implements Parcelable
      */
     public Bundle extras = new Bundle();
 
+    /**
+     * If will group all the same id notifications.
+     */
+    public int group = 0;
+
     // extras keys for Builder inputs
     /** @hide */
     public static final String EXTRA_TITLE = "android.title";
@@ -634,6 +639,8 @@ public class Notification implements Parcelable
         if (parcel.readInt() != 0) {
             bigContentView = RemoteViews.CREATOR.createFromParcel(parcel);
         }
+
+        group = parcel.readInt();
     }
 
     @Override
@@ -722,6 +729,8 @@ public class Notification implements Parcelable
         if (!heavy) {
             that.lightenPayload(); // will clean out extras
         }
+
+        that.group = this.group;
     }
 
     /**
@@ -844,6 +853,8 @@ public class Notification implements Parcelable
         } else {
             parcel.writeInt(0);
         }
+
+        parcel.writeInt(group);
     }
 
     /**
@@ -907,6 +918,7 @@ public class Notification implements Parcelable
         }
         builder.setContentIntent(contentIntent);
         builder.buildInto(this);
+        builder.setGroup(this.group);
     }
 
     @Override
@@ -1047,7 +1059,7 @@ public class Notification implements Parcelable
         private boolean mUseChronometer;
         private Style mStyle;
         private boolean mShowWhen = true;
-
+	private int mGroup = 0;
         /**
          * Constructs a new Builder with the defaults:
          *
@@ -1495,6 +1507,10 @@ public class Notification implements Parcelable
             }
         }
 
+	public void setGroup(int group) {
+	    mGroup = group;
+	}
+
         private RemoteViews applyStandardTemplate(int resId, boolean fitIn1U) {
             RemoteViews contentView = new RemoteViews(mContext.getPackageName(), resId);
             boolean showLine3 = false;
@@ -1698,7 +1714,7 @@ public class Notification implements Parcelable
                 n.actions = new Action[mActions.size()];
                 mActions.toArray(n.actions);
             }
-
+	    n.group = mGroup;
             return n;
         }
 

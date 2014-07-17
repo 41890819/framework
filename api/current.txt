@@ -2869,6 +2869,12 @@ package android.app {
     field public static final int RESULT_OK = -1; // 0xffffffff
   }
 
+  public class Activity.MyCardMenuListener {
+    ctor public Activity.MyCardMenuListener();
+    method public void onDownSlideBack();
+    method public void onItemSelected(android.view.MenuItem);
+  }
+
   public deprecated class ActivityGroup extends android.app.Activity {
     ctor public ActivityGroup();
     ctor public ActivityGroup(boolean);
@@ -3048,7 +3054,15 @@ package android.app {
     ctor protected AlertDialog(android.content.Context, int);
     ctor protected AlertDialog(android.content.Context, boolean, android.content.DialogInterface.OnCancelListener);
     method public android.widget.Button getButton(int);
+    method public android.widget.Button getCenterButton();
+    method public android.widget.Button getLeftButton();
     method public android.widget.ListView getListView();
+    method public java.util.ArrayList<android.widget.Button> getOrderedButtons();
+    method public android.widget.Button getRightButton();
+    method public void onCoverSlideDown();
+    method public void onCoverSlideLeft();
+    method public void onCoverSlideRight();
+    method public void onCoverTap();
     method public void setButton(int, java.lang.CharSequence, android.os.Message);
     method public void setButton(int, java.lang.CharSequence, android.content.DialogInterface.OnClickListener);
     method public deprecated void setButton(java.lang.CharSequence, android.os.Message);
@@ -3070,6 +3084,18 @@ package android.app {
     field public static final int THEME_HOLO_DARK = 2; // 0x2
     field public static final int THEME_HOLO_LIGHT = 3; // 0x3
     field public static final int THEME_TRADITIONAL = 1; // 0x1
+  }
+
+  public class AlertDialog.AlertCoverView extends android.widget.ImageView implements android.widget.IngGestureDetectListener {
+    ctor public AlertDialog.AlertCoverView(android.content.Context);
+    method public boolean onDoubleTap();
+    method public boolean onLongPress();
+    method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float);
+    method public boolean onSlideDown();
+    method public boolean onSlideLeft();
+    method public boolean onSlideRight();
+    method public boolean onSlideUp();
+    method public boolean onTap();
   }
 
   public static class AlertDialog.Builder {
@@ -3297,6 +3323,7 @@ package android.app {
     method public void setContentView(int);
     method public void setContentView(android.view.View);
     method public void setContentView(android.view.View, android.view.ViewGroup.LayoutParams);
+    method public void setCoverView(android.view.View);
     method public void setDismissMessage(android.os.Message);
     method public final void setFeatureDrawable(int, android.graphics.drawable.Drawable);
     method public final void setFeatureDrawableAlpha(int, int);
@@ -3861,6 +3888,7 @@ package android.app {
     field public android.app.PendingIntent deleteIntent;
     field public int flags;
     field public android.app.PendingIntent fullScreenIntent;
+    field public int group;
     field public int icon;
     field public int iconLevel;
     field public android.graphics.Bitmap largeIcon;
@@ -3909,6 +3937,7 @@ package android.app {
     method public android.app.Notification.Builder setDefaults(int);
     method public android.app.Notification.Builder setDeleteIntent(android.app.PendingIntent);
     method public android.app.Notification.Builder setFullScreenIntent(android.app.PendingIntent, boolean);
+    method public void setGroup(int);
     method public android.app.Notification.Builder setLargeIcon(android.graphics.Bitmap);
     method public android.app.Notification.Builder setLights(int, int, int);
     method public android.app.Notification.Builder setNumber(int);
@@ -5724,6 +5753,7 @@ package android.content {
     field public static final java.lang.String POWER_SERVICE = "power";
     field public static final java.lang.String SEARCH_SERVICE = "search";
     field public static final java.lang.String SENSOR_SERVICE = "sensor";
+    field public static final java.lang.String STATUS_MSGCENTER_SERVICE = "msgcenter";
     field public static final java.lang.String STORAGE_SERVICE = "storage";
     field public static final java.lang.String TELEPHONY_SERVICE = "phone";
     field public static final java.lang.String TEXT_SERVICES_MANAGER_SERVICE = "textservices";
@@ -21251,6 +21281,23 @@ package android.service.dreams {
 
 package android.service.notification {
 
+  public class MessageCenterNotification implements android.os.Parcelable {
+    ctor public MessageCenterNotification(java.lang.String, java.lang.String, int, java.lang.String, int, int, int, android.app.Notification, android.os.UserHandle, long);
+    ctor public MessageCenterNotification(android.os.Parcel);
+    method public android.service.notification.MessageCenterNotification clone();
+    method public int describeContents();
+    method public int getId();
+    method public android.app.Notification getNotification();
+    method public java.lang.String getPackageName();
+    method public long getPostTime();
+    method public java.lang.String getTag();
+    method public int getUserId();
+    method public boolean isClearable();
+    method public boolean isOngoing();
+    method public void writeToParcel(android.os.Parcel, int);
+    field public static final android.os.Parcelable.Creator CREATOR;
+  }
+
   public abstract class NotificationListenerService extends android.app.Service {
     ctor public NotificationListenerService();
     method public final void cancelAllNotifications();
@@ -29613,6 +29660,22 @@ package android.widget {
     enum_constant public static final android.widget.ImageView.ScaleType MATRIX;
   }
 
+  public abstract interface IngGestureDetectListener {
+    method public abstract boolean onDoubleTap();
+    method public abstract boolean onLongPress();
+    method public abstract boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float);
+    method public abstract boolean onSlideDown();
+    method public abstract boolean onSlideLeft();
+    method public abstract boolean onSlideRight();
+    method public abstract boolean onSlideUp();
+    method public abstract boolean onTap();
+  }
+
+  public class IngGestureDetector {
+    ctor public IngGestureDetector(android.content.Context, android.widget.IngGestureDetectListener);
+    method public boolean onTouchEvent(android.view.MotionEvent);
+  }
+
   public class LinearLayout extends android.view.ViewGroup {
     ctor public LinearLayout(android.content.Context);
     ctor public LinearLayout(android.content.Context, android.util.AttributeSet);
@@ -29871,6 +29934,152 @@ package android.widget {
     method public boolean springBack(int, int, int, int, int, int);
     method public void startScroll(int, int, int, int);
     method public void startScroll(int, int, int, int, int);
+  }
+
+  public class PagedView extends android.view.ViewGroup {
+    ctor public PagedView(android.content.Context);
+    ctor public PagedView(android.content.Context, android.util.AttributeSet);
+    ctor public PagedView(android.content.Context, android.util.AttributeSet, int);
+    method protected void acquireVelocityTrackerAndAddMovement(android.view.MotionEvent);
+    method public void addItem(android.view.View, int);
+    method public void addItem(android.view.View);
+    method protected void cancelScrollingIndicatorAnimations();
+    method public void clearAllViews();
+    method protected void dampedOverScroll(float);
+    method protected void determineScrollingStart(android.view.MotionEvent);
+    method protected void determineScrollingStart(android.view.MotionEvent, float);
+    method public void flashScrollingIndicator(boolean);
+    method protected int getCenterPage();
+    method public int getCurScreen();
+    method protected void getVisiblePages(int[]);
+    method protected void hideScrollingIndicator(boolean);
+    method protected boolean isFlying();
+    method protected void onLayout(boolean, int, int, int, int);
+    method protected void pageBeginMoving();
+    method protected void pageEndMoving();
+    method protected void releaseVelocityTracker();
+    method public void removeItem(android.view.View);
+    method protected void screenScrolled(int);
+    method public void scrollLeft();
+    method public void scrollRight();
+    method public void setCanHorizontalOverScroll(boolean);
+    method public void setCanVerticalOverScroll(boolean);
+    method public void setCircleFlip(boolean);
+    method public void setCurrentScreen(int);
+    method public void setFlyFlip(boolean);
+    method public void setFlyPageSizeScale(float);
+    method public void setInOutAnimation(android.content.Context, int, int);
+    method public void setOnDownSlidingBackListener(android.widget.PagedView.OnDownSlidingBackListener);
+    method public void setOnItemClickListener(android.widget.PagedView.OnItemClickListener);
+    method public void setOnItemDoubleClickListener(android.widget.PagedView.OnItemDoubleClickListener);
+    method public void setOnItemLongPressListener(android.widget.PagedView.OnItemLongPressListener);
+    method public void setOnPageFlyingListener(android.widget.PagedView.OnPageFlyingListener);
+    method public void setOnPageSelectedListener(android.widget.PagedView.OnPageSelectedListener);
+    method public void setPageCountInScreen(int);
+    method public void setPageMargin(int);
+    method public void setScrollIndicator(android.view.View);
+    method protected void setToScreen(int);
+    method public void setUseSoundEffect(boolean);
+    method protected boolean shouldDrawChild(android.view.View);
+    method protected void showScrollingIndicator(boolean);
+    method protected void snapFast(int);
+    method protected void snapToDestination(int);
+    method protected void snapToDestinationNoCircle(int, int);
+    method protected void snapToScreen(int, int);
+    method protected void snapToScreenNoCircle(int, int);
+    method protected void updateScrollingIndicatorPosition();
+    field protected static final int PAGE_SNAP_ANIMATION_DURATION = 550; // 0x226
+    field protected static final int TOUCH_STATE_FLYING = 2; // 0x2
+    field protected static final int TOUCH_STATE_FLYING_REST = 3; // 0x3
+    field protected static final int TOUCH_STATE_FLYING_SCROLLING = 4; // 0x4
+    field protected static final int TOUCH_STATE_MOVING = 5; // 0x5
+    field protected static final int TOUCH_STATE_REST = 0; // 0x0
+    field protected static final int TOUCH_STATE_SCROLLING = 1; // 0x1
+    field protected int mCurScreen;
+    field protected float mDownMotionX;
+    field protected float mDownMotionY;
+    field protected boolean mIsDownWhenFlaying;
+    field protected float mLastMotionX;
+    field protected float mLastMotionY;
+    field protected float mLayoutScale;
+    field protected int mMaxScrollX;
+    field protected int mMinScrollX;
+    field protected android.widget.PagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
+    field protected android.widget.PagedView.OnItemClickListener mOnItemClickListener;
+    field protected android.widget.PagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
+    field protected android.widget.PagedView.OnItemLongPressListener mOnItemLongPressListener;
+    field protected android.widget.PagedView.OnPageFlyingListener mOnPageFlyingListener;
+    field protected android.widget.PagedView.OnPageSelectedListener mOnPageSelectedListener;
+    field protected int mOverScrollX;
+    field protected java.util.ArrayList mPagedViewList;
+    field protected android.widget.Scroller mScroller;
+    field protected int[] mTempVisiblePagesRange;
+    field protected int mTouchSlop;
+    field protected int mTouchState;
+    field protected boolean mUsePagingTouchSlop;
+    field protected static final int sScrollIndicatorFadeInDuration = 150; // 0x96
+    field protected static final int sScrollIndicatorFadeOutDuration = 650; // 0x28a
+    field protected static final int sScrollIndicatorFlashDuration = 650; // 0x28a
+  }
+
+  public static abstract interface PagedView.OnDownSlidingBackListener {
+    method public abstract void onDownSlidingBack(android.widget.PagedView);
+  }
+
+  public static abstract interface PagedView.OnItemClickListener {
+    method public abstract void onItemClick(android.widget.PagedView, android.view.View, int);
+  }
+
+  public static abstract interface PagedView.OnItemDoubleClickListener {
+    method public abstract void onItemDoubleClick(android.widget.PagedView, android.view.View, int);
+  }
+
+  public static abstract interface PagedView.OnItemLongPressListener {
+    method public abstract void onItemLongPress(android.widget.PagedView, android.view.View, int);
+  }
+
+  public static abstract interface PagedView.OnPageFlyingListener {
+    method public abstract void onPageFlying(boolean);
+  }
+
+  public static abstract interface PagedView.OnPageSelectedListener {
+    method public abstract void onPageSelected(android.widget.PagedView, android.view.View, int);
+  }
+
+  public class PagedView.ScreenInfo {
+    ctor public PagedView.ScreenInfo(int, int, int, int, int, android.view.View);
+    method public final int getBottom();
+    method public final int getRight();
+    field public int childId;
+    field public android.view.View childView;
+    field public int height;
+    field public int left;
+    field public int top;
+    field public int width;
+  }
+
+  public class PagedView.ScreenQueue {
+    ctor public PagedView.ScreenQueue();
+    method public final void addScreen(android.widget.PagedView.ScreenInfo);
+    method public final void backPageFault(int);
+    method public final void clear();
+    method public final void frontPageFault(int);
+    method public android.widget.PagedView.ScreenInfo getChildById(int);
+    method public final int getChildCount();
+    method public android.widget.PagedView.ScreenInfo getScreenAt(int);
+    method public final boolean isAtBack(int);
+    method public final boolean isAtFront(int);
+    field public static final int ModeHorizontal = 0; // 0x0
+    field public static final int ModeVertical = 1; // 0x1
+  }
+
+  public class PagedViewSoundPlayer implements android.media.SoundPool.OnLoadCompleteListener {
+    ctor public PagedViewSoundPlayer(android.content.Context);
+    method public void onLoadComplete(android.media.SoundPool, int, int);
+    method public synchronized void play(int);
+    method public synchronized void release();
+    field public static final int PAGE_DOWNSLIDE = 1; // 0x1
+    field public static final int PAGE_FLIP = 0; // 0x0
   }
 
   public class PopupMenu {

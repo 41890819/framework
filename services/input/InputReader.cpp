@@ -1186,6 +1186,7 @@ void CursorMotionAccumulator::reset(InputDevice* device) {
 void CursorMotionAccumulator::clearRelativeAxes() {
     mRelX = 0;
     mRelY = 0;
+    mRelZ = 0;
 }
 
 void CursorMotionAccumulator::process(const RawEvent* rawEvent) {
@@ -1196,6 +1197,9 @@ void CursorMotionAccumulator::process(const RawEvent* rawEvent) {
             break;
         case REL_Y:
             mRelY = rawEvent->value;
+            break;
+        case REL_Z:
+            mRelZ = rawEvent->value & 0x81;
             break;
         }
     }
@@ -2324,16 +2328,16 @@ void CursorInputMapper::configure(nsecs_t when,
     }
 
     if (!changes || (changes & InputReaderConfiguration::CHANGE_DISPLAY_INFO)) {
-        if (mParameters.orientationAware && mParameters.hasAssociatedDisplay) {
-            DisplayViewport v;
-            if (config->getDisplayInfo(false /*external*/, &v)) {
-                mOrientation = v.orientation;
-            } else {
-                mOrientation = DISPLAY_ORIENTATION_0;
-            }
-        } else {
-            mOrientation = DISPLAY_ORIENTATION_0;
-        }
+	DisplayViewport v;
+	if (config->getDisplayInfo(false /*external*/, &v)) {
+	    mOrientation = v.orientation;
+	    mDisplayWidth = v.deviceWidth;
+	    mDisplayHeight = v.deviceHeight;
+	} else {
+	    mOrientation = DISPLAY_ORIENTATION_0;
+	    mDisplayWidth = 360;
+	    mDisplayHeight = 240;
+	}
         bumpGeneration();
     }
 }
@@ -2383,6 +2387,9 @@ void CursorInputMapper::reset(nsecs_t when) {
     mButtonState = 0;
     mDownTime = 0;
 
+    mXPosition = mDisplayWidth/2;
+    mYPosition = mDisplayHeight/2;
+
     mPointerVelocityControl.reset();
     mWheelXVelocityControl.reset();
     mWheelYVelocityControl.reset();
@@ -2406,27 +2413,35 @@ void CursorInputMapper::process(const RawEvent* rawEvent) {
 
 void CursorInputMapper::sync(nsecs_t when) {
     int32_t lastButtonState = mButtonState;
-    int32_t currentButtonState = mCursorButtonAccumulator.getButtonState();
+    int32_t currentButtonState = mCursorMotionAccumulator.getRelativeZ();
     mButtonState = currentButtonState;
 
-    bool wasDown = isPointerDown(lastButtonState);
-    bool down = isPointerDown(currentButtonState);
+    float deltaX = mCursorMotionAccumulator.getRelativeX()*0.5;
+    float deltaY = mCursorMotionAccumulator.getRelativeY()*0.5;
+    bool moved = deltaX != 0 || deltaY != 0;
+    bool wasDown = (lastButtonState == 0 ? false : true);
+    bool down = (currentButtonState == 0 ? false : true);
     bool downChanged;
+
+
     if (!wasDown && down) {
         mDownTime = when;
         downChanged = true;
+	mXPosition = mDisplayWidth/2;
+	mYPosition = mDisplayHeight/2;
     } else if (wasDown && !down) {
         downChanged = true;
     } else {
         downChanged = false;
     }
-    nsecs_t downTime = mDownTime;
-    bool buttonsChanged = currentButtonState != lastButtonState;
-    bool buttonsPressed = currentButtonState & ~lastButtonState;
 
-    float deltaX = mCursorMotionAccumulator.getRelativeX() * mXScale;
-    float deltaY = mCursorMotionAccumulator.getRelativeY() * mYScale;
-    bool moved = deltaX != 0 || deltaY != 0;
+    nsecs_t downTime = mDownTime;
+
+    if(moved){
+	mXPosition += deltaX;
+	mYPosition += deltaY;
+
+    }
 
     // Rotate delta according to orientation if needed.
     if (mParameters.orientationAware && mParameters.hasAssociatedDisplay
@@ -2438,109 +2453,49 @@ void CursorInputMapper::sync(nsecs_t when) {
     PointerProperties pointerProperties;
     pointerProperties.clear();
     pointerProperties.id = 0;
-    pointerProperties.toolType = AMOTION_EVENT_TOOL_TYPE_MOUSE;
+    pointerProperties.toolType = AMOTION_EVENT_TOOL_TYPE_FINGER;
 
     PointerCoords pointerCoords;
     pointerCoords.clear();
-
-    float vscroll = mCursorScrollAccumulator.getRelativeVWheel();
-    float hscroll = mCursorScrollAccumulator.getRelativeHWheel();
-    bool scrolled = vscroll != 0 || hscroll != 0;
-
-    mWheelYVelocityControl.move(when, NULL, &vscroll);
-    mWheelXVelocityControl.move(when, &hscroll, NULL);
-
-    mPointerVelocityControl.move(when, &deltaX, &deltaY);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, mXPosition);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mYPosition);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, down ? 1.0f : 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MINOR, 20.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_ORIENTATION, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TILT, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_DISTANCE, 0.0f);
+    
 
     int32_t displayId;
-    if (mPointerController != NULL) {
-        if (moved || scrolled || buttonsChanged) {
-            mPointerController->setPresentation(
-                    PointerControllerInterface::PRESENTATION_POINTER);
-
-            if (moved) {
-                mPointerController->move(deltaX, deltaY);
-            }
-
-            if (buttonsChanged) {
-                mPointerController->setButtonState(currentButtonState);
-            }
-
-            mPointerController->unfade(PointerControllerInterface::TRANSITION_IMMEDIATE);
-        }
-
-        float x, y;
-        mPointerController->getPosition(&x, &y);
-        pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, x);
-        pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, y);
-        displayId = ADISPLAY_ID_DEFAULT;
-    } else {
-        pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, deltaX);
-        pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, deltaY);
-        displayId = ADISPLAY_ID_NONE;
-    }
-
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, down ? 1.0f : 0.0f);
+    displayId = ADISPLAY_ID_DEFAULT;
 
     // Moving an external trackball or mouse should wake the device.
     // We don't do this for internal cursor devices to prevent them from waking up
     // the device in your pocket.
     // TODO: Use the input device configuration to control this behavior more finely.
     uint32_t policyFlags = 0;
-    if ((buttonsPressed || moved || scrolled) && getDevice()->isExternal()) {
+    if ( moved && getDevice()->isExternal()) {
         policyFlags |= POLICY_FLAG_WAKE_DROPPED;
     }
 
-    // Synthesize key down from buttons if needed.
-    synthesizeButtonKeys(getContext(), AKEY_EVENT_ACTION_DOWN, when, getDeviceId(), mSource,
-            policyFlags, lastButtonState, currentButtonState);
-
     // Send motion event.
-    if (downChanged || moved || scrolled || buttonsChanged) {
+    if (downChanged || moved) {
         int32_t metaState = mContext->getGlobalMetaState();
         int32_t motionEventAction;
         if (downChanged) {
             motionEventAction = down ? AMOTION_EVENT_ACTION_DOWN : AMOTION_EVENT_ACTION_UP;
-        } else if (down || mPointerController == NULL) {
-            motionEventAction = AMOTION_EVENT_ACTION_MOVE;
         } else {
-            motionEventAction = AMOTION_EVENT_ACTION_HOVER_MOVE;
-        }
+            motionEventAction = AMOTION_EVENT_ACTION_MOVE;
+        } 
 
-        NotifyMotionArgs args(when, getDeviceId(), mSource, policyFlags,
-                motionEventAction, 0, metaState, currentButtonState, 0,
-                displayId, 1, &pointerProperties, &pointerCoords,
-                mXPrecision, mYPrecision, downTime);
-        getListener()->notifyMotion(&args);
-
-        // Send hover move after UP to tell the application that the mouse is hovering now.
-        if (motionEventAction == AMOTION_EVENT_ACTION_UP
-                && mPointerController != NULL) {
-            NotifyMotionArgs hoverArgs(when, getDeviceId(), mSource, policyFlags,
-                    AMOTION_EVENT_ACTION_HOVER_MOVE, 0,
-                    metaState, currentButtonState, AMOTION_EVENT_EDGE_FLAG_NONE,
-                    displayId, 1, &pointerProperties, &pointerCoords,
-                    mXPrecision, mYPrecision, downTime);
-            getListener()->notifyMotion(&hoverArgs);
-        }
-
-        // Send scroll events.
-        if (scrolled) {
-            pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_VSCROLL, vscroll);
-            pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_HSCROLL, hscroll);
-
-            NotifyMotionArgs scrollArgs(when, getDeviceId(), mSource, policyFlags,
-                    AMOTION_EVENT_ACTION_SCROLL, 0, metaState, currentButtonState,
-                    AMOTION_EVENT_EDGE_FLAG_NONE,
-                    displayId, 1, &pointerProperties, &pointerCoords,
-                    mXPrecision, mYPrecision, downTime);
-            getListener()->notifyMotion(&scrollArgs);
-        }
+	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+			      motionEventAction, 0, 0, 0, 0,
+			      displayId, 1, &pointerProperties, &pointerCoords,
+			      mXPrecision, mYPrecision, downTime);
+	getListener()->notifyMotion(&args);
     }
-
-    // Synthesize key up from buttons if needed.
-    synthesizeButtonKeys(getContext(), AKEY_EVENT_ACTION_UP, when, getDeviceId(), mSource,
-            policyFlags, lastButtonState, currentButtonState);
 
     mCursorMotionAccumulator.finishSync();
     mCursorScrollAccumulator.finishSync();

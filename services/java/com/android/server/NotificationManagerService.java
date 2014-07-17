@@ -64,6 +64,7 @@ import android.provider.Settings;
 import android.service.notification.INotificationListener;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.service.notification.MessageCenterNotification;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AtomicFile;
@@ -140,6 +141,8 @@ public class NotificationManagerService extends INotificationManager.Stub
     private StatusBarManagerService mStatusBar;
     private LightsService.Light mNotificationLight;
     private LightsService.Light mAttentionLight;
+
+    private MessageCenterManagerService mMsgCenter;
 
     private int mDefaultNotificationColor;
     private int mDefaultNotificationLedOn;
@@ -912,6 +915,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     {
         final StatusBarNotification sbn;
         IBinder statusBarKey;
+	IBinder msgCenterKey;
 
         NotificationRecord(StatusBarNotification sbn)
         {
@@ -1275,7 +1279,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     }
 
     NotificationManagerService(Context context, StatusBarManagerService statusBar,
-            LightsService lights)
+			       LightsService lights, MessageCenterManagerService msgCenter)
     {
         super();
         mContext = context;
@@ -1291,6 +1295,9 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         mStatusBar = statusBar;
         statusBar.setNotificationCallbacks(mNotificationCallbacks);
+
+	mMsgCenter = msgCenter;
+	msgCenter.setNotificationCallbacks(mNotificationCallbacks);
 
         mNotificationLight = lights.getLight(LightsService.LIGHT_ID_NOTIFICATIONS);
         mAttentionLight = lights.getLight(LightsService.LIGHT_ID_ATTENTION);
@@ -1746,6 +1753,32 @@ public class NotificationManagerService extends INotificationManager.Stub
                         Binder.restoreCallingIdentity(identity);
                     }
                 }
+
+		final MessageCenterNotification nforMsg = new MessageCenterNotification(
+                        pkg, id, tag, callingUid, callingPid, score, notification, user);
+                if (old != null && old.msgCenterKey != null) {
+                    r.msgCenterKey = old.msgCenterKey;
+                    long identity = Binder.clearCallingIdentity();
+                    try {
+                        mMsgCenter.updateNotification(r.msgCenterKey, nforMsg);
+                    }
+                    finally {
+                        Binder.restoreCallingIdentity(identity);
+                    }
+                } else {
+                    long identity = Binder.clearCallingIdentity();
+                    try {
+                        r.msgCenterKey = mMsgCenter.addNotification(nforMsg);
+                        if ((notification.flags & Notification.FLAG_SHOW_LIGHTS) != 0
+			        && canInterrupt) {
+                            mAttentionLight.pulse();
+                        }
+                    }
+                    finally {
+                        Binder.restoreCallingIdentity(identity);
+                    }
+                }
+
                 // Send accessibility events only for the current user.
                 if (currentUser == userId) {
                     sendAccessibilityEvent(notification, pkg);
@@ -1764,6 +1797,17 @@ public class NotificationManagerService extends INotificationManager.Stub
                     }
 
                     notifyRemovedLocked(r);
+                }
+                if (old != null && old.msgCenterKey != null) {
+                    long identity = Binder.clearCallingIdentity();
+                    try {
+                        mMsgCenter.removeNotification(old.msgCenterKey);
+                    }
+                    finally {
+                        Binder.restoreCallingIdentity(identity);
+                    }
+
+		    notifyRemovedLocked(r);
                 }
                 // ATTENTION: in a future release we will bail out here
                 // so that we do not play sounds, show lights, etc. for invalid notifications
@@ -1931,11 +1975,13 @@ public class NotificationManagerService extends INotificationManager.Stub
             long identity = Binder.clearCallingIdentity();
             try {
                 mStatusBar.removeNotification(r.statusBarKey);
+		mMsgCenter.removeNotification(r.msgCenterKey);
             }
             finally {
                 Binder.restoreCallingIdentity(identity);
             }
             r.statusBarKey = null;
+			r.msgCenterKey = null;
             notifyRemovedLocked(r);
         }
 

@@ -237,6 +237,12 @@ public class Dialog implements DialogInterface, Window.Callback,
         return mShowing;
     }
 
+	private View mCoverView = null;
+
+	public void setCoverView(View view) {
+		mCoverView = view;
+	}
+	
     /**
      * Start the dialog and display it on screen.  The window is placed in the
      * application layer and opaque.  Note that you should not override this
@@ -250,6 +256,9 @@ public class Dialog implements DialogInterface, Window.Callback,
                     mWindow.invalidatePanelMenu(Window.FEATURE_ACTION_BAR);
                 }
                 mDecor.setVisibility(View.VISIBLE);
+				if(mCoverView != null){
+					mCoverView.setVisibility(View.VISIBLE);
+				}
             }
             return;
         }
@@ -277,10 +286,22 @@ public class Dialog implements DialogInterface, Window.Callback,
             l = nl;
         }
 
-        try {
+        try {			
             mWindowManager.addView(mDecor, l);
             mShowing = true;
-    
+
+			////////////////////////////////////jim add for view above the alert dialog to capture gestures.
+			if(mCoverView != null){
+				WindowManager.LayoutParams mWindowParams = new WindowManager.LayoutParams();
+				mWindowParams.copyFrom(l);
+				mWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+				mWindowParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+				mWindowParams.alpha = 0.0F;
+				mWindowParams.dimAmount = 0.0F;
+				mWindowManager.addView(mCoverView, mWindowParams);
+			}
+			////////////////////////////////
+			
             sendShowMessage();
         } finally {
         }
@@ -292,6 +313,9 @@ public class Dialog implements DialogInterface, Window.Callback,
     public void hide() {
         if (mDecor != null) {
             mDecor.setVisibility(View.GONE);
+			if(mCoverView != null){
+				mCoverView.setVisibility(View.GONE);
+			}
         }
     }
 
@@ -321,6 +345,10 @@ public class Dialog implements DialogInterface, Window.Callback,
 
         try {
             mWindowManager.removeView(mDecor);
+			if(mCoverView != null){
+				mWindowManager.removeView(mCoverView);
+			}
+			
         } finally {
             if (mActionMode != null) {
                 mActionMode.finish();
@@ -329,7 +357,9 @@ public class Dialog implements DialogInterface, Window.Callback,
             mWindow.closeAllPanels();
             onStop();
             mShowing = false;
-            
+
+			mCoverView = null;
+			
             sendDismissMessage();
         }
     }

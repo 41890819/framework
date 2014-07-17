@@ -51,6 +51,7 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.Trace;
+import android.os.ServiceManager;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -76,6 +77,7 @@ import com.android.internal.os.SomeArgs;
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.view.BaseSurfaceHolder;
 import com.android.internal.view.RootViewSurfaceTaker;
+import com.android.internal.msgcenter.IMessageCenterService;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -3764,8 +3766,16 @@ public final class ViewRootImpl implements ViewParent,
      * Delivers post-ime input events to the view hierarchy.
      */
     final class ViewPostImeInputStage extends InputStage {
+	private IMessageCenterService mMsgCenterService;
+	private VelocityTracker mVelocityTracker;
+	private boolean mDetectMsgCenterMotion = true;
+	private float mDownX, mLastX;
+	private float mDownY, mLastY;
+
         public ViewPostImeInputStage(InputStage next) {
             super(next);
+	    mMsgCenterService = IMessageCenterService.Stub.asInterface(
+                ServiceManager.getService(Context.STATUS_MSGCENTER_SERVICE));
         }
 
         @Override
@@ -3877,8 +3887,51 @@ public final class ViewRootImpl implements ViewParent,
             return FORWARD;
         }
 
+	private void acquireVelocityTrackerAndAddMovement(MotionEvent ev) {
+	    if (mVelocityTracker == null) {
+		mVelocityTracker = VelocityTracker.obtain();
+	    }
+	    mVelocityTracker.addMovement(ev);
+	}
+
+	private void releaseVelocityTracker() {
+	    if (mVelocityTracker != null) {
+		mVelocityTracker.recycle();
+		mVelocityTracker = null;
+	    }
+	}
+
         private int processPointerEvent(QueuedInputEvent q) {
             final MotionEvent event = (MotionEvent)q.mEvent;
+
+	    try {
+		if (mMsgCenterService != null) {
+		    acquireVelocityTrackerAndAddMovement(event);
+		    final int action = event.getAction();
+		    if (action == MotionEvent.ACTION_DOWN) {
+			mDownX = mLastX = event.getX();
+			mDownY = mLastY = event.getY();
+			mDetectMsgCenterMotion = true;
+		    } else if (action == MotionEvent.ACTION_MOVE) {
+			if (mDetectMsgCenterMotion 
+			    && (Math.abs(event.getX() - mDownX) > 100 || (event.getY() - mDownY) > 100))
+			    mDetectMsgCenterMotion = false;
+		    } else if (action == MotionEvent.ACTION_UP 
+			       || action == MotionEvent.ACTION_CANCEL) {
+			if (mDetectMsgCenterMotion) {
+			    final VelocityTracker velocityTracker = mVelocityTracker;
+			    velocityTracker.computeCurrentVelocity(1000);
+			    int velocityX = (int) velocityTracker.getXVelocity();
+			    int velocityY = (int) velocityTracker.getYVelocity();
+			    if ((velocityY < -600 && Math.abs(velocityX) < 600)
+				|| (event.getY() - mDownY < -100))
+				mMsgCenterService.openNotificationDrawer(); 
+			}
+			releaseVelocityTracker();
+		    }
+		}
+	    } catch (RemoteException ex) {
+	    }
 
             if (mView.dispatchPointerEvent(event)) {
                 return FINISH_HANDLED;

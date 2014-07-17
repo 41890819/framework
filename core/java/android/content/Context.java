@@ -2010,6 +2010,8 @@ public abstract class Context {
      */
     public static final String STATUS_BAR_SERVICE = "statusbar";
 
+    public static final String STATUS_MSGCENTER_SERVICE = "msgcenter";
+
     /**
      * Use with {@link #getSystemService} to retrieve a {@link
      * android.net.ConnectivityManager} for handling management of

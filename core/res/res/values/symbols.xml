@@ -217,6 +217,10 @@
   <java-symbol type="id" name="sms_short_code_remember_undo_instruction" />
   <java-symbol type="id" name="breadcrumb_section" />
   <java-symbol type="id" name="action_bar_spinner" />
+  <java-symbol type="id" name="card_menu_item_icon" />
+  <java-symbol type="id" name="card_menu_item_title" />
+  <java-symbol type="id" name="card_menu_pagedview" />
+  <java-symbol type="id" name="card_menu_indicator_group" />
 
   <java-symbol type="attr" name="actionModeShareDrawable" />
   <java-symbol type="attr" name="alertDialogCenterButtons" />
@@ -1038,7 +1042,9 @@
   <java-symbol type="drawable" name="ic_lockscreen_unlock_phantom" />
   <java-symbol type="drawable" name="ic_media_route_on_holo_dark" />
   <java-symbol type="drawable" name="ic_media_route_disabled_holo_dark" />
-
+  <java-symbol type="drawable" name="card_menu_indicator_selected" />
+  <java-symbol type="drawable" name="card_menu_indicator_non_selected" />
+ 
   <java-symbol type="layout" name="action_bar_home" />
   <java-symbol type="layout" name="action_bar_title_item" />
   <java-symbol type="layout" name="action_menu_item_layout" />
@@ -1141,6 +1147,9 @@
   <java-symbol type="layout" name="keyguard_add_widget" />
   <java-symbol type="layout" name="action_bar_up_container" />
   <java-symbol type="layout" name="app_not_authorized" />
+  <java-symbol type="layout" name="card_menu_scroll_indicator" />
+  <java-symbol type="layout" name="card_menu_item" />
+  <java-symbol type="layout" name="card_menu" />
 
   <java-symbol type="anim" name="slide_in_child_bottom" />
   <java-symbol type="anim" name="slide_in_right" />
@@ -1520,6 +1529,8 @@
   <java-symbol type="anim" name="rotation_animation_jump_exit" />
   <java-symbol type="anim" name="rotation_animation_xfade_exit" />
   <java-symbol type="anim" name="rotation_animation_enter" />
+  <java-symbol type="anim" name="slide_in_up" />
+  <java-symbol type="anim" name="slide_out_down" />
   <java-symbol type="array" name="config_autoBrightnessButtonBacklightValues" />
   <java-symbol type="array" name="config_autoBrightnessKeyboardBacklightValues" />
   <java-symbol type="array" name="config_autoBrightnessLcdBacklightValues" />
