@@ -17,6 +17,8 @@ import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
+import android.os.ServiceManager;
+import android.os.RemoteException;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.SoundEffectConstants;
@@ -29,7 +31,7 @@ import android.view.ViewConfiguration;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Scroller;
-
+import com.android.internal.msgcenter.IMessageCenterService;
 /**
  * A common case of using PagedView as follows:
  * 
@@ -188,8 +190,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	private int mSpacePageCount = 0;
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
+        protected boolean mIsDownWhenHasNotifications = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
+        protected IMessageCenterService mMsgCenterService;
 
 	private boolean mUseSoundEffect = false;
 
@@ -252,6 +256,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				.getScaledPagingTouchSlop();
 		mGestureDetector = new GestureDetector(context, new MySimpleGesture());
 		mGestureDetector.setIsLongpressEnabled(true);
+		mMsgCenterService = IMessageCenterService.Stub.asInterface(ServiceManager.getService(Context.STATUS_MSGCENTER_SERVICE));		
 	}
 
 	@Override
@@ -1022,6 +1027,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				mIsDownWhenFlaying = true;
 			else
 				mIsDownWhenFlaying = false;
+			try {
+			    if (mMsgCenterService != null && mMsgCenterService.hasNotifications())
+				mIsDownWhenHasNotifications = true;
+			    else
+				mIsDownWhenHasNotifications = false;
+			} catch (RemoteException ex) {
+			}
 			final int xDist = Math.abs(mScroller.getFinalX()
 					- mScroller.getCurrX());
 			final boolean finishedScrolling = (mScroller.isFinished() || xDist < mTouchSlop);
@@ -1086,7 +1098,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				scrollBy(deltaX, 0);
 			} else {
 				determineScrollingStart(event);
-				if (mCanVerticalOverScroll) {
+				if (mCanVerticalOverScroll && !mIsDownWhenHasNotifications) {
 					if (mTouchState == TOUCH_STATE_MOVING) {
 						float yDiff = y - mDownMotionY;
 						if (yDiff < -mTouchSlop) {

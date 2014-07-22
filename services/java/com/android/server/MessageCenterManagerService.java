@@ -204,6 +204,17 @@ public class MessageCenterManagerService extends IMessageCenterService.Stub
 	}
     }
 
+    public boolean hasNotifications() {
+	if (mMsgCenter != null) {
+	    Slog.e(TAG, "hasNotifications ....");
+	    try {
+		return mMsgCenter.hasNotifications();
+	    } catch (RemoteException ex) {
+	    }
+	}
+	return false;
+    }
+
     // ================================================================================
     // Always called from UI thread
     // ================================================================================

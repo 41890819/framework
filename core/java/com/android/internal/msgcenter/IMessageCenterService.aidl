@@ -35,4 +35,5 @@ interface IMessageCenterService
     void onClearAllNotifications();
     void onNotificationClear(String pkg, String tag, int id);
     void openNotificationDrawer();
+    boolean hasNotifications();
 }

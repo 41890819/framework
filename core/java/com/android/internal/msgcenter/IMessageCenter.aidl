@@ -19,7 +19,8 @@ package com.android.internal.msgcenter;
 import android.service.notification.MessageCenterNotification;
 
 /** @hide */
-oneway interface IMessageCenter
+//oneway interface IMessageCenter
+interface IMessageCenter
 {
     void addNotification(IBinder key, in MessageCenterNotification notification);
     void updateNotification(IBinder key, in MessageCenterNotification notification);
@@ -27,5 +28,6 @@ oneway interface IMessageCenter
     void disable(int state);
     void animateCollapsePanels();
     void openNotificationDrawer();
+    boolean hasNotifications();
 }
 

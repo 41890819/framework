@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ServiceManager;
+import android.os.RemoteException;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.SoundEffectConstants;
@@ -26,6 +28,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 import android.widget.TextView;
+
+import com.android.internal.msgcenter.IMessageCenterService;
 
 /**
  * A common case of using PagedView as follows:
@@ -183,9 +187,11 @@ public class PagedView extends ViewGroup {
 	private ArrayList<TextView> mSpacePageList = new ArrayList<TextView>();
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
+        protected boolean mIsDownWhenHasNotifications = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
-	
+        protected IMessageCenterService mMsgCenterService;
+
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
 
@@ -210,6 +216,7 @@ public class PagedView extends ViewGroup {
 				.getScaledPagingTouchSlop();
 		mGestureDetector = new GestureDetector(context, new MySimpleGesture());
 		mGestureDetector.setIsLongpressEnabled(true);
+		mMsgCenterService = IMessageCenterService.Stub.asInterface(ServiceManager.getService(Context.STATUS_MSGCENTER_SERVICE));
 	}
 
 	@Override
@@ -895,6 +902,7 @@ public class PagedView extends ViewGroup {
 
 	};
 
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 //	       Log.e("sn", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
@@ -919,6 +927,13 @@ public class PagedView extends ViewGroup {
 		    mIsDownWhenFlaying = true;
 		else
 		    mIsDownWhenFlaying = false;
+		try {
+		    if (mMsgCenterService != null && mMsgCenterService.hasNotifications())
+			mIsDownWhenHasNotifications = true;
+		    else
+			mIsDownWhenHasNotifications = false;
+		} catch (RemoteException ex) {
+		}
 		final int xDist = Math.abs(mScroller.getFinalX() - mScroller.getCurrX());
 		final boolean finishedScrolling = (mScroller.isFinished() || xDist < mTouchSlop);
 		if (mTouchState == TOUCH_STATE_FLYING) {
@@ -979,7 +994,7 @@ public class PagedView extends ViewGroup {
 		    scrollBy(deltaX, 0);
 		} else {
 		    determineScrollingStart(event);
-		    if (mCanVerticalOverScroll) {
+		    if (mCanVerticalOverScroll && !mIsDownWhenHasNotifications) {
 			if (mTouchState == TOUCH_STATE_MOVING) {
 			    float yDiff = y - mDownMotionY;
 			    if (yDiff < -mTouchSlop) {
