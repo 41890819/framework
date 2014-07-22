@@ -1824,11 +1824,17 @@ public class PagedView extends ViewGroup {
 	 * @param count: must be more than 0
 	 */
 	public void setPageCountInScreen(int count) {
-		if (count >= 0) {
-			mPageCountInScreen  = count;
-			detectFlyAndCycle();
-			requestLayout();
-		}
+		String err = null;
+		if (count <= 0)
+			err = "setPageCountInScreen(count) doesn't support (count <= 0)";
+		else if (count % 2 == 0)
+			err = "setPageCountInScreen(count) doesn't support (count % 2 == 0)";
+		if (err != null)
+			throw new IllegalArgumentException(err);
+
+		mPageCountInScreen  = count;
+		detectFlyAndCycle();
+		requestLayout();
 	}
 	
 	/**
@@ -1867,6 +1873,7 @@ public class PagedView extends ViewGroup {
 	 * Set page size scale when flying.
 	 */
 	public void setFlyPageSizeScale(float scale) {
+	    if (scale > 0)
 		mFlyPageSizeScale = scale;
 	}
 
