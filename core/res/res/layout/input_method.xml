@@ -17,7 +17,6 @@
 ** limitations under the License.
 */
 -->
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/parentPanel"
     android:layout_width="match_parent"
@@ -29,6 +28,7 @@
         android:id="@+id/fullscreenArea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+	android:alpha="0.4"
         android:orientation="vertical"
         >
 
