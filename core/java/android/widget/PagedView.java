@@ -898,6 +898,7 @@ public class PagedView extends ViewGroup {
 		    Log.e("sn", "call onPageSelected --2");
 		    if (mOnPageSelectedListener != null)
 			mOnPageSelectedListener.onPageSelected(PagedView.this, mPagedViewList.get(getCurScreen()), getCurScreen());
+		    mHandler.removeMessages(0);
 		}
 
 	};
@@ -1002,7 +1003,7 @@ public class PagedView extends ViewGroup {
 				mLastMotionY = y;
 			    }
 			} else if (getScrollY() != 0)
-			    scrollTo((int) getScaleX(), 0);
+			    scrollTo((int) getScrollX(), 0);
 		    }
 		}
 		break;
@@ -1804,7 +1805,9 @@ public class PagedView extends ViewGroup {
 				mPagedViewList.remove(i);
 				mFirstMeasure = true;
 				mFirstLayout = true;
-				setPagedViewList(mPagedViewList);
+				removeView(v);
+				resetState();
+				// setPagedViewList(mPagedViewList);
 				if (i < mCurScreen || (i == mCurScreen && i == N - 1))
 					mCurScreen--;
 				break;

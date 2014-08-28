@@ -590,6 +590,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 		updateScrollingIndicatorPosition();
 
+		if (mScreenQueue.getChildCount() > 0){
+			scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
+					- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
+		}
+		else
 		scrollTo(mCurScreen * (mPageWidth + mPageMargin), 0);
 
 		if (childCount > 0) {
@@ -894,8 +899,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			if (mTouchState == TOUCH_STATE_FLYING) {
 				// mTouchState = TOUCH_STATE_REST;
 				// mNextScreen = restorePages(mNextScreen);
-				mHandler.removeMessages(0);
+			    //	mHandler.removeMessages(0);
 				mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
+				mCurScreen = mNextScreen;
 				return;
 			}
 			mCurScreen = mNextScreen;
@@ -999,6 +1005,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			pageEndMoving();
 			Log.e("sn", "call onPageSelected --2");
 			notifyPageSelected();
+			mHandler.removeMessages(0);
 		}
 
 	};
@@ -1106,7 +1113,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							mLastMotionY = y;
 						}
 					} else if (getScrollY() != 0)
-						scrollTo((int) getScaleX(), 0);
+						scrollTo((int) getScrollX(), 0);
 				}
 			}
 			break;
