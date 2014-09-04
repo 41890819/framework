@@ -181,7 +181,7 @@ public class PagedView extends ViewGroup {
 	private boolean mCycleFlipByUser = false;
 	private boolean mCanFlyFlip = false;
 	private boolean mFlyFlipByUser = false;
-	private int mPageMargin = 0;
+	private int mPageMargin = 1;
 	private int mPageCountInScreen = 1;
 	private int mPageWidth = 0;
 	private ArrayList<TextView> mSpacePageList = new ArrayList<TextView>();
