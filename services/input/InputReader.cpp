@@ -323,6 +323,7 @@ void InputReader::processEventsLocked(const RawEvent* rawEvents, size_t count) {
 #if DEBUG_RAW_EVENTS
             ALOGD("BatchSize: %d Count: %d", batchSize, count);
 #endif
+
             processEventsForDeviceLocked(deviceId, rawEvent, batchSize);
         } else {
             switch (rawEvent->type) {
@@ -1200,6 +1201,7 @@ void CursorMotionAccumulator::process(const RawEvent* rawEvent) {
             break;
         case REL_Z:
             mRelZ = rawEvent->value & 0x81;
+	    //ALOGE("REL_Z:%d", mRelZ);
             break;
         }
     }
@@ -2415,9 +2417,13 @@ void CursorInputMapper::sync(nsecs_t when) {
     int32_t lastButtonState = mButtonState;
     int32_t currentButtonState = mCursorMotionAccumulator.getRelativeZ();
     mButtonState = currentButtonState;
-
-    float deltaX = mCursorMotionAccumulator.getRelativeX()*0.5;
-    float deltaY = mCursorMotionAccumulator.getRelativeY()*0.5;
+#if defined(INPUT_ZET6231)
+    float deltaX = mCursorMotionAccumulator.getRelativeX()*2;
+    float deltaY = mCursorMotionAccumulator.getRelativeY()*2;
+#else
+    float deltaX = mCursorMotionAccumulator.getRelativeX();
+    float deltaY = mCursorMotionAccumulator.getRelativeY();
+#endif
     bool moved = deltaX != 0 || deltaY != 0;
     bool wasDown = (lastButtonState == 0 ? false : true);
     bool down = (currentButtonState == 0 ? false : true);
@@ -2437,10 +2443,10 @@ void CursorInputMapper::sync(nsecs_t when) {
 
     nsecs_t downTime = mDownTime;
 
-    if(moved){
+    if(moved && !downChanged){
 	mXPosition += deltaX;
 	mYPosition += deltaY;
-
+	//ALOGE("mXPosition:%f  mYPosition:%f", mXPosition, mYPosition);
     }
 
     // Rotate delta according to orientation if needed.
