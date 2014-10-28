@@ -96,6 +96,8 @@ interface IAudioService {
 
     oneway void reloadAudioSettings();
 
+    oneway void avrcpSupportsAbsoluteVolume(String address, boolean support);
+
     void setSpeakerphoneOn(boolean on);
 
     boolean isSpeakerphoneOn();

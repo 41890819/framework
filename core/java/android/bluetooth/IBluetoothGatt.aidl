@@ -33,12 +33,21 @@ interface IBluetoothGatt {
     void startScanWithUuids(in int appIf, in boolean isServer, in ParcelUuid[] ids);
     void stopScan(in int appIf, in boolean isServer);
 
+    void serverAdvertise(in int serverIf, in boolean start);
     void registerClient(in ParcelUuid appId, in IBluetoothGattCallback callback);
     void unregisterClient(in int clientIf);
     void clientConnect(in int clientIf, in String address, in boolean isDirect);
     void clientDisconnect(in int clientIf, in String address);
+    void clientListen(in int clientIf, in boolean start);
+    void setAdvData(in int clientIf, in boolean setScanRsp, in boolean inclName,
+                            in boolean inclTxPower, in int minInterval, in int maxInterval,
+                            in int appearance, in byte[] manufacturerData);
+    void setAdvDataEx(in int clientIf, in boolean setScanRsp, in boolean inclName,
+                            in boolean inclTxPower, in int minInterval, in int maxInterval,
+                            in int appearance, in char[] data);
     void refreshDevice(in int clientIf, in String address);
     void discoverServices(in int clientIf, in String address);
+    void discoverServicesByUuid(in int clientIf, in String address, in ParcelUuid uuid);
     void readCharacteristic(in int clientIf, in String address, in int srvcType,
                             in int srvcInstanceId, in ParcelUuid srvcId,
                             in int charInstanceId, in ParcelUuid charId,
@@ -50,12 +59,13 @@ interface IBluetoothGatt {
     void readDescriptor(in int clientIf, in String address, in int srvcType,
                             in int srvcInstanceId, in ParcelUuid srvcId,
                             in int charInstanceId, in ParcelUuid charId,
-                            in ParcelUuid descrUuid, in int authReq);
+                            in int descrInstanceId, in ParcelUuid descrUuid,
+                            in int authReq);
     void writeDescriptor(in int clientIf, in String address, in int srvcType,
                             in int srvcInstanceId, in ParcelUuid srvcId,
                             in int charInstanceId, in ParcelUuid charId,
-                            in ParcelUuid descrId, in int writeType,
-                            in int authReq, in byte[] value);
+                            in int descrInstanceId, in ParcelUuid descrId,
+                            in int writeType, in int authReq, in byte[] value);
     void registerForNotification(in int clientIf, in String address, in int srvcType,
                             in int srvcInstanceId, in ParcelUuid srvcId,
                             in int charInstanceId, in ParcelUuid charId,

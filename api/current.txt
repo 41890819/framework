@@ -4704,68 +4704,165 @@ package android.bluetooth {
   }
 
   public class BluetoothAssignedNumbers {
+    field public static final int AAMP_OF_AMERICA = 190; // 0xbe
     field public static final int ACCEL_SEMICONDUCTOR = 74; // 0x4a
+    field public static final int ACE_SENSOR = 188; // 0xbc
+    field public static final int ADIDAS = 195; // 0xc3
+    field public static final int ADVANCED_PANMOBIL_SYSTEMS = 145; // 0x91
+    field public static final int AIROHA_TECHNOLOGY = 148; // 0x94
     field public static final int ALCATEL = 36; // 0x24
+    field public static final int ALPWISE = 154; // 0x9a
+    field public static final int AMICCOM_ELECTRONICS = 192; // 0xc0
+    field public static final int APLIX = 189; // 0xbd
     field public static final int APPLE = 76; // 0x4c
     field public static final int APT_LICENSING = 79; // 0x4f
+    field public static final int ARCHOS = 207; // 0xcf
+    field public static final int ARP_DEVICES = 168; // 0xa8
     field public static final int ATHEROS_COMMUNICATIONS = 69; // 0x45
     field public static final int ATMEL = 19; // 0x13
+    field public static final int AUSTCO_COMMUNICATION_SYSTEMS = 213; // 0xd5
+    field public static final int AUTONET_MOBILE = 127; // 0x7f
     field public static final int AVAGO = 78; // 0x4e
     field public static final int AVM_BERLIN = 31; // 0x1f
+    field public static final int A_AND_D_ENGINEERING = 105; // 0x69
+    field public static final int A_AND_R_CAMBRIDGE = 124; // 0x7c
     field public static final int BANDSPEED = 32; // 0x20
+    field public static final int BAND_XI_INTERNATIONAL = 100; // 0x64
+    field public static final int BDE_TECHNOLOGY = 180; // 0xb4
+    field public static final int BEATS_ELECTRONICS = 204; // 0xcc
+    field public static final int BEAUTIFUL_ENTERPRISE = 108; // 0x6c
+    field public static final int BEKEY = 178; // 0xb2
     field public static final int BELKIN_INTERNATIONAL = 92; // 0x5c
+    field public static final int BINAURIC = 203; // 0xcb
+    field public static final int BIOSENTRONICS = 219; // 0xdb
     field public static final int BLUEGIGA = 71; // 0x47
+    field public static final int BLUERADIOS = 133; // 0x85
     field public static final int BLUETOOTH_SIG = 63; // 0x3f
+    field public static final int BLUETREK_TECHNOLOGIES = 151; // 0x97
+    field public static final int BOSE = 158; // 0x9e
+    field public static final int BRIARTEK = 109; // 0x6d
     field public static final int BROADCOM = 15; // 0xf
+    field public static final int CAEN_RFID = 170; // 0xaa
     field public static final int CAMBRIDGE_SILICON_RADIO = 10; // 0xa
     field public static final int CATC = 52; // 0x34
+    field public static final int CINETIX = 175; // 0xaf
+    field public static final int CLARINOX_TECHNOLOGIES = 179; // 0xb3
+    field public static final int COLORFY = 156; // 0x9c
     field public static final int COMMIL = 51; // 0x33
     field public static final int CONEXANT_SYSTEMS = 28; // 0x1c
+    field public static final int CONNECTBLUE = 113; // 0x71
     field public static final int CONTINENTAL_AUTOMOTIVE = 75; // 0x4b
     field public static final int CONWISE_TECHNOLOGY = 66; // 0x42
+    field public static final int CREATIVE_TECHNOLOGY = 118; // 0x76
     field public static final int C_TECHNOLOGIES = 38; // 0x26
+    field public static final int DANLERS = 225; // 0xe1
+    field public static final int DELORME_PUBLISHING_COMPANY = 128; // 0x80
+    field public static final int DEXCOM = 208; // 0xd0
+    field public static final int DIALOG_SEMICONDUCTOR = 210; // 0xd2
     field public static final int DIGIANSWER = 12; // 0xc
     field public static final int ECLIPSE = 53; // 0x35
+    field public static final int ECOTEST = 136; // 0x88
+    field public static final int ELGATO_SYSTEMS = 206; // 0xce
     field public static final int EM_MICROELECTRONIC_MARIN = 90; // 0x5a
+    field public static final int EQUINOX_AG = 134; // 0x86
     field public static final int ERICSSON_TECHNOLOGY = 0; // 0x0
+    field public static final int EVLUMA = 201; // 0xc9
     field public static final int FREE2MOVE = 83; // 0x53
+    field public static final int FUNAI_ELECTRIC = 144; // 0x90
+    field public static final int GARMIN_INTERNATIONAL = 135; // 0x87
     field public static final int GCT_SEMICONDUCTOR = 45; // 0x2d
+    field public static final int GELO = 200; // 0xc8
+    field public static final int GENEQ = 194; // 0xc2
+    field public static final int GENERAL_MOTORS = 104; // 0x68
     field public static final int GENNUM = 59; // 0x3b
+    field public static final int GEOFORCE = 157; // 0x9d
+    field public static final int GIBSON_GUITARS = 98; // 0x62
+    field public static final int GN_NETCOM = 103; // 0x67
+    field public static final int GN_RESOUND = 137; // 0x89
+    field public static final int GOOGLE = 224; // 0xe0
+    field public static final int GREEN_THROTTLE_GAMES = 172; // 0xac
+    field public static final int GROUP_SENSE = 115; // 0x73
+    field public static final int HANLYNN_TECHNOLOGIES = 123; // 0x7b
     field public static final int HARMAN_INTERNATIONAL = 87; // 0x57
+    field public static final int HEWLETT_PACKARD = 101; // 0x65
     field public static final int HITACHI = 41; // 0x29
+    field public static final int HOSIDEN = 221; // 0xdd
     field public static final int IBM = 3; // 0x3
     field public static final int INFINEON_TECHNOLOGIES = 9; // 0x9
+    field public static final int INGENIEUR_SYSTEMGRUPPE_ZAHN = 171; // 0xab
     field public static final int INTEGRATED_SILICON_SOLUTION = 65; // 0x41
     field public static final int INTEGRATED_SYSTEM_SOLUTION = 57; // 0x39
     field public static final int INTEL = 2; // 0x2
     field public static final int INVENTEL = 30; // 0x1e
     field public static final int IPEXTREME = 61; // 0x3d
+    field public static final int I_TECH_DYNAMIC_GLOBAL_DISTRIBUTION = 153; // 0x99
+    field public static final int JAWBONE = 138; // 0x8a
+    field public static final int JIANGSU_TOPPOWER_AUTOMOTIVE_ELECTRONICS = 155; // 0x9b
+    field public static final int JOHNSON_CONTROLS = 185; // 0xb9
     field public static final int J_AND_M = 82; // 0x52
+    field public static final int KAWANTECH = 212; // 0xd4
     field public static final int KC_TECHNOLOGY = 22; // 0x16
+    field public static final int KENSINGTON_COMPUTER_PRODUCTS_GROUP = 160; // 0xa0
+    field public static final int LAIRD_TECHNOLOGIES = 119; // 0x77
+    field public static final int LESSWIRE = 121; // 0x79
+    field public static final int LG_ELECTRONICS = 196; // 0xc4
+    field public static final int LINAK = 164; // 0xa4
     field public static final int LUCENT = 7; // 0x7
+    field public static final int LUDUS_HELSINKI = 132; // 0x84
     field public static final int MACRONIX = 44; // 0x2c
+    field public static final int MAGNETI_MARELLI = 169; // 0xa9
     field public static final int MANSELLA = 33; // 0x21
     field public static final int MARVELL = 72; // 0x48
     field public static final int MATSUSHITA_ELECTRIC = 58; // 0x3a
+    field public static final int MC10 = 202; // 0xca
     field public static final int MEDIATEK = 70; // 0x46
+    field public static final int MESO_INTERNATIONAL = 182; // 0xb6
+    field public static final int META_WATCH = 163; // 0xa3
     field public static final int MEWTEL_TECHNOLOGY = 47; // 0x2f
+    field public static final int MICOMMAND = 99; // 0x63
+    field public static final int MICROCHIP_TECHNOLOGY = 205; // 0xcd
     field public static final int MICROSOFT = 6; // 0x6
+    field public static final int MINDTREE = 106; // 0x6a
+    field public static final int MISFIT_WEARABLES = 223; // 0xdf
     field public static final int MITEL_SEMICONDUCTOR = 16; // 0x10
     field public static final int MITSUBISHI_ELECTRIC = 20; // 0x14
     field public static final int MOBILIAN_CORPORATION = 55; // 0x37
+    field public static final int MONSTER = 112; // 0x70
     field public static final int MOTOROLA = 8; // 0x8
+    field public static final int MSTAR_SEMICONDUCTOR = 122; // 0x7a
+    field public static final int MUZIK = 222; // 0xde
     field public static final int NEC = 34; // 0x22
+    field public static final int NEC_LIGHTING = 149; // 0x95
     field public static final int NEWLOGIC = 23; // 0x17
+    field public static final int NIKE = 120; // 0x78
+    field public static final int NINE_SOLUTIONS = 102; // 0x66
     field public static final int NOKIA_MOBILE_PHONES = 1; // 0x1
     field public static final int NORDIC_SEMICONDUCTOR = 89; // 0x59
     field public static final int NORWOOD_SYSTEMS = 46; // 0x2e
+    field public static final int ODM_TECHNOLOGY = 150; // 0x96
+    field public static final int OMEGAWAVE = 174; // 0xae
+    field public static final int ONSET_COMPUTER = 197; // 0xc5
     field public static final int OPEN_INTERFACE = 39; // 0x27
+    field public static final int OTL_DYNAMICS = 165; // 0xa5
+    field public static final int PANDA_OCEAN = 166; // 0xa6
     field public static final int PARROT = 67; // 0x43
     field public static final int PARTHUS_TECHNOLOGIES = 14; // 0xe
+    field public static final int PASSIF_SEMICONDUCTOR = 176; // 0xb0
+    field public static final int PETER_SYSTEMTECHNIK = 173; // 0xad
     field public static final int PHILIPS_SEMICONDUCTORS = 37; // 0x25
     field public static final int PLANTRONICS = 85; // 0x55
+    field public static final int POLAR_ELECTRO = 107; // 0x6b
+    field public static final int POLAR_ELECTRO_EUROPE = 209; // 0xd1
+    field public static final int PROCTER_AND_GAMBLE = 220; // 0xdc
     field public static final int QUALCOMM = 29; // 0x1d
+    field public static final int QUALCOMM_CONNECTED_EXPERIENCES = 216; // 0xd8
+    field public static final int QUALCOMM_INNOVATION_CENTER = 184; // 0xb8
+    field public static final int QUALCOMM_LABS = 140; // 0x8c
+    field public static final int QUALCOMM_TECHNOLOGIES = 215; // 0xd7
+    field public static final int QUINTIC = 142; // 0x8e
+    field public static final int QUUPPA = 199; // 0xc7
     field public static final int RALINK_TECHNOLOGY = 91; // 0x5b
+    field public static final int RDA_MICROELECTRONICS = 97; // 0x61
     field public static final int REALTEK_SEMICONDUCTOR = 93; // 0x5d
     field public static final int RED_M = 50; // 0x32
     field public static final int RENESAS_TECHNOLOGY = 54; // 0x36
@@ -4774,33 +4871,66 @@ package android.bluetooth {
     field public static final int RIVIERAWAVES = 96; // 0x60
     field public static final int ROHDE_AND_SCHWARZ = 25; // 0x19
     field public static final int RTX_TELECOM = 21; // 0x15
+    field public static final int SAMSUNG_ELECTRONICS = 117; // 0x75
+    field public static final int SARIS_CYCLING_GROUP = 177; // 0xb1
+    field public static final int SEERS_TECHNOLOGY = 125; // 0x7d
     field public static final int SEIKO_EPSON = 64; // 0x40
+    field public static final int SELFLY = 198; // 0xc6
+    field public static final int SEMILINK = 226; // 0xe2
+    field public static final int SENNHEISER_COMMUNICATIONS = 130; // 0x82
+    field public static final int SHANGHAI_SUPER_SMART_ELECTRONICS = 114; // 0x72
+    field public static final int SHENZHEN_EXCELSECU_DATA_TECHNOLOGY = 193; // 0xc1
     field public static final int SIGNIA_TECHNOLOGIES = 27; // 0x1b
     field public static final int SILICON_WAVE = 11; // 0xb
     field public static final int SIRF_TECHNOLOGY = 80; // 0x50
     field public static final int SOCKET_MOBILE = 68; // 0x44
     field public static final int SONY_ERICSSON = 86; // 0x56
+    field public static final int SOUND_ID = 111; // 0x6f
+    field public static final int SPORTS_TRACKING_TECHNOLOGIES = 126; // 0x7e
+    field public static final int SR_MEDIZINELEKTRONIK = 161; // 0xa1
     field public static final int STACCATO_COMMUNICATIONS = 77; // 0x4d
+    field public static final int STALMART_TECHNOLOGY = 191; // 0xbf
+    field public static final int STARKEY_LABORATORIES = 186; // 0xba
+    field public static final int STOLLMAN_E_PLUS_V = 143; // 0x8f
     field public static final int STONESTREET_ONE = 94; // 0x5e
     field public static final int ST_MICROELECTRONICS = 48; // 0x30
+    field public static final int SUMMIT_DATA_COMMUNICATIONS = 110; // 0x6e
+    field public static final int SUUNTO = 159; // 0x9f
+    field public static final int SWIRL_NETWORKS = 181; // 0xb5
     field public static final int SYMBOL_TECHNOLOGIES = 42; // 0x2a
     field public static final int SYNOPSYS = 49; // 0x31
     field public static final int SYSTEMS_AND_CHIPS = 62; // 0x3e
+    field public static final int S_POWER_ELECTRONICS = 187; // 0xbb
+    field public static final int TAIXINGBANG_TECHNOLOGY = 211; // 0xd3
     field public static final int TENOVIS = 43; // 0x2b
     field public static final int TERAX = 56; // 0x38
     field public static final int TEXAS_INSTRUMENTS = 13; // 0xd
+    field public static final int THINKOPTICS = 146; // 0x92
     field public static final int THREECOM = 5; // 0x5
     field public static final int THREE_DIJOY = 84; // 0x54
     field public static final int THREE_DSP = 73; // 0x49
+    field public static final int TIMEKEEPING_SYSTEMS = 131; // 0x83
+    field public static final int TIMEX_GROUP_USA = 214; // 0xd6
+    field public static final int TOPCORN_POSITIONING_SYSTEMS = 139; // 0x8b
     field public static final int TOSHIBA = 4; // 0x4
     field public static final int TRANSILICA = 24; // 0x18
+    field public static final int TRELAB = 183; // 0xb7
     field public static final int TTPCOM = 26; // 0x1a
+    field public static final int TXTR = 218; // 0xda
     field public static final int TZERO_TECHNOLOGIES = 81; // 0x51
+    field public static final int UNIVERSAL_ELECTRONICS = 147; // 0x93
+    field public static final int VERTU = 162; // 0xa2
+    field public static final int VISTEON = 167; // 0xa7
     field public static final int VIZIO = 88; // 0x58
+    field public static final int VOYETRA_TURTLE_BEACH = 217; // 0xd9
     field public static final int WAVEPLUS_TECHNOLOGY = 35; // 0x23
     field public static final int WICENTRIC = 95; // 0x5f
     field public static final int WIDCOMM = 17; // 0x11
+    field public static final int WUXI_VIMICRO = 129; // 0x81
     field public static final int ZEEVO = 18; // 0x12
+    field public static final int ZER01_TV = 152; // 0x98
+    field public static final int ZOMM = 116; // 0x74
+    field public static final int ZSCAN_SOFTWARE = 141; // 0x8d
   }
 
   public final class BluetoothClass implements android.os.Parcelable {
@@ -4896,6 +5026,7 @@ package android.bluetooth {
 
   public final class BluetoothDevice implements android.os.Parcelable {
     method public android.bluetooth.BluetoothGatt connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback);
+    method public boolean createBond();
     method public android.bluetooth.BluetoothSocket createInsecureRfcommSocketToServiceRecord(java.util.UUID) throws java.io.IOException;
     method public android.bluetooth.BluetoothSocket createRfcommSocketToServiceRecord(java.util.UUID) throws java.io.IOException;
     method public int describeContents();
@@ -4906,6 +5037,9 @@ package android.bluetooth {
     method public java.lang.String getName();
     method public int getType();
     method public android.os.ParcelUuid[] getUuids();
+    method public void setBondState(int);
+    method public boolean setPairingConfirmation(boolean);
+    method public boolean setPin(byte[]);
     method public void writeToParcel(android.os.Parcel, int);
     field public static final java.lang.String ACTION_ACL_CONNECTED = "android.bluetooth.device.action.ACL_CONNECTED";
     field public static final java.lang.String ACTION_ACL_DISCONNECTED = "android.bluetooth.device.action.ACL_DISCONNECTED";
@@ -4914,6 +5048,7 @@ package android.bluetooth {
     field public static final java.lang.String ACTION_CLASS_CHANGED = "android.bluetooth.device.action.CLASS_CHANGED";
     field public static final java.lang.String ACTION_FOUND = "android.bluetooth.device.action.FOUND";
     field public static final java.lang.String ACTION_NAME_CHANGED = "android.bluetooth.device.action.NAME_CHANGED";
+    field public static final java.lang.String ACTION_PAIRING_REQUEST = "android.bluetooth.device.action.PAIRING_REQUEST";
     field public static final java.lang.String ACTION_UUID = "android.bluetooth.device.action.UUID";
     field public static final int BOND_BONDED = 12; // 0xc
     field public static final int BOND_BONDING = 11; // 0xb
@@ -4928,18 +5063,24 @@ package android.bluetooth {
     field public static final java.lang.String EXTRA_CLASS = "android.bluetooth.device.extra.CLASS";
     field public static final java.lang.String EXTRA_DEVICE = "android.bluetooth.device.extra.DEVICE";
     field public static final java.lang.String EXTRA_NAME = "android.bluetooth.device.extra.NAME";
+    field public static final java.lang.String EXTRA_PAIRING_KEY = "android.bluetooth.device.extra.PAIRING_KEY";
+    field public static final java.lang.String EXTRA_PAIRING_VARIANT = "android.bluetooth.device.extra.PAIRING_VARIANT";
     field public static final java.lang.String EXTRA_PREVIOUS_BOND_STATE = "android.bluetooth.device.extra.PREVIOUS_BOND_STATE";
     field public static final java.lang.String EXTRA_RSSI = "android.bluetooth.device.extra.RSSI";
     field public static final java.lang.String EXTRA_UUID = "android.bluetooth.device.extra.UUID";
+    field public static final int PAIRING_VARIANT_PASSKEY_CONFIRMATION = 2; // 0x2
+    field public static final int PAIRING_VARIANT_PIN = 0; // 0x0
   }
 
   public final class BluetoothGatt implements android.bluetooth.BluetoothProfile {
-    method public void abortReliableWrite(android.bluetooth.BluetoothDevice);
+    method public void abortReliableWrite();
+    method public deprecated void abortReliableWrite(android.bluetooth.BluetoothDevice);
     method public boolean beginReliableWrite();
     method public void close();
     method public boolean connect();
     method public void disconnect();
     method public boolean discoverServices();
+    method public boolean discoverServices(android.os.ParcelUuid);
     method public boolean executeReliableWrite();
     method public java.util.List<android.bluetooth.BluetoothDevice> getConnectedDevices();
     method public int getConnectionState(android.bluetooth.BluetoothDevice);
@@ -5061,6 +5202,9 @@ package android.bluetooth {
     method public boolean notifyCharacteristicChanged(android.bluetooth.BluetoothDevice, android.bluetooth.BluetoothGattCharacteristic, boolean);
     method public boolean removeService(android.bluetooth.BluetoothGattService);
     method public boolean sendResponse(android.bluetooth.BluetoothDevice, int, int, int, byte[]);
+    method public void setAdvDataEx(boolean, boolean, boolean, java.lang.Integer, java.lang.Integer, java.lang.Integer, char[]);
+    method public void startAdvertising();
+    method public void stopAdvertising();
   }
 
   public abstract class BluetoothGattServerCallback {
@@ -5071,6 +5215,7 @@ package android.bluetooth {
     method public void onDescriptorReadRequest(android.bluetooth.BluetoothDevice, int, int, android.bluetooth.BluetoothGattDescriptor);
     method public void onDescriptorWriteRequest(android.bluetooth.BluetoothDevice, int, android.bluetooth.BluetoothGattDescriptor, boolean, boolean, int, byte[]);
     method public void onExecuteWrite(android.bluetooth.BluetoothDevice, int, boolean);
+    method public void onMtuReceived(android.bluetooth.BluetoothDevice, int);
     method public void onServiceAdded(int, android.bluetooth.BluetoothGattService);
   }
 
@@ -5095,6 +5240,7 @@ package android.bluetooth {
     method public int getConnectionState(android.bluetooth.BluetoothDevice);
     method public java.util.List<android.bluetooth.BluetoothDevice> getDevicesMatchingConnectionStates(int[]);
     method public boolean isAudioConnected(android.bluetooth.BluetoothDevice);
+    method public boolean sendVendorSpecificResultCode(android.bluetooth.BluetoothDevice, java.lang.String, java.lang.String);
     method public boolean startVoiceRecognition(android.bluetooth.BluetoothDevice);
     method public boolean stopVoiceRecognition(android.bluetooth.BluetoothDevice);
     field public static final java.lang.String ACTION_AUDIO_STATE_CHANGED = "android.bluetooth.headset.profile.action.AUDIO_STATE_CHANGED";
@@ -5111,6 +5257,7 @@ package android.bluetooth {
     field public static final int STATE_AUDIO_CONNECTED = 12; // 0xc
     field public static final int STATE_AUDIO_CONNECTING = 11; // 0xb
     field public static final int STATE_AUDIO_DISCONNECTED = 10; // 0xa
+    field public static final java.lang.String VENDOR_RESULT_CODE_COMMAND_ANDROID = "+ANDROID";
     field public static final java.lang.String VENDOR_SPECIFIC_HEADSET_EVENT_COMPANY_ID_CATEGORY = "android.bluetooth.headset.intent.category.companyid";
   }
 
@@ -5195,6 +5342,208 @@ package android.bluetooth {
     method public java.io.OutputStream getOutputStream() throws java.io.IOException;
     method public android.bluetooth.BluetoothDevice getRemoteDevice();
     method public boolean isConnected();
+  }
+
+}
+
+package android.bluetooth.peripheral {
+
+  public final class BluetoothHfDevice implements android.bluetooth.BluetoothProfile {
+    method public boolean answer();
+    method public void closeProxy();
+    method public boolean connect(android.bluetooth.BluetoothDevice);
+    method public boolean connectAudio();
+    method public boolean dial(java.lang.String);
+    method public boolean disconnect(android.bluetooth.BluetoothDevice);
+    method public boolean disconnectAudio();
+    method public int getAudioState(android.bluetooth.BluetoothDevice);
+    method public boolean getCLCC();
+    method public android.bluetooth.peripheral.CallStateInfo getCallStateInfo(android.bluetooth.BluetoothDevice);
+    method public java.util.List<android.bluetooth.BluetoothDevice> getConnectedDevices();
+    method public int getConnectionState(android.bluetooth.BluetoothDevice);
+    method public int[] getDeviceIndicators(android.bluetooth.BluetoothDevice);
+    method public java.util.List<android.bluetooth.BluetoothDevice> getDevicesMatchingConnectionStates(int[]);
+    method public android.bluetooth.peripheral.BluetoothHfDevice.LocalHfFeatures getLocalFeatures();
+    method public android.bluetooth.peripheral.BluetoothHfDevice.PeerHfFeatures getPeerFeatures();
+    method public static boolean getProxy(android.content.Context, android.bluetooth.BluetoothProfile.ServiceListener);
+    method public boolean hangup();
+    method public boolean hold(int);
+    method public boolean queryOperatorSelectionInfo();
+    method public boolean querySubscriberInfo();
+    method public boolean readPhoneBookList(java.lang.String, int);
+    method public boolean redial();
+    method public void registerEventHandler(android.bluetooth.peripheral.IHfDeviceEventHandler);
+    method public boolean sendDTMFcode(char);
+    method public boolean sendKeyPressedEvent();
+    method public boolean sendVendorCmd(java.lang.String);
+    method public boolean setVolume(int, int);
+    method public boolean startVoiceRecognition(android.bluetooth.BluetoothDevice);
+    method public boolean stopVoiceRecognition(android.bluetooth.BluetoothDevice);
+    method public void unregisterEventHandler();
+    field public static final java.lang.String ACTION_AUDIO_STATE_CHANGED = "com.broadcom.bt.hfdevice.profile.action.AUDIO_STATE_CHANGED";
+    field public static final java.lang.String ACTION_CALL_STATE_CHANGED = "com.broadcom.bt.hfdevice.profile.action.CALL_STATE_CHANGED";
+    field public static final java.lang.String ACTION_CONNECTION_STATE_CHANGED = "com.broadcom.bt.hfdevice.profile.action.CONNECTION_STATE_CHANGED";
+    field public static final java.lang.String ACTION_REGISTER_HFDEVICE_SDP = "com.broadcom.bt.action.REGISTER_HFDEVICE_SDP";
+    field public static final java.lang.String ACTION_RING_EVENT = "com.broadcom.bt.hfdevice.profile.action.RING_EVENT";
+    field public static final java.lang.String ACTION_UUID_CHANGED = "com.broadcom.bt.action.ACTION_UUID_CHANGED";
+    field public static final java.lang.String ACTION_WBS_STATE_CHANGED = "com.broadcom.bt.hfdevice.profile.action.WBS_STATE_CHANGED";
+    field public static final int CALL_ADDRTYPE_INTERNATIONAL = 145; // 0x91
+    field public static final int CALL_ADDRTYPE_UNKNOWN = 129; // 0x81
+    field public static final int CALL_DIRECTION_INCOMING = 1; // 0x1
+    field public static final int CALL_DIRECTION_OUTGOING = 0; // 0x0
+    field public static final int CALL_MPTY_TYPE_MULTI = 1; // 0x1
+    field public static final int CALL_MPTY_TYPE_SINGLE = 0; // 0x0
+    field public static final int CALL_SETUP_STATE_ALERTING = 3; // 0x3
+    field public static final int CALL_SETUP_STATE_DIALING = 2; // 0x2
+    field public static final int CALL_SETUP_STATE_IDLE = 6; // 0x6
+    field public static final int CALL_SETUP_STATE_INCOMING = 4; // 0x4
+    field public static final int CALL_SETUP_STATE_WAITING = 5; // 0x5
+    field public static final int CALL_STATE_ACTIVE = 0; // 0x0
+    field public static final int CALL_STATE_HELD = 1; // 0x1
+    field public static final int CALL_TYPE_DATA = 1; // 0x1
+    field public static final int CALL_TYPE_FAX = 2; // 0x2
+    field public static final int CALL_TYPE_VOICE = 0; // 0x0
+    field public static final int CONFERENCE = 3; // 0x3
+    field public static final int ERROR_AG_FAILURE = 0; // 0x0
+    field public static final int ERROR_DIAL_STRING_HAS_INVALID_CHARS = 27; // 0x1b
+    field public static final int ERROR_DIAL_STRING_TOO_LONG = 26; // 0x1a
+    field public static final int ERROR_INVALID_INDEX = 21; // 0x15
+    field public static final int ERROR_MEMORY_FAILURE = 23; // 0x17
+    field public static final int ERROR_MEMORY_FULL = 20; // 0x14
+    field public static final int ERROR_NO_CONNECTION_TO_PHONE = 1; // 0x1
+    field public static final int ERROR_NO_SERVICE = 30; // 0x1e
+    field public static final int ERROR_ONLY_911_ALLOWED = 32; // 0x20
+    field public static final int ERROR_OPERATION_NOT_ALLOWED = 3; // 0x3
+    field public static final int ERROR_OPERATION_NOT_SUPPORTED = 4; // 0x4
+    field public static final int ERROR_PIN_REQUIRED = 5; // 0x5
+    field public static final int ERROR_SIM_BUSY = 14; // 0xe
+    field public static final int ERROR_SIM_FAILURE = 13; // 0xd
+    field public static final int ERROR_SIM_MISSING = 10; // 0xa
+    field public static final int ERROR_SIM_PIN2_REQUIRED = 17; // 0x11
+    field public static final int ERROR_SIM_PIN_REQUIRED = 11; // 0xb
+    field public static final int ERROR_SIM_PUK2_REQUIRED = 18; // 0x12
+    field public static final int ERROR_SIM_PUK_REQUIRED = 12; // 0xc
+    field public static final int ERROR_TEXT_HAS_INVALID_CHARS = 25; // 0x19
+    field public static final int ERROR_TEXT_TOO_LONG = 24; // 0x18
+    field public static final int ERROR_WRONG_PASSWORD = 16; // 0x10
+    field public static final java.lang.String EXTRA_REGISTER_HFDEVICE_SDP = "EXTRA.REGISTER.SDP";
+    field public static final int HANGUP_ACTIVE_ACCEPT_HELD = 1; // 0x1
+    field public static final int HANGUP_HELD = 0; // 0x0
+    field public static final int INDICATOR_TYPE_BATTERY = 3; // 0x3
+    field public static final int INDICATOR_TYPE_MAX = 4; // 0x4
+    field public static final int INDICATOR_TYPE_ROAM = 1; // 0x1
+    field public static final int INDICATOR_TYPE_SERVICE = 0; // 0x0
+    field public static final int INDICATOR_TYPE_SIGNAL = 2; // 0x2
+    field public static final int NO_ERROR = 255; // 0xff
+    field public static final int PHONEBOOK_READ_COMPLETED = 253; // 0xfd
+    field public static final int PHONEBOOK_READ_PROGRESS_UPDATE = 254; // 0xfe
+    field public static final java.lang.String PHONE_MEM_TYPE_LAST_DIALED = "DC";
+    field public static final java.lang.String PHONE_MEM_TYPE_MISSED = "MC";
+    field public static final java.lang.String PHONE_MEM_TYPE_PHONEBOOK = "ME";
+    field public static final java.lang.String PHONE_MEM_TYPE_RECEIVED = "RC";
+    field public static final int SERVICE_AVAILABLE = 1; // 0x1
+    field public static final int SERVICE_NOT_AVAILABLE = 0; // 0x0
+    field public static final int SERVICE_TYPE_HOME = 0; // 0x0
+    field public static final int SERVICE_TYPE_ROAMING = 1; // 0x1
+    field public static final int STATE_AUDIO_CONNECTED = 2; // 0x2
+    field public static final int STATE_AUDIO_CONNECTING = 1; // 0x1
+    field public static final int STATE_AUDIO_DISCONNECTED = 0; // 0x0
+    field public static final int STATE_AUDIO_DISCONNECTING = 3; // 0x3
+    field public static final int STATE_CONNECTED = 2; // 0x2
+    field public static final int STATE_CONNECTING = 1; // 0x1
+    field public static final int STATE_DISCONNECTED = 0; // 0x0
+    field public static final int STATE_DISCONNECTING = 3; // 0x3
+    field public static final int SWAP_CALLS = 2; // 0x2
+    field public static final int VOLUME_TYPE_MIC = 1; // 0x1
+    field public static final int VOLUME_TYPE_SPK = 0; // 0x0
+    field public static final int VR_STATE_ACTIVE = 1; // 0x1
+    field public static final int VR_STATE_INACTIVE = 0; // 0x0
+    field public static final int WBS_NONE = 0; // 0x0
+    field public static final int WBS_YES = 1; // 0x1
+  }
+
+  public class BluetoothHfDevice.LocalHfFeatures {
+    method public boolean isCLIPSupported();
+    method public boolean isCodecNegotiationSupported();
+    method public boolean isECControlSupported();
+    method public boolean isECNRSupported();
+    method public boolean isECStatusSupported();
+    method public boolean isRemoteVolumeControlSupported();
+    method public boolean isThreeWayCallSupported();
+    method public boolean isUnknownAtCommandSupported();
+    method public boolean isVRSupported();
+    method public boolean isVoipCallSupported();
+    method public void printLog();
+  }
+
+  public class BluetoothHfDevice.PeerHfFeatures {
+    ctor public BluetoothHfDevice.PeerHfFeatures(int);
+    method public boolean isCodecNegotiationSupported();
+    method public boolean isECControlSupported();
+    method public boolean isECNRSupported();
+    method public boolean isECStatusSupported();
+    method public boolean isEERCSupported();
+    method public boolean isHSPConnection();
+    method public boolean isInBandToneSupported();
+    method public boolean isRejectIncomingSupported();
+    method public boolean isThreeWayCallSupported();
+    method public boolean isVRSupported();
+    method public boolean isVoipCallSupported();
+    method public boolean isVtagSupported();
+    method public void printLog();
+  }
+
+  public class CallStateInfo {
+    ctor public CallStateInfo(int, int, int);
+    ctor public CallStateInfo(int, int, int, java.lang.String);
+    method public int getCallSetupState();
+    method public int getNumActiveCall();
+    method public int getNumHeldCall();
+    method public int getNumOfCalls();
+    method public java.lang.String getPhoneNumber();
+    method public boolean hasHeldCall();
+    method public boolean isInCall();
+    method public void setCallSetupState(int);
+    method public void setNumActiveCall(int);
+    method public void setNumHeldCall(int);
+  }
+
+  public final class ClccInfo implements android.os.Parcelable {
+    method public int describeContents();
+    method public int getCallDirection();
+    method public int getCallIndex();
+    method public int getCallMode();
+    method public int getCallMultiPartyType();
+    method public int getCallNumType();
+    method public java.lang.String getCallNumber();
+    method public int getCallState();
+    method public void writeToParcel(android.os.Parcel, int);
+    field public static final java.lang.String TAG = "ClccInfo";
+  }
+
+  public abstract interface IHfDeviceEventHandler {
+    method public abstract void onAudioStateChange(int, int);
+    method public abstract void onCLCCRsp(int, java.util.List<android.bluetooth.peripheral.ClccInfo>);
+    method public abstract void onCallStateChange(int, int, int, int, java.lang.String, int);
+    method public abstract void onConnectionStateChange(int, android.bluetooth.BluetoothDevice, int, int);
+    method public abstract void onIndicatorsUpdate(int[]);
+    method public abstract void onOperatorSelectionRsp(int, int, java.lang.String);
+    method public abstract void onPhoneBookReadRsp(int, java.util.List<android.bluetooth.peripheral.PhoneBookInfo>);
+    method public abstract void onRingEvent();
+    method public abstract void onSubscriberInfoRsp(int, java.lang.String, int);
+    method public abstract void onVRStateChange(int, int);
+    method public abstract void onVendorAtRsp(int, java.lang.String);
+    method public abstract void onVolumeChange(int, int);
+  }
+
+  public final class PhoneBookInfo implements android.os.Parcelable {
+    method public int describeContents();
+    method public java.lang.String getContactInfo();
+    method public int getContactNumType();
+    method public java.lang.String getContactNumber();
+    method public int getIndex();
+    method public void writeToParcel(android.os.Parcel, int);
+    field public static final java.lang.String TAG = "PhoneBookInfo";
   }
 
 }
@@ -18503,8 +18852,10 @@ package android.provider {
     field public static final int MISSED_TYPE = 3; // 0x3
     field public static final java.lang.String NEW = "new";
     field public static final java.lang.String NUMBER = "number";
+    field public static final java.lang.String NUMBER_PRESENTATION = "presentation";
     field public static final java.lang.String OFFSET_PARAM_KEY = "offset";
     field public static final int OUTGOING_TYPE = 2; // 0x2
+    field public static final int PRESENTATION_ALLOWED = 1; // 0x1
     field public static final java.lang.String TYPE = "type";
   }
 
@@ -20115,6 +20466,7 @@ package android.provider {
     field public static final java.lang.String END_BUTTON_BEHAVIOR = "end_button_behavior";
     field public static final java.lang.String FONT_SCALE = "font_scale";
     field public static final java.lang.String HAPTIC_FEEDBACK_ENABLED = "haptic_feedback_enabled";
+    field public static final java.lang.String HEART_RATE_BLE_SETTINGS = "heart_rate_ble_service";
     field public static final deprecated java.lang.String HTTP_PROXY = "http_proxy";
     field public static final deprecated java.lang.String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
     field public static final deprecated java.lang.String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
@@ -28837,6 +29189,148 @@ package android.widget {
     field public static final int NO_SELECTION = -2147483648; // 0x80000000
   }
 
+  public class AdapterPagedView extends android.widget.AdapterView {
+    ctor public AdapterPagedView(android.content.Context);
+    ctor public AdapterPagedView(android.content.Context, android.util.AttributeSet);
+    ctor public AdapterPagedView(android.content.Context, android.util.AttributeSet, int);
+    method protected void acquireVelocityTrackerAndAddMovement(android.view.MotionEvent);
+    method protected void cancelScrollingIndicatorAnimations();
+    method public void clearAllViews();
+    method protected void dampedOverScroll(float);
+    method protected void determineScrollingStart(android.view.MotionEvent);
+    method protected void determineScrollingStart(android.view.MotionEvent, float);
+    method protected void dumpScreenQueue();
+    method public void flashScrollingIndicator(boolean);
+    method public android.widget.BaseAdapter getAdapter();
+    method protected int getCenterPage();
+    method public int getCurScreen();
+    method public android.view.View getSelectedView();
+    method protected void getVisiblePages(int[]);
+    method protected void hideScrollingIndicator(boolean);
+    method protected boolean isFlying();
+    method protected void pageBeginMoving();
+    method protected void pageEndMoving();
+    method protected void releaseVelocityTracker();
+    method protected void screenScrolled(int);
+    method public void scrollLeft();
+    method public void scrollRight();
+    method public void setAdapter(android.widget.BaseAdapter);
+    method public void setCanHorizontalOverScroll(boolean);
+    method public void setCanVerticalOverScroll(boolean);
+    method public void setCircleFlip(boolean);
+    method public void setCurrentScreen(int);
+    method public void setFlyFlip(boolean);
+    method public void setFlyPageSizeScale(float);
+    method public void setInOutAnimation(android.content.Context, int, int);
+    method public void setOnDownSlidingBackListener(android.widget.AdapterPagedView.OnDownSlidingBackListener);
+    method public void setOnItemClickListener(android.widget.AdapterPagedView.OnItemClickListener);
+    method public void setOnItemDoubleClickListener(android.widget.AdapterPagedView.OnItemDoubleClickListener);
+    method public void setOnItemLongPressListener(android.widget.AdapterPagedView.OnItemLongPressListener);
+    method public void setOnPageFlyingListener(android.widget.AdapterPagedView.OnPageFlyingListener);
+    method public void setOnPageSelectedListener(android.widget.AdapterPagedView.OnPageSelectedListener);
+    method public void setPageCountInScreen(int);
+    method public void setPageMargin(int);
+    method public void setScrollIndicator(android.view.View);
+    method public void setSelection(int);
+    method protected void setToScreen(int);
+    method public void setUseSoundEffect(boolean);
+    method protected boolean shouldDrawChild(android.view.View);
+    method protected void showScrollingIndicator(boolean);
+    method protected void snapFast(int);
+    method protected void snapToDestination(int);
+    method protected void snapToDestinationNoCircle(int, int);
+    method protected void snapToScreen(int, int);
+    method protected void snapToScreenNoCircle(int, int);
+    method protected void updateScrollingIndicatorPosition();
+    field protected static final int PAGE_SNAP_ANIMATION_DURATION = 550; // 0x226
+    field protected static final int TOUCH_STATE_FLYING = 2; // 0x2
+    field protected static final int TOUCH_STATE_FLYING_REST = 3; // 0x3
+    field protected static final int TOUCH_STATE_FLYING_SCROLLING = 4; // 0x4
+    field protected static final int TOUCH_STATE_MOVING = 5; // 0x5
+    field protected static final int TOUCH_STATE_REST = 0; // 0x0
+    field protected static final int TOUCH_STATE_SCROLLING = 1; // 0x1
+    field protected android.widget.BaseAdapter mAdapter;
+    field protected int mCurScreen;
+    field protected float mDownMotionX;
+    field protected float mDownMotionY;
+    field protected boolean mIsDownWhenFlaying;
+    field protected boolean mIsDownWhenHasNotifications;
+    field protected float mLastMotionX;
+    field protected float mLastMotionY;
+    field protected float mLayoutScale;
+    field protected int mMaxScrollX;
+    field protected int mMinScrollX;
+    field protected com.android.internal.msgcenter.IMessageCenterService mMsgCenterService;
+    field protected android.widget.AdapterPagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
+    field protected android.widget.AdapterPagedView.OnItemClickListener mOnItemClickListener;
+    field protected android.widget.AdapterPagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
+    field protected android.widget.AdapterPagedView.OnItemLongPressListener mOnItemLongPressListener;
+    field protected android.widget.AdapterPagedView.OnPageFlyingListener mOnPageFlyingListener;
+    field protected android.widget.AdapterPagedView.OnPageSelectedListener mOnPageSelectedListener;
+    field protected int mOverScrollX;
+    field protected android.widget.Scroller mScroller;
+    field protected int[] mTempVisiblePagesRange;
+    field protected int mTouchSlop;
+    field protected int mTouchState;
+    field protected boolean mUsePagingTouchSlop;
+    field protected int[] mVisiblePagesIDRange;
+    field protected int[] mVisiblePagesRange;
+    field protected static final int sScrollIndicatorFadeInDuration = 150; // 0x96
+    field protected static final int sScrollIndicatorFadeOutDuration = 650; // 0x28a
+    field protected static final int sScrollIndicatorFlashDuration = 650; // 0x28a
+  }
+
+  public static abstract interface AdapterPagedView.OnDownSlidingBackListener {
+    method public abstract void onDownSlidingBack(android.widget.AdapterPagedView);
+  }
+
+  public static abstract interface AdapterPagedView.OnItemClickListener {
+    method public abstract void onItemClick(android.widget.AdapterPagedView, android.view.View, int);
+  }
+
+  public static abstract interface AdapterPagedView.OnItemDoubleClickListener {
+    method public abstract void onItemDoubleClick(android.widget.AdapterPagedView, android.view.View, int);
+  }
+
+  public static abstract interface AdapterPagedView.OnItemLongPressListener {
+    method public abstract void onItemLongPress(android.widget.AdapterPagedView, android.view.View, int);
+  }
+
+  public static abstract interface AdapterPagedView.OnPageFlyingListener {
+    method public abstract void onPageFlying(android.widget.AdapterPagedView, boolean);
+  }
+
+  public static abstract interface AdapterPagedView.OnPageSelectedListener {
+    method public abstract void onPageSelected(android.widget.AdapterPagedView, android.view.View, int);
+  }
+
+  protected class AdapterPagedView.ScreenInfo {
+    ctor public AdapterPagedView.ScreenInfo(int, int, int, int, int, android.view.View);
+    method public final int getBottom();
+    method public final int getRight();
+    field public int childId;
+    field public android.view.View childView;
+    field public int height;
+    field public int left;
+    field public int top;
+    field public int width;
+  }
+
+  protected class AdapterPagedView.ScreenQueue {
+    ctor protected AdapterPagedView.ScreenQueue();
+    method public final void addScreen(android.widget.AdapterPagedView.ScreenInfo);
+    method public final void backPageFault(int);
+    method public final void clear();
+    method public final void frontPageFault(int);
+    method public android.widget.AdapterPagedView.ScreenInfo getChildById(int);
+    method public final int getChildCount();
+    method public android.widget.AdapterPagedView.ScreenInfo getScreenAt(int);
+    method public final boolean isAtBack(int);
+    method public final boolean isAtFront(int);
+    field public static final int ModeHorizontal = 0; // 0x0
+    field public static final int ModeVertical = 1; // 0x1
+  }
+
   public abstract class AdapterView extends android.view.ViewGroup {
     ctor public AdapterView(android.content.Context);
     ctor public AdapterView(android.content.Context, android.util.AttributeSet);
@@ -29999,11 +30493,13 @@ package android.widget {
     field protected float mDownMotionX;
     field protected float mDownMotionY;
     field protected boolean mIsDownWhenFlaying;
+    field protected boolean mIsDownWhenHasNotifications;
     field protected float mLastMotionX;
     field protected float mLastMotionY;
     field protected float mLayoutScale;
     field protected int mMaxScrollX;
     field protected int mMinScrollX;
+    field protected com.android.internal.msgcenter.IMessageCenterService mMsgCenterService;
     field protected android.widget.PagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
     field protected android.widget.PagedView.OnItemClickListener mOnItemClickListener;
     field protected android.widget.PagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
@@ -30071,15 +30567,6 @@ package android.widget {
     method public final boolean isAtFront(int);
     field public static final int ModeHorizontal = 0; // 0x0
     field public static final int ModeVertical = 1; // 0x1
-  }
-
-  public class PagedViewSoundPlayer implements android.media.SoundPool.OnLoadCompleteListener {
-    ctor public PagedViewSoundPlayer(android.content.Context);
-    method public void onLoadComplete(android.media.SoundPool, int, int);
-    method public synchronized void play(int);
-    method public synchronized void release();
-    field public static final int PAGE_DOWNSLIDE = 1; // 0x1
-    field public static final int PAGE_FLIP = 0; // 0x0
   }
 
   public class PopupMenu {
@@ -31199,6 +31686,31 @@ package android.widget {
     method public void setOnZoomOutClickListener(android.view.View.OnClickListener);
     method public void setZoomSpeed(long);
     method public void show();
+  }
+
+}
+
+package com.android.internal.msgcenter {
+
+  public abstract interface IMessageCenter implements android.os.IInterface {
+    method public abstract void addNotification(android.os.IBinder, android.service.notification.MessageCenterNotification) throws android.os.RemoteException;
+    method public abstract void animateCollapsePanels() throws android.os.RemoteException;
+    method public abstract void disable(int) throws android.os.RemoteException;
+    method public abstract boolean hasNotifications() throws android.os.RemoteException;
+    method public abstract void openNotificationDrawer() throws android.os.RemoteException;
+    method public abstract void removeNotification(android.os.IBinder) throws android.os.RemoteException;
+    method public abstract void updateNotification(android.os.IBinder, android.service.notification.MessageCenterNotification) throws android.os.RemoteException;
+  }
+
+  public abstract interface IMessageCenterService implements android.os.IInterface {
+    method public abstract void collapsePanels() throws android.os.RemoteException;
+    method public abstract boolean hasNotifications() throws android.os.RemoteException;
+    method public abstract void onClearAllNotifications() throws android.os.RemoteException;
+    method public abstract void onNotificationClear(java.lang.String, java.lang.String, int) throws android.os.RemoteException;
+    method public abstract void onNotificationClick(java.lang.String, java.lang.String, int) throws android.os.RemoteException;
+    method public abstract void onNotificationError(java.lang.String, java.lang.String, int, int, int, java.lang.String) throws android.os.RemoteException;
+    method public abstract void openNotificationDrawer() throws android.os.RemoteException;
+    method public abstract void registerMessageCenter(com.android.internal.msgcenter.IMessageCenter, java.util.List<android.os.IBinder>, java.util.List<android.service.notification.MessageCenterNotification>, java.util.List<android.os.IBinder>) throws android.os.RemoteException;
   }
 
 }

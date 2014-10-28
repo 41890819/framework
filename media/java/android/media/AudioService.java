@@ -449,6 +449,10 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
     // and used later when/if disableSafeMediaVolume() is called.
     private StreamVolumeCommand mPendingVolumeCommand;
 
+    private final Object mA2dpAvrcpLock = new Object();
+    // If absolute volume is supported in AVRCP device
+    private boolean mAvrcpAbsVolSupported = false;
+
     ///////////////////////////////////////////////////////////////////////////
     // Construction
     ///////////////////////////////////////////////////////////////////////////
@@ -3773,6 +3777,16 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     }
                 }
             }
+        }
+    }
+
+    public void avrcpSupportsAbsoluteVolume(String address, boolean support) {
+        // address is not used for now, but may be used when multiple a2dp devices are supported
+        synchronized (mA2dpAvrcpLock) {
+            mAvrcpAbsVolSupported = support;
+            VolumeStreamState streamState = mStreamStates[AudioSystem.STREAM_MUSIC];
+            sendMsg(mAudioHandler, MSG_SET_DEVICE_VOLUME, SENDMSG_QUEUE,
+                    AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP, 0, streamState, 0);
         }
     }
 

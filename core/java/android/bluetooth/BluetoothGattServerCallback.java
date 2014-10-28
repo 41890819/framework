@@ -38,6 +38,9 @@ public abstract class BluetoothGattServerCallback {
                                         int newState) {
     }
 
+    //Callback indicating a limited mtu.
+    public void onMtuReceived(BluetoothDevice device, int mtu) {
+    }
     /**
      * Indicates whether a local service has been added successfully.
      *

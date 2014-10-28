@@ -56,6 +56,7 @@ import com.android.internal.widget.ILockSettings;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 
 /**
  * The Settings provider contains global system-level device preferences.
@@ -1431,6 +1432,10 @@ public final class Settings {
             setShowGTalkServiceStatusForUser(cr, flag, UserHandle.myUserId());
         }
 
+      /**
+         * @hide
+         */
+       public static final String CTA_OPEN_CAPTURE_LOG = "cta_open_capture_log";
         /**
          * @hide
          * @deprecated - Do not use
@@ -2315,6 +2320,8 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
+		public static final String HEART_RATE_BLE_SETTINGS = "heart_rate_ble_service";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
@@ -2380,7 +2387,8 @@ public final class Settings {
             SIP_CALL_OPTIONS,
             SIP_RECEIVE_CALLS,
             POINTER_SPEED,
-            VIBRATE_WHEN_RINGING
+            VIBRATE_WHEN_RINGING,
+			HEART_RATE_BLE_SETTINGS
         };
 
         // Settings moved to Settings.Secure
@@ -5242,6 +5250,9 @@ public final class Settings {
         /** {@hide} */
         public static final String
                 BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX = "bluetooth_input_device_priority_";
+        /** {@hide} */
+        public static final String
+                BLUETOOTH_MAP_PRIORITY_PREFIX = "bluetooth_map_priority_";
 
         /**
          * Get the key that retrieves a bluetooth headset's priority.
@@ -5267,6 +5278,13 @@ public final class Settings {
             return BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX + address.toUpperCase();
         }
 
+        /**
+         * Get the key that retrieves a bluetooth map priority.
+         * @hide
+         */
+        public static final String getBluetoothMapPriorityKey(String address) {
+            return BLUETOOTH_MAP_PRIORITY_PREFIX + address.toUpperCase(Locale.ROOT);
+        }
         /**
          * Scaling factor for normal window animations. Setting to 0 will
          * disable window animations.

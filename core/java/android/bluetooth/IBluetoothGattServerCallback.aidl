@@ -27,6 +27,7 @@ interface IBluetoothGattServerCallback {
     void onScanResult(in String address, in int rssi, in byte[] advData);
     void onServerConnectionState(in int status, in int serverIf,
                                  in boolean connected, in String address);
+    void onMtuReceived(in String address, in int mtu);
     void onServiceAdded(in int status, in int srvcType,
                         in int srvcInstId, in ParcelUuid srvcId);
     void onCharacteristicReadRequest(in String address, in int transId,

@@ -57,6 +57,10 @@ public abstract class BaseNetworkStateTracker implements NetworkStateTracker {
         mLinkCapabilities = new LinkCapabilities();
     }
 
+    protected BaseNetworkStateTracker() {
+        // By default, let the sub classes construct everything
+    }
+
     @Deprecated
     protected Handler getTargetHandler() {
         return mTarget;
@@ -73,26 +77,28 @@ public abstract class BaseNetworkStateTracker implements NetworkStateTracker {
     }
 
     @Override
-    public final void startMonitoring(Context context, Handler target) {
+    public void startMonitoring(Context context, Handler target) {
         mContext = Preconditions.checkNotNull(context);
         mTarget = Preconditions.checkNotNull(target);
         startMonitoringInternal();
     }
 
-    protected abstract void startMonitoringInternal();
+    protected void startMonitoringInternal() {
+
+    }
 
     @Override
-    public final NetworkInfo getNetworkInfo() {
+    public NetworkInfo getNetworkInfo() {
         return new NetworkInfo(mNetworkInfo);
     }
 
     @Override
-    public final LinkProperties getLinkProperties() {
+    public LinkProperties getLinkProperties() {
         return new LinkProperties(mLinkProperties);
     }
 
     @Override
-    public final LinkCapabilities getLinkCapabilities() {
+    public LinkCapabilities getLinkCapabilities() {
         return new LinkCapabilities(mLinkCapabilities);
     }
 

@@ -108,7 +108,19 @@ public final class BluetoothGattServer implements BluetoothProfile {
                                                       connected ? BluetoothProfile.STATE_CONNECTED :
                                                       BluetoothProfile.STATE_DISCONNECTED);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
+                }
+            }
+
+            /**
+             * Server mtu.
+             * @hide
+             */
+            public void onMtuReceived(String address, int mtu) {
+                try {
+                    mCallback.onMtuReceived(mAdapter.getRemoteDevice(address), mtu);
+                } catch (Exception ex) {
+                    Log.w(TAG, "Unhandled exception in mtu callback", ex);
                 }
             }
 
@@ -128,7 +140,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                 try {
                     mCallback.onServiceAdded((int)status, service);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
 
@@ -154,7 +166,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                 try {
                     mCallback.onCharacteristicReadRequest(device, transId, offset, characteristic);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
 
@@ -186,7 +198,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                 try {
                     mCallback.onDescriptorReadRequest(device, transId, offset, descriptor);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
 
@@ -214,7 +226,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                     mCallback.onCharacteristicWriteRequest(device, transId, characteristic,
                                                            isPrep, needRsp, offset, value);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
 
             }
@@ -250,7 +262,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                     mCallback.onDescriptorWriteRequest(device, transId, descriptor,
                                                        isPrep, needRsp, offset, value);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
 
@@ -270,7 +282,7 @@ public final class BluetoothGattServer implements BluetoothProfile {
                 try {
                     mCallback.onExecuteWrite(device, transId, execWrite);
                 } catch (Exception ex) {
-                    Log.w(TAG, "Unhandled exception: " + ex);
+                    Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
         };
@@ -690,5 +702,72 @@ public final class BluetoothGattServer implements BluetoothProfile {
     public List<BluetoothDevice> getDevicesMatchingConnectionStates(int[] states) {
         throw new UnsupportedOperationException
             ("Use BluetoothManager#getDevicesMatchingConnectionStates instead.");
+    }
+
+    /**
+     * Starts or stops sending of advertisement packages to listen for connection
+     * requests from a central devices.
+     *
+     * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
+     *
+     */
+    public void startAdvertising() {
+        serverAdvertise(true);
+    }
+
+    public void stopAdvertising() {
+        serverAdvertise(false);
+    }
+
+    private void serverAdvertise(boolean start) {
+        if (DBG) Log.d(TAG, "listen() - start: " + start);
+        if (mService == null || mServerIf == 0) {
+            if (DBG) Log.d(TAG, "listen is not supported");
+            return;
+        }
+
+        try {
+            mService.serverAdvertise(mServerIf, start);
+        } catch (RemoteException e) {
+            Log.e(TAG,"",e);
+        }
+    }
+
+    /**
+     * Sets the advertising data contained in the adv. response packet.
+     *
+     * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
+     *
+     * @param advData true to set adv. data, false to set scan response
+     * @param includeName Inlucde the name in the adv. response
+     * @param includeTxPower Include TX power value
+     * @param minInterval Minimum desired scan interval (optional)
+     * @param maxInterval Maximum desired scan interval (optional)
+     * @param appearance The appearance flags for the device (optional)
+     */
+     public void setAdvDataEx(boolean advData, boolean includeName, boolean includeTxPower,
+                           Integer minInterval, Integer maxInterval,
+                           Integer appearance, char[] reserveData) {
+        char[] data = new char[0];
+        if (mService == null || mServerIf == 0) {
+            if (DBG) Log.d(TAG, " setAdvDataEx is not supported");
+            return;
+        }
+        if (reserveData != null) {
+            data = new char[reserveData.length];
+            for(int i = 0; i != reserveData.length; ++i) {
+                data[i] = reserveData[i];
+            }
+        }
+
+        try {
+            mService.setAdvDataEx(mServerIf, !advData,
+                includeName, includeTxPower,
+                minInterval != null ? minInterval : 0,
+                maxInterval != null ? maxInterval : 0,
+                appearance != null ? appearance : 0, data);
+        } catch (RemoteException e) {
+            Log.e(TAG,"",e);
+        }
     }
 }

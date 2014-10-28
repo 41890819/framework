@@ -136,6 +136,10 @@ public class CallLog {
          */
         public static final String NUMBER = "number";
 
+        public static final String NUMBER_PRESENTATION = "presentation";
+         /** Number is allowed to display for caller id. */
+        public static final int PRESENTATION_ALLOWED = 1;
+
         /**
          * The ISO 3166-1 two letters country code of the country where the
          * user received or made the call.

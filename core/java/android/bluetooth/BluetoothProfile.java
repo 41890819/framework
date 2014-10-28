@@ -98,6 +98,21 @@ public interface BluetoothProfile {
     static public final int GATT_SERVER = 8;
 
     /**
+     * MAP Profile
+     * @hide
+     */
+    public static final int MAP = 9;
+
+
+// Broadcom added profiles are defined here.
+    /**
+     * Hf Device Profile
+     * @hide
+     */
+    public static final int HF_DEVICE = 100;
+
+
+    /**
      * Default priority for devices that we try to auto-connect to and
      * and allow incoming connections for the profile
      * @hide

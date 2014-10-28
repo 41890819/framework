@@ -100,6 +100,7 @@ LOCAL_SRC_FILES += \
 	core/java/android/bluetooth/IBluetoothManager.aidl \
 	core/java/android/bluetooth/IBluetoothManagerCallback.aidl \
 	core/java/android/bluetooth/IBluetoothPbap.aidl \
+	core/java/android/bluetooth/IBluetoothMap.aidl \
 	core/java/android/bluetooth/IBluetoothStateChangeCallback.aidl \
 	core/java/android/bluetooth/IBluetoothGatt.aidl \
 	core/java/android/bluetooth/IBluetoothGattCallback.aidl \
@@ -237,6 +238,9 @@ LOCAL_SRC_FILES += \
 	telephony/java/com/android/internal/telephony/IWapPushManager.aidl \
 	wifi/java/android/net/wifi/IWifiManager.aidl \
 	wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl
+
+LOCAL_SRC_FILES +=  core/java/android/bluetooth/peripheral/IBluetoothHfDevice.aidl \
+					core/java/android/bluetooth/peripheral/IBluetoothHfDeviceCallback.aidl
 #
 
 

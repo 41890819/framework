@@ -58,6 +58,7 @@ interface IBluetooth
     boolean cancelBondProcess(in BluetoothDevice device);
     boolean removeBond(in BluetoothDevice device);
     int getBondState(in BluetoothDevice device);
+    void setBondState(in BluetoothDevice device, int mBondState);
 
     String getRemoteName(in BluetoothDevice device);
     int getRemoteType(in BluetoothDevice device);
@@ -80,4 +81,6 @@ interface IBluetooth
     // For Socket
     ParcelFileDescriptor connectSocket(in BluetoothDevice device, int type, in ParcelUuid uuid, int port, int flag);
     ParcelFileDescriptor createSocketChannel(int type, in String serviceName, in ParcelUuid uuid, int port, int flag);
+
+    boolean configHciSnoopLog(boolean enable);
 }
