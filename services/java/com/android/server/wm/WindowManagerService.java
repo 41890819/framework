@@ -297,7 +297,11 @@ public class WindowManagerService extends IWindowManager.Stub
             if (DevicePolicyManager.ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED.equals(action)) {
                 mKeyguardDisableHandler.sendEmptyMessage(
                     KeyguardDisableHandler.KEYGUARD_POLICY_CHANGED);
-            }
+            } else if ("com.ingenic.glass.screencontrol.gesture".equals(action)) {// for screencontrol 
+		int gesture = intent.getIntExtra("gesture", -1);
+		Slog.d(TAG, "receive screen control gesture "+gesture+" ... ");
+		mInputManager.putGestureEvent(gesture);
+	    }
         }
     };
 
@@ -806,6 +810,8 @@ public class WindowManagerService extends IWindowManager.Stub
         // Track changes to DevicePolicyManager state so we can enable/disable keyguard.
         IntentFilter filter = new IntentFilter();
         filter.addAction(DevicePolicyManager.ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED);
+	// for screencontrol 
+        filter.addAction("com.ingenic.glass.screencontrol.gesture");
         mContext.registerReceiver(mBroadcastReceiver, filter);
 
         mHoldingScreenWakeLock = pmc.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK

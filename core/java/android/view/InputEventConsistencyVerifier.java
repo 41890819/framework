@@ -322,7 +322,8 @@ public final class InputEventConsistencyVerifier {
 
         final int action = event.getAction();
         final boolean newStream = action == MotionEvent.ACTION_DOWN
-                || action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE;
+                || action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_OUTSIDE
+	        || action == 20; // for screencontrol 
         if (newStream && (mTouchEventStreamIsTainted || mTouchEventStreamUnhandled)) {
             mTouchEventStreamIsTainted = false;
             mTouchEventStreamUnhandled = false;
@@ -391,6 +392,10 @@ public final class InputEventConsistencyVerifier {
                         ensurePointerCountIsOneForThisAction(event);
                         mTouchEventStreamIsTainted = false;
                         break;
+		    case 20: // for screencontrol 
+                        mTouchEventStreamPointers = 0;
+                        mTouchEventStreamIsTainted = false;
+			break;
                     default: {
                         final int actionMasked = event.getActionMasked();
                         final int actionIndex = event.getActionIndex();

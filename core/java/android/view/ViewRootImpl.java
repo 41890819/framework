@@ -3715,7 +3715,9 @@ public final class ViewRootImpl implements ViewParent,
 
             // Enter touch mode on down or scroll.
             final int action = event.getAction();
-            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_SCROLL) {
+            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_SCROLL 
+		// for screencontrol 
+		|| action == 20) {
                 ensureTouchMode(true);
             }
 

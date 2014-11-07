@@ -15,8 +15,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.os.RemoteException;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
+import android.widget.GestureDetector;
+import android.widget.GestureDetector.SimpleOnGestureListener;
 import android.view.SoundEffectConstants;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -215,7 +215,6 @@ public class PagedView extends ViewGroup {
 		mPagingTouchSlop = ViewConfiguration.get(getContext())
 				.getScaledPagingTouchSlop();
 		mGestureDetector = new GestureDetector(context, new MySimpleGesture());
-		mGestureDetector.setIsLongpressEnabled(true);
 		mMsgCenterService = IMessageCenterService.Stub.asInterface(ServiceManager.getService(Context.STATUS_MSGCENTER_SERVICE));
 	}
 
@@ -228,16 +227,6 @@ public class PagedView extends ViewGroup {
 				startAnimation(mOutAnim);
 		}
 		super.onVisibilityChanged(changedView, visibility);
-	}
-
-	@Override
-	protected void onAttachedToWindow() {
-	    super.onAttachedToWindow();
-	}
-
-	@Override
-	protected void onDetachedFromWindow() {
-	    super.onDetachedFromWindow();
 	}
 
 	protected void screenScrolled(int screenCenter) {
@@ -807,6 +796,7 @@ public class PagedView extends ViewGroup {
 		    Log.e("sn", "call onPageSelected --1");
 		    if (mOnPageSelectedListener != null)
 			mOnPageSelectedListener.onPageSelected(PagedView.this, mPagedViewList.get(getCurScreen()), getCurScreen());
+		    requestLayout();
 		}
 	    }
 	}
@@ -899,6 +889,7 @@ public class PagedView extends ViewGroup {
 		    if (mOnPageSelectedListener != null)
 			mOnPageSelectedListener.onPageSelected(PagedView.this, mPagedViewList.get(getCurScreen()), getCurScreen());
 		    mHandler.removeMessages(0);
+		    requestLayout();
 		}
 
 	};
@@ -1239,76 +1230,36 @@ public class PagedView extends ViewGroup {
 	}
 
 	private class MySimpleGesture extends SimpleOnGestureListener {
-		// 双击的第二下Touch down时触发
 		@Override
-		public boolean onDoubleTap(MotionEvent e) {
+		public boolean onDoubleTap(boolean fromPhone) {
 			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemDoubleClickListener != null)
 				mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
 			return true;
 		}
 
-		// 双击的第二下Touch down和up都会触发，可用e.getAction()区分
 		@Override
-		public boolean onDoubleTapEvent(MotionEvent e) {
-			return true;
-		}
-
-		// Touch down时触发
-		@Override
-		public boolean onDown(MotionEvent e) {
-			return true;
-		}
-
-		// Touch了滑动一点距离后，up时触发
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			if (velocityY > SNAP_VELOCITY
-					&& Math.abs(velocityX) < SNAP_VELOCITY) {
-				// 鍚戜笅绉诲姩
-				if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnDownSlidingBackListener != null) {
-					mOnDownSlidingBackListener.onDownSlidingBack(PagedView.this);
-					if (mUseSoundEffect)
-					    playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
-				}
-			}
-			// mTouchState = TOUCH_STATE_REST;
-			return true;
+		public boolean onSlideDown(boolean fromPhone) {
+		      // 鍚戜笅绉诲姩
+		    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnDownSlidingBackListener != null) {
+			mOnDownSlidingBackListener.onDownSlidingBack(PagedView.this);
+			if (mUseSoundEffect)
+			    playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
+		    }
+		    return true;
 		}
 
 		// Touch了不移动一直Touch down时触发
 		@Override
-		public void onLongPress(MotionEvent e) {
+		public boolean onLongPress(boolean fromPhone) {
 			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemLongPressListener != null)
 				mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
-		}
-
-		// Touch了滑动时触发
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
 			return true;
 		}
 
-		/**
-		 * Touch了还没有滑动时触发 (1)onDown只要Touch Down一定立刻触发 (2)Touch
-		 * Down后过一会没有滑动先触发onShowPress再触发onLongPress So: Touch Down后一直不滑动，onDown
-		 * -> onShowPress -> onLongPress这个顺序触发。
-		 **/
 		@Override
-		public void onShowPress(MotionEvent e) {
-		}
-
-		/**
-		 * 两个函数都是在Touch Down后又没有滑动(onScroll)，又没有长按(onLongPress)，然后Touch Up时触发
-		 * 点击一下非常快的(不滑动)Touch Up: onDown->onSingleTapUp->onSingleTapConfirmed
-		 * 点击一下稍微慢点的(不滑动)Touch Up:
-		 * onDown->onShowPress->onSingleTapUp->onSingleTapConfirmed
-		 **/
-		@Override
-		public boolean onSingleTapConfirmed(MotionEvent e) {
+		public boolean onTap(boolean fromPhone){
 			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemClickListener != null) {
 				Log.e("sn","onSingleTapConfirmed "+getCurScreen());
 				if (mUseSoundEffect)
@@ -1320,8 +1271,17 @@ public class PagedView extends ViewGroup {
 		}
 
 		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			return true;
+	        public boolean onSlideLeft(boolean fromPhone){
+		    if (fromPhone)
+			scrollRight();
+		    return true;
+		}
+
+		@Override
+	        public boolean onSlideRight(boolean fromPhone){
+		    if (fromPhone)
+			scrollLeft();
+		    return true;
 		}
 	}
 	
@@ -1919,12 +1879,19 @@ public class PagedView extends ViewGroup {
 	 * Scroll to left page.
 	 */
 	public void scrollLeft() {
-		if (mScroller.isFinished()) {
-			if (mCurScreen > 0)
-				snapToScreenNoCircle(mCurScreen - 1, mPageWidth);
+	        if (mCanCycleFlip) {
+		        if (mScroller.isFinished())
+			        snapToScreen(mCurScreen, FAST_SNAP_VELOCITY);
+			else
+			        snapToScreen(mNextScreen, FAST_SNAP_VELOCITY);
 		} else {
-			if (mNextScreen > 0)
-				snapToScreenNoCircle(mNextScreen - 1, mPageWidth);
+		        if (mScroller.isFinished()) {
+			        if (mCurScreen > 0)
+				        snapToScreenNoCircle(mCurScreen - 1, mPageWidth);
+			} else {
+			        if (mNextScreen > 0)
+				        snapToScreenNoCircle(mNextScreen - 1, mPageWidth);
+			}
 		}
 	}
 
@@ -1932,12 +1899,19 @@ public class PagedView extends ViewGroup {
 	 * Scroll to right page.
 	 */
 	public void scrollRight() {
-		if (mScroller.isFinished()) {
-			if (mCurScreen < getChildCount() - 1)
-				snapToScreenNoCircle(mCurScreen + 1, mPageWidth);
+	        if (mCanCycleFlip) {
+		        if (mScroller.isFinished())
+			        snapToScreen(mCurScreen, -FAST_SNAP_VELOCITY);
+			else
+			        snapToScreen(mNextScreen, -FAST_SNAP_VELOCITY);
 		} else {
-			if (mNextScreen < getChildCount() - 1)
-				snapToScreenNoCircle(mNextScreen + 1, mPageWidth);
+		        if (mScroller.isFinished()) {
+			        if (mCurScreen < getChildCount() - 1)
+				        snapToScreenNoCircle(mCurScreen + 1, mPageWidth);
+			} else {
+			        if (mNextScreen < getChildCount() - 1)
+				        snapToScreenNoCircle(mNextScreen + 1, mPageWidth);
+			}
 		}
 	}
 

@@ -1637,4 +1637,10 @@ public class InputManagerService extends IInputManager.Stub
             onVibratorTokenDied(this);
         }
     }
+
+      // for screencontrol
+    public void putGestureEvent(int gesture) {
+	nativePutGestureEvent(mPtr, gesture);	
+    }
+    private static native void nativePutGestureEvent(int ptr, int gesture);
 }

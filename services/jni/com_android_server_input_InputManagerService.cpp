@@ -1287,6 +1287,13 @@ static void nativeMonitor(JNIEnv* env, jclass clazz, jint ptr) {
     im->getInputManager()->getDispatcher()->monitor();
 }
 
+// for screencontrol
+static void nativePutGestureEvent(JNIEnv* env, jclass clazz, jint ptr, jint gesture) {
+    NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
+
+    im->getInputManager()->getDispatcher()->notifyGestureMotion(gesture);
+}
+
 // ----------------------------------------------------------------------------
 
 static JNINativeMethod gInputManagerMethods[] = {
@@ -1341,6 +1348,9 @@ static JNINativeMethod gInputManagerMethods[] = {
             (void*) nativeDump },
     { "nativeMonitor", "(I)V",
             (void*) nativeMonitor },
+      // for screencontrol
+    { "nativePutGestureEvent", "(II)V",
+            (void*) nativePutGestureEvent },
 };
 
 #define FIND_CLASS(var, className) \

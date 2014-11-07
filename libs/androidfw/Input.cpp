@@ -573,6 +573,8 @@ bool MotionEvent::isTouchEvent(int32_t source, int32_t action) {
         case AMOTION_EVENT_ACTION_POINTER_UP:
         case AMOTION_EVENT_ACTION_CANCEL:
         case AMOTION_EVENT_ACTION_OUTSIDE:
+	// for screencontrol
+        case 20:
             return true;
         }
     }

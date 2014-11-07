@@ -127,6 +127,8 @@ static bool isValidMotionAction(int32_t action, size_t pointerCount) {
     case AMOTION_EVENT_ACTION_HOVER_MOVE:
     case AMOTION_EVENT_ACTION_HOVER_EXIT:
     case AMOTION_EVENT_ACTION_SCROLL:
+    //for screencontrol
+    case 20:
         return true;
     case AMOTION_EVENT_ACTION_POINTER_DOWN:
     case AMOTION_EVENT_ACTION_POINTER_UP: {
@@ -1157,9 +1159,11 @@ int32_t InputDispatcher::findTouchedWindowTargetsLocked(nsecs_t currentTime,
     bool isHoverAction = (maskedAction == AMOTION_EVENT_ACTION_HOVER_MOVE
             || maskedAction == AMOTION_EVENT_ACTION_HOVER_ENTER
             || maskedAction == AMOTION_EVENT_ACTION_HOVER_EXIT);
+    bool isSCGestureAction = maskedAction == 20; //for screencontrol
     bool newGesture = (maskedAction == AMOTION_EVENT_ACTION_DOWN
             || maskedAction == AMOTION_EVENT_ACTION_SCROLL
-            || isHoverAction);
+            || isHoverAction
+	    || isSCGestureAction);
     bool wrongDevice = false;
     if (newGesture) {
         bool down = maskedAction == AMOTION_EVENT_ACTION_DOWN;
@@ -3736,6 +3740,58 @@ void InputDispatcher::monitor() {
     mLock.unlock();
 }
 
+// for screencontrol
+#define SC_GESTURE_DEVICE_ID 1000
+void InputDispatcher::notifyGestureMotion(int gesture) {
+    nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
+    uint32_t policyFlags = 0;
+    policyFlags |= POLICY_FLAG_TRUSTED;
+    mPolicy->interceptMotionBeforeQueueing(now, /*byref*/ policyFlags);
+
+    PointerProperties pointerProperties;
+    pointerProperties.clear();
+    pointerProperties.id = 0;
+    pointerProperties.toolType = AMOTION_EVENT_TOOL_TYPE_FINGER;
+	
+    PointerCoords pointerCoords;
+    pointerCoords.clear();
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, gesture);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, 1);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, 1.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MINOR, 20.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_ORIENTATION, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TILT, 0.0f);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_DISTANCE, 0.0f);
+
+#if DEBUG_INBOUND_EVENT_DETAILS
+    ALOGD("notifyGestureMotion - eventTime=%lld, deviceId=%d, source=0x%x, policyFlags=0x%x, "
+            "action=0x%x",
+            now, SC_GESTURE_DEVICE_ID, AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+            20);
+#endif
+
+    bool needWake;
+    { // acquire lock
+        mLock.lock();
+
+        // Just enqueue a new motion event.
+        MotionEntry* newEntry = new MotionEntry(now,
+                SC_GESTURE_DEVICE_ID, AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+                20, 0, 0, 0,
+                0, gesture, 1, now,
+                ADISPLAY_ID_DEFAULT,
+                1, &pointerProperties, &pointerCoords);
+
+        needWake = enqueueInboundEventLocked(newEntry);
+        mLock.unlock();
+    } // release lock
+
+    if (needWake) {
+        mLooper->wake();
+    }
+}
 
 // --- InputDispatcher::Queue ---
 
