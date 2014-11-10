@@ -2624,10 +2624,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mHideNavFakeWindow = null;
                 }
             } else if (mHideNavFakeWindow == null) {
+		/* 防止mHideNavFakeWindow拦截touch事件
                 mHideNavFakeWindow = mWindowManagerFuncs.addFakeWindow(
                         mHandler.getLooper(), mHideNavInputEventReceiverFactory,
                         "hidden nav", WindowManager.LayoutParams.TYPE_HIDDEN_NAV_CONSUMER,
                         0, false, false, true);
+		*/
             }
 
             // For purposes of positioning and showing the nav bar, if we have

@@ -3748,6 +3748,8 @@ void InputDispatcher::notifyGestureMotion(int gesture) {
     policyFlags |= POLICY_FLAG_TRUSTED;
     mPolicy->interceptMotionBeforeQueueing(now, /*byref*/ policyFlags);
 
+    int32_t positionY = 50;
+
     PointerProperties pointerProperties;
     pointerProperties.clear();
     pointerProperties.id = 0;
@@ -3756,7 +3758,7 @@ void InputDispatcher::notifyGestureMotion(int gesture) {
     PointerCoords pointerCoords;
     pointerCoords.clear();
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, gesture);
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, 1);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, positionY);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, 1.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);
@@ -3780,7 +3782,7 @@ void InputDispatcher::notifyGestureMotion(int gesture) {
         MotionEntry* newEntry = new MotionEntry(now,
                 SC_GESTURE_DEVICE_ID, AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
                 20, 0, 0, 0,
-                0, gesture, 1, now,
+                0, gesture, positionY, now,
                 ADISPLAY_ID_DEFAULT,
                 1, &pointerProperties, &pointerCoords);
 
