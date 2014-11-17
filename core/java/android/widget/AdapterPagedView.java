@@ -157,7 +157,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 //	protected ArrayList<View> mPagedViewList = new ArrayList<View>();
 	private GestureDetector mGestureDetector = null;
 	protected OnItemClickListener mOnItemClickListener = null;
-	protected OnTouchListener mOnTouchListener = null;
+	protected OnTouchAfterLongPressListener mOnTouchAfterLongPressListener = null;
 	protected OnItemLongPressListener mOnItemLongPressListener = null;
 	protected OnItemDoubleClickListener mOnItemDoubleClickListener = null;
 	protected OnDownSlidingBackListener mOnDownSlidingBackListener = null;
@@ -1013,11 +1013,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-	    if(mIsLongPress && mOnTouchListener != null){		
+	    if(mIsLongPress && mOnTouchAfterLongPressListener != null){		
 		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
 		    mIsLongPress = false;
 		else {
-		    mOnTouchListener.onTouch(AdapterPagedView.this,
+		    mOnTouchAfterLongPressListener.onTouchAfterLongPress(AdapterPagedView.this,
 					 mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),event);
 		    return false;
 		}
@@ -1400,12 +1400,19 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			}
 			return true;
 		}
+	    @Override
+		public boolean onDown(boolean fromPhone) {
+		return true;	    
+
+}
 
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
 		        if (fromPhone)
 			        mIsLongPress = false;
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST
+				if(DEBUG)
+			Log.d(TAG,"--mIsDownWhenFlaying"+mIsDownWhenFlaying+"mTouchState"+mTouchState);
+			if (!mIsDownWhenFlaying
 			    && mOnItemLongPressListener != null){
 			    Log.e("sn", "onLongPress " + getCurScreen());
 			    mOnItemLongPressListener.onItemLongPress(AdapterPagedView.this,
@@ -2114,12 +2121,12 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mOnItemClickListener = listener;
 	}
 	// after longpress,receive touch event
-	public interface OnTouchListener {
-	    void onTouch(AdapterPagedView pagedView, View view, int position, MotionEvent event);
+	public interface OnTouchAfterLongPressListener {
+	    void onTouchAfterLongPress(AdapterPagedView pagedView, View view, int position, MotionEvent event);
 	}
 
-	public void setOnTouchListener(OnTouchListener listener) {
-		mOnTouchListener = listener;
+	public void setOnTouchAfterLongPressListener(OnTouchAfterLongPressListener listener) {
+		mOnTouchAfterLongPressListener = listener;
 	}
 
 	// long press

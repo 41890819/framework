@@ -29228,6 +29228,7 @@ package android.widget {
     method public void setOnItemLongPressListener(android.widget.AdapterPagedView.OnItemLongPressListener);
     method public void setOnPageFlyingListener(android.widget.AdapterPagedView.OnPageFlyingListener);
     method public void setOnPageSelectedListener(android.widget.AdapterPagedView.OnPageSelectedListener);
+    method public void setOnTouchAfterLongPressListener(android.widget.AdapterPagedView.OnTouchAfterLongPressListener);
     method public void setPageCountInScreen(int);
     method public void setPageMargin(int);
     method public void setScrollIndicator(android.view.View);
@@ -29267,6 +29268,7 @@ package android.widget {
     field protected android.widget.AdapterPagedView.OnItemLongPressListener mOnItemLongPressListener;
     field protected android.widget.AdapterPagedView.OnPageFlyingListener mOnPageFlyingListener;
     field protected android.widget.AdapterPagedView.OnPageSelectedListener mOnPageSelectedListener;
+    field protected android.widget.AdapterPagedView.OnTouchAfterLongPressListener mOnTouchAfterLongPressListener;
     field protected int mOverScrollX;
     field protected android.widget.Scroller mScroller;
     field protected int[] mTempVisiblePagesRange;
@@ -29302,6 +29304,10 @@ package android.widget {
 
   public static abstract interface AdapterPagedView.OnPageSelectedListener {
     method public abstract void onPageSelected(android.widget.AdapterPagedView, android.view.View, int);
+  }
+
+  public static abstract interface AdapterPagedView.OnTouchAfterLongPressListener {
+    method public abstract void onTouchAfterLongPress(android.widget.AdapterPagedView, android.view.View, int, android.view.MotionEvent);
   }
 
   protected class AdapterPagedView.ScreenInfo {
@@ -29954,6 +29960,40 @@ package android.widget {
     ctor public Gallery.LayoutParams(android.content.Context, android.util.AttributeSet);
     ctor public Gallery.LayoutParams(int, int);
     ctor public Gallery.LayoutParams(android.view.ViewGroup.LayoutParams);
+  }
+
+  public class GestureDetector {
+    ctor public GestureDetector(android.content.Context, android.widget.GestureDetector.OnGestureListener);
+    method public boolean isLongpressEnabled();
+    method public boolean onTouchEvent(android.view.MotionEvent);
+    method public void setIsLongpressEnabled(boolean);
+  }
+
+  public static abstract interface GestureDetector.OnGestureListener {
+    method public abstract boolean onDoubleTap(boolean);
+    method public abstract boolean onDown(boolean);
+    method public abstract boolean onLongPress(boolean);
+    method public abstract boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
+    method public abstract boolean onSlideDown(boolean);
+    method public abstract boolean onSlideLeft(boolean);
+    method public abstract boolean onSlideRight(boolean);
+    method public abstract boolean onSlideUp(boolean);
+    method public abstract boolean onTap(boolean);
+    method public abstract boolean onUp(android.view.MotionEvent, boolean);
+  }
+
+  public static class GestureDetector.SimpleOnGestureListener implements android.widget.GestureDetector.OnGestureListener {
+    ctor public GestureDetector.SimpleOnGestureListener();
+    method public boolean onDoubleTap(boolean);
+    method public boolean onDown(boolean);
+    method public boolean onLongPress(boolean);
+    method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
+    method public boolean onSlideDown(boolean);
+    method public boolean onSlideLeft(boolean);
+    method public boolean onSlideRight(boolean);
+    method public boolean onSlideUp(boolean);
+    method public boolean onTap(boolean);
+    method public boolean onUp(android.view.MotionEvent, boolean);
   }
 
   public class GridLayout extends android.view.ViewGroup {
