@@ -94,7 +94,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	/**
 	 * fast fly snap x velocity
 	 */
-	private static final int FAST_FLY_SNAP_X_VELOCITY = 2000;
+	private static final int FAST_FLY_SNAP_X_VELOCITY = 3000;
 	/**
 	 * fast fly snap x distance
 	 */
@@ -652,19 +652,25 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		ScreenInfo cur = mScreenQueue.getChildById(tmpScreen);
 		int newX = cur.left; // newX就是curLeft
 		mNextScreen = tmpScreen;
+		int moveDistance;
 		// mNextScreen将可能在左侧，因为curLeft在对齐点scrollX的右侧
+		if(mAdapter.getCount()<4){
+		    moveDistance = cur.width >> 4;
+		}else{
+		    moveDistance = cur.width >> 2;
+		}
 		if (newX >= scrollX) {
-			if (newX - scrollX > (cur.width >> 4)) {
+			if (newX - scrollX > moveDistance) {
 				if (--mNextScreen < 0)
 					mNextScreen = mAdapter.getCount() - 1;
 				// 但是子view的width都一样，左侧view的left就是当前view的left减去其宽度
-				newX -= cur.width;
+				newX -= (cur.width+mPageMargin);
 			}
 		} else {
-			if (scrollX - newX > (cur.width >> 4)) {
+			if (scrollX - newX > moveDistance) {
 				if (++mNextScreen >= mAdapter.getCount())
 					mNextScreen = 0;
-				newX += cur.width;
+				newX += (cur.width+mPageMargin);
 			}
 		}
 		final int delta = newX - scrollX;
@@ -744,15 +750,24 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected void snapToDestinationNoCircle(int tmpScreen, int pageWidth) {
 		tmpScreen = Math.max(0, Math.min(tmpScreen, mAdapter.getCount() - 1));
 		final int scrollX = getScrollX();
+		int moveDistance;
 		int newX = (int) mScreenQueue.getScreenAt(tmpScreen).left
 				- mSpacePageCount * (pageWidth + mPageMargin);
 		int destScreen = tmpScreen;
-		Log.e(TAG, "newX=" + newX + " scrollX=" + scrollX);
+		//Log.e(TAG, "newX=" + newX + " scrollX=" + scrollX+"  pageWidth >> 2  "+(pageWidth >> 2));
+		Log.d(TAG,"tmpScreen"+tmpScreen);
+		Log.d(TAG,"mScreenQueue.getScreenAt(tmpScreen).left"+mScreenQueue.getScreenAt(tmpScreen).left+"   mSpacePageCount * (pageWidth + mPageMargin)"+mSpacePageCount * (pageWidth + mPageMargin));
+		if(mAdapter.getCount()<4){
+		    moveDistance = pageWidth >> 4;
+		}else{
+		    moveDistance = pageWidth >> 2;
+		}
+		Log.d(TAG,"moveDistance"+moveDistance + "mPageMargin"+mPageMargin+"  mPageWidth"+mPageWidth+"   pageWidth"+pageWidth);
 		if (newX >= scrollX) {
-			if (newX - scrollX > (pageWidth >> 4))
+			if (newX - scrollX > moveDistance)
 				destScreen--;
 		} else {
-			if (scrollX - newX > (pageWidth >> 4))
+			if (scrollX - newX > moveDistance)
 				destScreen++;
 		}
 		// Log.e("sn","flying destScreen="+destScreen+" tmpScreen="+tmpScreen+" pageWidth="+pageWidth);
@@ -1072,14 +1087,14 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						int rightScreen = (mCurScreen + mPageCountInScreen - 1)
 								% mAdapter.getCount();
 						int tmpScreen = rightScreen
-								+ (Math.abs(dX) / mPageWidth);
+						    + (Math.abs(dX) / (mPageWidth+mPageMargin));
 						for (int i = rightScreen; i <= tmpScreen; i++) {
 							mScreenQueue.backPageFault(i % mAdapter.getCount());
 						}
 						// 表明在持续向左滑动（或则向右又向左滑了），要判断右侧是否会有缺页
 					} else {
 						int tmpScreen = mCurScreen
-								- (Math.abs(dX) / mPageWidth);
+						    - (Math.abs(dX) / (mPageWidth+mPageMargin));
 						for (int i = mCurScreen; i >= tmpScreen; i--) {
 							mScreenQueue.frontPageFault((i + mAdapter
 									.getCount()) % mAdapter.getCount());
@@ -1127,7 +1142,6 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				final int deltaX = (int) (mDownMotionX - x);
 				if (mCanCycleFlip) {
 					if (velocityX > SNAP_VELOCITY /* && mCurScreen >= 0 */) {
-						// 鍚戝乏绉诲姩
 						if (mCanFlyFlip && velocityX > FAST_FLY_SNAP_X_VELOCITY
 						// && mCurScreen >= mPageCountInScreen
 								&& deltaX < -FAST_FLY_SNAP_X_DISTANCE) {
@@ -1138,7 +1152,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						} else {
 							// fling
 							int tmpScreen = (mCurScreen
-									- (Math.abs(deltaX) / mPageWidth) + mAdapter
+									 - (Math.abs(deltaX) / (mPageWidth+mPageMargin)) + mAdapter
 										.getCount()) % mAdapter.getCount();
 							snapToScreen(tmpScreen, velocityX);
 						}
@@ -1154,18 +1168,18 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							break;
 						} else {
 							// fling
-							int tmpScreen = (mCurScreen + (Math.abs(deltaX) / mPageWidth))
+						    int tmpScreen = (mCurScreen + (Math.abs(deltaX) / (mPageWidth+mPageMargin)))
 									% mAdapter.getCount();
 							snapToScreen(tmpScreen, velocityX);
 						}
 					} else {
 						int tmpScreen = mCurScreen;
 						if (deltaX > 0)
-							tmpScreen = (mCurScreen + (Math.abs(deltaX) / mPageWidth))
+						    tmpScreen = (mCurScreen + (Math.abs(deltaX) / (mPageWidth+mPageMargin)))
 									% mAdapter.getCount();// getChildCount();
 						else
 							tmpScreen = (mCurScreen
-									- (Math.abs(deltaX) / mPageWidth) + mAdapter
+								     - (Math.abs(deltaX) / (mPageWidth+mPageMargin)) + mAdapter
 										.getCount()) % mAdapter.getCount();
 						snapToDestination(tmpScreen);
 					}
@@ -1179,7 +1193,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							break;
 						} else {
 							int tmpScreen = mCurScreen
-									- (Math.abs(deltaX) / mPageWidth);
+							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 							if (mPageCountInScreen > 1
 									&& velocityX > FAST_SNAP_VELOCITY)
 								tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
@@ -1201,7 +1215,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							break;
 						} else {
 							int tmpScreen = mCurScreen
-									+ (Math.abs(deltaX) / mPageWidth);
+							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 							if (mPageCountInScreen > 1
 									&& velocityX < -FAST_SNAP_VELOCITY)
 								tmpScreen += (-velocityX) / FAST_SNAP_VELOCITY;
@@ -1213,10 +1227,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						int tmpScreen = mCurScreen;
 						if (deltaX > 0)
 							tmpScreen = mCurScreen
-									+ (Math.abs(deltaX) / mPageWidth);
+							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 						else
 							tmpScreen = mCurScreen
-									- (Math.abs(deltaX) / mPageWidth);
+							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 						Log.e("sn", "............................. tmpScreen="
 								+ tmpScreen);
 						snapToDestinationNoCircle(tmpScreen, mPageWidth);
@@ -1295,20 +1309,20 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				int tmpScreen = mCurScreen;
 				if (mCanCycleFlip) {
 					if (deltaX > 0)
-						tmpScreen = (mCurScreen + (Math.abs(deltaX) / mPageWidth))
+					    tmpScreen = (mCurScreen + (Math.abs(deltaX) / (mPageWidth+mPageMargin)))
 								% mAdapter.getCount();
 					else
 						tmpScreen = (mCurScreen
-								- (Math.abs(deltaX) / mPageWidth) + mAdapter
+							     - (Math.abs(deltaX) / (mPageWidth+mPageMargin)) + mAdapter
 									.getCount()) % mAdapter.getCount();
 					snapToDestination(tmpScreen);
 				} else {
 					if (deltaX > 0)
 						tmpScreen = mCurScreen
-								+ (Math.abs(deltaX) / mPageWidth);
+						    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 					else
 						tmpScreen = mCurScreen
-								- (Math.abs(deltaX) / mPageWidth);
+						    - (Math.abs(deltaX) /(mPageWidth+mPageMargin));
 					snapToDestinationNoCircle(tmpScreen, mPageWidth);
 				}
 			} else if (mTouchState == TOUCH_STATE_FLYING_SCROLLING) {
