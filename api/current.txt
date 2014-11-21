@@ -29261,7 +29261,6 @@ package android.widget {
     field protected float mLayoutScale;
     field protected int mMaxScrollX;
     field protected int mMinScrollX;
-    field protected com.android.internal.msgcenter.IMessageCenterService mMsgCenterService;
     field protected android.widget.AdapterPagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
     field protected android.widget.AdapterPagedView.OnItemClickListener mOnItemClickListener;
     field protected android.widget.AdapterPagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
@@ -30539,7 +30538,6 @@ package android.widget {
     field protected float mLayoutScale;
     field protected int mMaxScrollX;
     field protected int mMinScrollX;
-    field protected com.android.internal.msgcenter.IMessageCenterService mMsgCenterService;
     field protected android.widget.PagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
     field protected android.widget.PagedView.OnItemClickListener mOnItemClickListener;
     field protected android.widget.PagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
@@ -31726,31 +31724,6 @@ package android.widget {
     method public void setOnZoomOutClickListener(android.view.View.OnClickListener);
     method public void setZoomSpeed(long);
     method public void show();
-  }
-
-}
-
-package com.android.internal.msgcenter {
-
-  public abstract interface IMessageCenter implements android.os.IInterface {
-    method public abstract void addNotification(android.os.IBinder, android.service.notification.MessageCenterNotification) throws android.os.RemoteException;
-    method public abstract void animateCollapsePanels() throws android.os.RemoteException;
-    method public abstract void disable(int) throws android.os.RemoteException;
-    method public abstract boolean hasNotifications() throws android.os.RemoteException;
-    method public abstract void openNotificationDrawer() throws android.os.RemoteException;
-    method public abstract void removeNotification(android.os.IBinder) throws android.os.RemoteException;
-    method public abstract void updateNotification(android.os.IBinder, android.service.notification.MessageCenterNotification) throws android.os.RemoteException;
-  }
-
-  public abstract interface IMessageCenterService implements android.os.IInterface {
-    method public abstract void collapsePanels() throws android.os.RemoteException;
-    method public abstract boolean hasNotifications() throws android.os.RemoteException;
-    method public abstract void onClearAllNotifications() throws android.os.RemoteException;
-    method public abstract void onNotificationClear(java.lang.String, java.lang.String, int) throws android.os.RemoteException;
-    method public abstract void onNotificationClick(java.lang.String, java.lang.String, int) throws android.os.RemoteException;
-    method public abstract void onNotificationError(java.lang.String, java.lang.String, int, int, int, java.lang.String) throws android.os.RemoteException;
-    method public abstract void openNotificationDrawer() throws android.os.RemoteException;
-    method public abstract void registerMessageCenter(com.android.internal.msgcenter.IMessageCenter, java.util.List<android.os.IBinder>, java.util.List<android.service.notification.MessageCenterNotification>, java.util.List<android.os.IBinder>) throws android.os.RemoteException;
   }
 
 }
