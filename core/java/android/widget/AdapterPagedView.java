@@ -162,6 +162,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected OnDownSlidingBackListener mOnDownSlidingBackListener = null;
 	protected OnPageFlyingListener mOnPageFlyingListener = null;
 	protected OnPageSelectedListener mOnPageSelectedListener = null;
+	protected OnItemLongPressFromPhoneListener mOnItemLongPressFromPhoneListener = null;
 
 	// Scrolling indicator
 	private ValueAnimator mScrollIndicatorAnimator;
@@ -1025,15 +1026,6 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-	    if(mIsLongPress && mOnTouchAfterLongPressListener != null){		
-		if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
-		    mIsLongPress = false;
-		else {
-		    mOnTouchAfterLongPressListener.onTouchAfterLongPress(AdapterPagedView.this,
-					 mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),event);
-		    return false;
-		}
-	    }
 		// Skip touch handling if there are no pages to swipe
 		if (!mIsDataReady || getChildCount() <= 0)
 			return super.onTouchEvent(event);
@@ -1074,7 +1066,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			break;
 
 		case MotionEvent.ACTION_MOVE:
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
+		    if(mIsLongPress && mOnTouchAfterLongPressListener != null){
+			Log.e(TAG,""+event.getAction());		
+			mOnTouchAfterLongPressListener.onTouchAfterLongPress(AdapterPagedView.this,
+									     mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),event);
+			break;
+		}
+		    if (mTouchState == TOUCH_STATE_SCROLLING) {
 				int deltaX = (int) (mLastMotionX - x);
 				mLastMotionX = x;
 				// Log.e("sn","cur = "+mCurScreen+" next = "+mNextScreen);
@@ -1134,6 +1132,12 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 		case MotionEvent.ACTION_UP:
 			Log.e("sn", "UP mTouchState=" + mTouchState);
+		    if(mIsLongPress && mOnTouchAfterLongPressListener != null){
+			Log.e(TAG,""+event.getAction());		
+			mOnTouchAfterLongPressListener.onTouchAfterLongPress(AdapterPagedView.this,
+									     mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),event);
+		    }
+			mIsLongPress = false;
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000);
@@ -1412,21 +1416,24 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
-		        if (fromPhone)
-			        mIsLongPress = false;
+
 				if(DEBUG)
 			Log.d(TAG,"--mIsDownWhenFlaying"+mIsDownWhenFlaying+"mTouchState"+mTouchState);
-			if (!mIsDownWhenFlaying
-			    && mOnItemLongPressListener != null){
-			    Log.e("sn", "onLongPress " + getCurScreen());
-			    mOnItemLongPressListener.onItemLongPress(AdapterPagedView.this,
-								     mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen());
-			    mIsLongPress = true;								
-			}
-			return true;
-		}
+				if (!mIsDownWhenFlaying){
+					if (mOnItemLongPressFromPhoneListener != null){
+					    mOnItemLongPressFromPhoneListener.onItemLongPressFromPhone(AdapterPagedView.this,mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),fromPhone);
 
-		@Override
+					}else if(mOnItemLongPressListener != null){
+					    Log.e("sn", "onLongPress " + getCurScreen());
+					    mOnItemLongPressListener.onItemLongPress(AdapterPagedView.this,
+										     mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen());
+					}			    
+					mIsLongPress = true;	
+				    }
+				    return true;
+				    }
+
+		    @Override
 		public boolean onTap(boolean fromPhone){
 		        if (fromPhone)
 			        mIsLongPress = false;
@@ -2134,10 +2141,17 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	}
 
 	// long press
-	public interface OnItemLongPressListener {
-		void onItemLongPress(AdapterPagedView pagedView, View view, int position);
+
+	public interface OnItemLongPressFromPhoneListener {
+	    void onItemLongPressFromPhone(AdapterPagedView pagedView, View view, int position,boolean fromPhone);
+	}
+	public void setOnItemLongPressFromPhoneListener(OnItemLongPressFromPhoneListener listener) {
+		mOnItemLongPressFromPhoneListener = listener;
 	}
 
+	public interface OnItemLongPressListener {
+	    void onItemLongPress(AdapterPagedView pagedView, View view, int position);
+	}
 	public void setOnItemLongPressListener(OnItemLongPressListener listener) {
 		mOnItemLongPressListener = listener;
 	}
