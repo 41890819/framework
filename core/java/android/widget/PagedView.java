@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.os.Handler;
 import android.os.Message;
-import android.os.ServiceManager;
 import android.os.RemoteException;
 import android.widget.GestureDetector;
 import android.widget.GestureDetector.SimpleOnGestureListener;
@@ -28,8 +27,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
 import android.widget.TextView;
-
-import com.android.internal.msgcenter.IMessageCenterService;
 
 /**
  * A common case of using PagedView as follows:
@@ -190,7 +187,6 @@ public class PagedView extends ViewGroup {
         protected boolean mIsDownWhenHasNotifications = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
-        protected IMessageCenterService mMsgCenterService;
 
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
@@ -215,7 +211,6 @@ public class PagedView extends ViewGroup {
 		mPagingTouchSlop = ViewConfiguration.get(getContext())
 				.getScaledPagingTouchSlop();
 		mGestureDetector = new GestureDetector(context, new MySimpleGesture());
-		mMsgCenterService = IMessageCenterService.Stub.asInterface(ServiceManager.getService(Context.STATUS_MSGCENTER_SERVICE));
 	}
 
 	@Override
@@ -919,13 +914,6 @@ public class PagedView extends ViewGroup {
 		    mIsDownWhenFlaying = true;
 		else
 		    mIsDownWhenFlaying = false;
-		try {
-		    if (mMsgCenterService != null && mMsgCenterService.hasNotifications())
-			mIsDownWhenHasNotifications = true;
-		    else
-			mIsDownWhenHasNotifications = false;
-		} catch (RemoteException ex) {
-		}
 		final int xDist = Math.abs(mScroller.getFinalX() - mScroller.getCurrX());
 		final boolean finishedScrolling = (mScroller.isFinished() || xDist < mTouchSlop);
 		if (mTouchState == TOUCH_STATE_FLYING) {
