@@ -184,7 +184,6 @@ public class PagedView extends ViewGroup {
 	private ArrayList<TextView> mSpacePageList = new ArrayList<TextView>();
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
-        protected boolean mIsDownWhenHasNotifications = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
 
@@ -974,7 +973,7 @@ public class PagedView extends ViewGroup {
 		    scrollBy(deltaX, 0);
 		} else {
 		    determineScrollingStart(event);
-		    if (mCanVerticalOverScroll && !mIsDownWhenHasNotifications) {
+		    if (mCanVerticalOverScroll) {
 			if (mTouchState == TOUCH_STATE_MOVING) {
 			    float yDiff = y - mDownMotionY;
 			    if (yDiff < -mTouchSlop) {
@@ -1932,6 +1931,7 @@ public class PagedView extends ViewGroup {
 	    else
 	    	mCurScreen = Math.max(0, Math.min(currentScreen, mPagedViewList.size() - 1));
 
+	    requestLayout();
 	    scrollTo((int) getChildAt(mCurScreen).getX(), 0);
 	    updateScrollingIndicator();
 	    invalidate();

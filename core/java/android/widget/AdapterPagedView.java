@@ -192,7 +192,6 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	private int mSpacePageCount = 0;
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
-        protected boolean mIsDownWhenHasNotifications = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
 
@@ -1043,6 +1042,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			mLastMotionY = y;
 			mDownMotionX = x;
 			mDownMotionY = y;
+			mIsLongPress = false;
 			if (isFlying())
 				mIsDownWhenFlaying = true;
 			else
@@ -1117,7 +1117,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				scrollBy(deltaX, 0);
 			} else {
 				determineScrollingStart(event);
-				if (mCanVerticalOverScroll && !mIsDownWhenHasNotifications) {
+				if (mCanVerticalOverScroll) {
 					if (mTouchState == TOUCH_STATE_MOVING) {
 						float yDiff = y - mDownMotionY;
 						if (yDiff < -mTouchSlop) {
@@ -2063,7 +2063,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		if (mScreenQueue.getChildCount() == 0) {
 			return;
 		}
-
+		
+		requestLayout();
 		scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
 				- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
 		updateScrollingIndicator();
