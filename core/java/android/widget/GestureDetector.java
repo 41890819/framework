@@ -69,7 +69,7 @@ public class GestureDetector {
         }
 
         public boolean onDown(boolean fromPhone) {
-	    return false;
+	    return true;
 
         }
 
