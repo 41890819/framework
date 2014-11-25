@@ -249,7 +249,7 @@ public class MiniThumbFile {
                 long magic = mBuffer.getLong();
                 int length = mBuffer.getInt();
 
-                if (size >= 1 + 8 + 4 + length && data.length >= length) {
+                if (size >= 1 + 8 + 4 + length && data.length >= length && length > 0) {
                     mBuffer.get(data, 0, length);
                     return data;
                 }

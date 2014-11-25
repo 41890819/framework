@@ -172,6 +172,7 @@ public class MediaFile {
 
     static {
         addFileType("MP3", FILE_TYPE_MP3, "audio/mpeg", MtpConstants.FORMAT_MP3);
+	addFileType("MP3", FILE_TYPE_MP3, "audio/lume", MtpConstants.FORMAT_MP3);
         addFileType("MPGA", FILE_TYPE_MP3, "audio/mpeg", MtpConstants.FORMAT_MP3);
         addFileType("M4A", FILE_TYPE_M4A, "audio/mp4", MtpConstants.FORMAT_MPEG);
         addFileType("WAV", FILE_TYPE_WAV, "audio/x-wav", MtpConstants.FORMAT_WAV);
@@ -197,6 +198,7 @@ public class MediaFile {
         addFileType("OTA", FILE_TYPE_MID, "audio/midi");
         addFileType("MXMF", FILE_TYPE_MID, "audio/midi");
         
+        addFileType("MPEG", FILE_TYPE_MP4, "video/lume", MtpConstants.FORMAT_MPEG);
         addFileType("MPEG", FILE_TYPE_MP4, "video/mpeg", MtpConstants.FORMAT_MPEG);
         addFileType("MPG", FILE_TYPE_MP4, "video/mpeg", MtpConstants.FORMAT_MPEG);
         addFileType("MP4", FILE_TYPE_MP4, "video/mp4", MtpConstants.FORMAT_MPEG);
