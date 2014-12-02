@@ -29225,7 +29225,7 @@ package android.widget {
     method public void setOnDownSlidingBackListener(android.widget.AdapterPagedView.OnDownSlidingBackListener);
     method public void setOnItemClickListener(android.widget.AdapterPagedView.OnItemClickListener);
     method public void setOnItemDoubleClickListener(android.widget.AdapterPagedView.OnItemDoubleClickListener);
-    method public void setOnItemLongPressFromPhoneListener(android.widget.AdapterPagedView.OnItemLongPressFromPhoneListener);
+    method public void setOnItemLongPressIdentifyFromListener(android.widget.AdapterPagedView.OnItemLongPressIdentifyFromListener);
     method public void setOnItemLongPressListener(android.widget.AdapterPagedView.OnItemLongPressListener);
     method public void setOnPageFlyingListener(android.widget.AdapterPagedView.OnPageFlyingListener);
     method public void setOnPageSelectedListener(android.widget.AdapterPagedView.OnPageSelectedListener);
@@ -29256,7 +29256,6 @@ package android.widget {
     field protected float mDownMotionX;
     field protected float mDownMotionY;
     field protected boolean mIsDownWhenFlaying;
-    field protected boolean mIsDownWhenHasNotifications;
     field protected float mLastMotionX;
     field protected float mLastMotionY;
     field protected float mLayoutScale;
@@ -29265,7 +29264,7 @@ package android.widget {
     field protected android.widget.AdapterPagedView.OnDownSlidingBackListener mOnDownSlidingBackListener;
     field protected android.widget.AdapterPagedView.OnItemClickListener mOnItemClickListener;
     field protected android.widget.AdapterPagedView.OnItemDoubleClickListener mOnItemDoubleClickListener;
-    field protected android.widget.AdapterPagedView.OnItemLongPressFromPhoneListener mOnItemLongPressFromPhoneListener;
+    field protected android.widget.AdapterPagedView.OnItemLongPressIdentifyFromListener mOnItemLongPressIdentifyFromListener;
     field protected android.widget.AdapterPagedView.OnItemLongPressListener mOnItemLongPressListener;
     field protected android.widget.AdapterPagedView.OnPageFlyingListener mOnPageFlyingListener;
     field protected android.widget.AdapterPagedView.OnPageSelectedListener mOnPageSelectedListener;
@@ -29295,8 +29294,8 @@ package android.widget {
     method public abstract void onItemDoubleClick(android.widget.AdapterPagedView, android.view.View, int);
   }
 
-  public static abstract interface AdapterPagedView.OnItemLongPressFromPhoneListener {
-    method public abstract void onItemLongPressFromPhone(android.widget.AdapterPagedView, android.view.View, int, boolean);
+  public static abstract interface AdapterPagedView.OnItemLongPressIdentifyFromListener {
+    method public abstract void onItemLongPressIdentifyFrom(android.widget.AdapterPagedView, android.view.View, int, boolean);
   }
 
   public static abstract interface AdapterPagedView.OnItemLongPressListener {
@@ -30538,7 +30537,6 @@ package android.widget {
     field protected float mDownMotionX;
     field protected float mDownMotionY;
     field protected boolean mIsDownWhenFlaying;
-    field protected boolean mIsDownWhenHasNotifications;
     field protected float mLastMotionX;
     field protected float mLastMotionY;
     field protected float mLayoutScale;

@@ -162,7 +162,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected OnDownSlidingBackListener mOnDownSlidingBackListener = null;
 	protected OnPageFlyingListener mOnPageFlyingListener = null;
 	protected OnPageSelectedListener mOnPageSelectedListener = null;
-	protected OnItemLongPressFromPhoneListener mOnItemLongPressFromPhoneListener = null;
+	protected OnItemLongPressIdentifyFromListener mOnItemLongPressIdentifyFromListener = null;
 
 	// Scrolling indicator
 	private ValueAnimator mScrollIndicatorAnimator;
@@ -1420,16 +1420,16 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				if(DEBUG)
 			Log.d(TAG,"--mIsDownWhenFlaying"+mIsDownWhenFlaying+"mTouchState"+mTouchState);
 				if (!mIsDownWhenFlaying){
-					if (mOnItemLongPressFromPhoneListener != null){
-					    mOnItemLongPressFromPhoneListener.onItemLongPressFromPhone(AdapterPagedView.this,mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),fromPhone);
-
-					}else if(mOnItemLongPressListener != null){
-					    Log.e("sn", "onLongPress " + getCurScreen());
-					    mOnItemLongPressListener.onItemLongPress(AdapterPagedView.this,
-										     mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen());
-					}			    
-					mIsLongPress = true;	
-				    }
+					if (mOnItemLongPressIdentifyFromListener != null){
+					    Log.d("sn","onItemLongPressIdentifyFromListener");
+					    mOnItemLongPressIdentifyFromListener.onItemLongPressIdentifyFrom(AdapterPagedView.this,mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen(),fromPhone);
+				    }else if(mOnItemLongPressListener != null){
+					Log.e("sn", "onLongPressListener " + getCurScreen());
+					mOnItemLongPressListener.onItemLongPress(AdapterPagedView.this,
+										 mScreenQueue.getChildById(getCurScreen()).childView,getCurScreen());
+				    }			    
+				    mIsLongPress = true;	
+				}
 				    return true;
 				    }
 
@@ -2141,13 +2141,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mOnTouchAfterLongPressListener = listener;
 	}
 
-	// long press
+	// The long press listener that can identify from phone or touchBoard,so recommend use OnItemLongPressIdentifyFromListener take the place of OnItemLongPressListener
 
-	public interface OnItemLongPressFromPhoneListener {
-	    void onItemLongPressFromPhone(AdapterPagedView pagedView, View view, int position,boolean fromPhone);
+	public interface OnItemLongPressIdentifyFromListener {
+	    void onItemLongPressIdentifyFrom(AdapterPagedView pagedView, View view, int position,boolean fromPhone);
 	}
-	public void setOnItemLongPressFromPhoneListener(OnItemLongPressFromPhoneListener listener) {
-		mOnItemLongPressFromPhoneListener = listener;
+	public void setOnItemLongPressIdentifyFromListener(OnItemLongPressIdentifyFromListener listener) {
+		mOnItemLongPressIdentifyFromListener = listener;
 	}
 
 	public interface OnItemLongPressListener {
