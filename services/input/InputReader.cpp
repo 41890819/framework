@@ -51,6 +51,8 @@
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
+#include "GP2AP050_v04.h"
+#include "GP2AP050_lib.h"
 
 #define INDENT "  "
 #define INDENT2 "    "
@@ -58,7 +60,123 @@
 #define INDENT4 "        "
 #define INDENT5 "          "
 
+#define STATE_ONE 			 1
+#define STATE_TWO 			 2
+#define STATE_THREE 		         3
+#ifdef TS1_SAMPLE
+	#define OVER_FLOW_DATA 	         1023
+#else
+	#define OVER_FLOW_DATA 	         4095
+#endif
+#define DIR_RIGHT 			 0x8
+#define DIR_LEFT 			 0x4
+#define DIR_TOP 			 0x2
+#define DIR_BOTTOM 			 0x1
+#define SPEED_HIGH 			 0x2
+#define SPEED_MID 			 0x1
+#define STANDARD_SAMPLING_RATE           100
+#define ZOOM_LEVEL1			 3
+#define ZOOM_LEVEL2			 5
+#define ZOOM_LEVEL3			 6
+#define ZOOM_LEVEL4			 7
+#define ZOOM_LEVEL5			 9
+#define ZOOM_LEVEL_DEF		         ZOOM_LEVEL3
+
+#define PS_ONLY_MODE		         1
+#define GS_ONLY_MODE		         2
+#define PS_GS_MODE			 3
+
+#define RGB_ONLY_MODE	                 4
+#define PS_RGB_MODE		         5
+#define GS_RGB_MODE		         6
+
+
+struct gs_params st_gs;
+int sampling_rate = 100;//Hz
+
 namespace android {
+// ____________________________________________________________
+// private
+// *******************************************************************
+// * Name	: clearGSparams(Input)
+// * Input	: struct gs_params pointer
+// * Output	: 
+// * Note	: clear temporal variables for direction judgement
+// *******************************************************************
+void clearGSparams(struct gs_params *p_gs) {
+	p_gs->x_plus  = 0;
+	p_gs->x_minus = 0;
+	p_gs->y_plus  = 0;
+	p_gs->y_minus = 0;
+	p_gs->max_x1  = 0;
+	p_gs->min_x1  = 0;
+	p_gs->max_y1  = 0;
+	p_gs->min_y1  = 0;
+	p_gs->max_x2  = 0;
+	p_gs->min_x2  = 0;
+	p_gs->max_y2  = 0;
+	p_gs->min_y2  = 0;
+	p_gs->diff_max_x = 0;
+	p_gs->diff_max_y = 0;
+	p_gs->speed_counts= 0;
+	p_gs->gs_state = STATE_ONE;
+	
+	return;
+}
+// *******************************************************************
+// * Name	: setGS_PSmode(Input1, Input2)
+// * Input	: Input1 = struct gs_params pointer
+//			: Input2 = operation_mode
+// * Output	: 
+// * Note	: GS_PS mode change according to operation_mode
+// *******************************************************************
+void setGS_PSmode(struct gs_params *p_gs, int op_mode){
+	if(op_mode == PS_GS_MODE){
+		p_gs->gs_ps_mode = PS_GS_MODE;
+	}else if((op_mode == PS_ONLY_MODE) | (op_mode == PS_RGB_MODE)){
+		p_gs->gs_ps_mode = PS_ONLY_MODE;
+	}else{
+		p_gs->gs_ps_mode = GS_ONLY_MODE;
+	}
+}
+
+
+// *******************************************************************
+// * Name	: initGSparams(Input)
+// * Input	: struct gs_params pointer
+// * Output	: 
+// * Note	: Initialize variables for GS
+// *******************************************************************
+void initGSparams(struct gs_params *p_gs){
+	int num;
+	clearGSparams(p_gs);
+	setGS_PSmode(p_gs, GS_ONLY_MODE);
+	p_gs->clear_int		 		= 1;
+	p_gs->ignore_z_th 			= 20;
+	p_gs->ignore_diff_th 		= 10;
+	p_gs->ratio_th 				= 0.1;
+	p_gs->active_osc_on 		= 1;
+	p_gs->allowable_variation 	= 30;
+	p_gs->acquisition_num		= 10;
+	p_gs->max_aoc_counts		= 2000;
+	p_gs->min_aoc_counts		= 0;
+	p_gs->zoomFuncOn 			= 1;
+	p_gs->to_zoom_th			= 100;
+	p_gs->out_zoom_th			= 30;
+	p_gs->zoomModeNow 			= 0;
+	p_gs->zoom_mode_th			= 4;
+	p_gs->zoom_z_th[0]			=  500;
+	p_gs->zoom_z_th[1]			= 1000;
+	p_gs->zoom_z_th[2]			= 2000;
+	p_gs->zoom_z_th[3]			= 4000;
+	p_gs->zoom_z_th[4]			= 8000;
+	for(num=0; num<4; num++){
+		p_gs->saturated_data[num] = 0;
+	}
+
+}
+
+
 
 // --- Constants ---
 
@@ -1194,14 +1312,16 @@ void CursorMotionAccumulator::process(const RawEvent* rawEvent) {
     if (rawEvent->type == EV_REL) {
         switch (rawEvent->code) {
         case REL_X:
+		//ALOGE("REL_X %d\n", rawEvent->value);
             mRelX = rawEvent->value;
             break;
         case REL_Y:
             mRelY = rawEvent->value;
             break;
         case REL_Z:
-            mRelZ = rawEvent->value & 0x81;
-	    //ALOGE("REL_Z:%d", mRelZ);
+		//mRelZ = rawEvent->value & 0x81;
+		mRelZ = rawEvent->value;
+		//ALOGE("REL_Z:%d", mRelZ);
             break;
         }
     }
@@ -2403,6 +2523,514 @@ void CursorInputMapper::reset(nsecs_t when) {
     InputMapper::reset(when);
 }
 
+/*********************************************************************/
+
+// *******************************************************************
+// * Name	: getZoom(Input1, Input2, Input3)
+// * Input	: Input1 = raw_data, Input1 = aoc_data, Input3 = struct gs_params pointer
+// * Output	: Output return value is unsigned 16bits integer = 0x0Z00
+//            Z(4bits from the higer 5th to 8th bit) ; Zoom results
+// * Note	: get the result of Zoom 
+// *******************************************************************
+int16 getZoom(int16 *raw_data, int16 *aoc_data, struct gs_params *p_gs){
+	int16 data_z = 0;
+	int16 raw_z = 0;
+	int16 aoc_z = 0;
+	int16 zoom_res = 0x0000;
+	static int16 stayz_aoc = 0;
+	static int now_level=ZOOM_LEVEL_DEF, temp_level=ZOOM_LEVEL_DEF, prev_level=ZOOM_LEVEL_DEF;
+	static int to_zoom_counts = 0, out_zoom_counts=0, zoom_mode_counts=0;
+	int to_zoom_th, out_zoom_th, zoom_mode_th;
+	to_zoom_th = (int16)(p_gs->to_zoom_th)*(int16)sampling_rate/(int16)STANDARD_SAMPLING_RATE;
+	out_zoom_th = (int16)(p_gs->out_zoom_th)*(int16)sampling_rate/(int16)STANDARD_SAMPLING_RATE;
+	zoom_mode_th = (int16)(p_gs->zoom_mode_th)*(int16)sampling_rate/(int16)STANDARD_SAMPLING_RATE;
+	int num;
+	
+	for(num=0;num<4;num++){
+		raw_z += *(raw_data+num);
+		aoc_z += *(aoc_data+num);
+	}
+	if( (p_gs->zoomModeNow==0) & (to_zoom_counts==0)){
+		stayz_aoc = aoc_z;
+	}
+	if(raw_z > stayz_aoc){
+		data_z = raw_z - stayz_aoc;
+	}else{
+		data_z = 0;
+	}
+
+	if(p_gs->zoomModeNow){
+		clearGSparams(p_gs);
+		if(data_z > p_gs->zoom_z_th[4]){
+			temp_level = ZOOM_LEVEL5;
+		}else if(data_z > p_gs->zoom_z_th[3]){
+			temp_level = ZOOM_LEVEL4;
+		}else if(data_z > p_gs->zoom_z_th[2]){
+			temp_level = ZOOM_LEVEL3;
+		}else if(data_z > p_gs->zoom_z_th[1]){
+			temp_level = ZOOM_LEVEL2;
+		}else if(data_z > p_gs->zoom_z_th[0]){
+			temp_level = ZOOM_LEVEL1;
+		}else{
+			temp_level = 0;
+		}
+
+		if((now_level!=temp_level) && (temp_level!=0) &&
+			(temp_level==prev_level)){
+			zoom_mode_counts++;
+		}else{
+			zoom_mode_counts = 0;
+		}
+		
+		if(zoom_mode_counts >= zoom_mode_th){
+			now_level = temp_level;
+			zoom_mode_counts = 0;
+			zoom_res = ((int16)now_level<<8);
+		}
+		
+		prev_level = temp_level;
+		
+		if( (temp_level==0) &&
+			(out_zoom_counts >= out_zoom_th)){
+			out_zoom_counts=0;
+			zoom_mode_counts = 0;
+			p_gs->zoomModeNow = 0;
+		}else if(temp_level==0){
+			out_zoom_counts++;
+		}else{
+			out_zoom_counts=0;
+		}
+		//zoom_res = ((int16)now_level<<8);
+	}else{
+		if( (data_z > p_gs->zoom_z_th[0]) &
+			(to_zoom_counts >= to_zoom_th)){
+			if(data_z > p_gs->zoom_z_th[4]){
+				now_level = ZOOM_LEVEL5;
+			}else if(data_z > p_gs->zoom_z_th[3]){
+				now_level = ZOOM_LEVEL4;
+			}else if(data_z > p_gs->zoom_z_th[2]){
+				now_level = ZOOM_LEVEL3;
+			}else if(data_z > p_gs->zoom_z_th[1]){
+				now_level = ZOOM_LEVEL2;
+			}else if(data_z > p_gs->zoom_z_th[0]){
+				now_level = ZOOM_LEVEL1;
+			}
+			zoom_res = ((int16)now_level<<8);
+			p_gs->zoomModeNow = 1;
+			to_zoom_counts = 0;
+			clearGSparams(p_gs);
+		}else if((data_z > p_gs->zoom_z_th[0])){//& (p_gs->gs_state!=STATE_THREE)){
+			to_zoom_counts++;
+		}else{
+			to_zoom_counts = 0;
+		}
+		//zoom_res = 0x0000;
+	}
+	
+	return zoom_res;
+
+}
+
+// *******************************************************************
+// * Name	: getDirection(Input1, Input2)
+// * Input	: Input1 = sub_os_data[4], Input2 = struct gs_params pointer
+// * Output	: Output return value is unsigned 16bits integer = 0x0ZSD
+//            Z(4bits from the higer 5th to 8th bit) ; Zoom results
+//            S(4bits from the lower 5th to 8th bit) ; Speed results
+//            D(lower 4bits) ; Direction results
+// * Note	: get the result of Direction or Zoom 
+// *******************************************************************
+int16 getDirection(unsigned int *sub_os_data, struct gs_params *p_gs){
+#if 0 // org
+	signed int16 data_x = 0, data_y = 0;
+	unsigned int16 data_z = 0;
+#else
+	signed int data_x = 0, data_y = 0;
+	unsigned int data_z = 0;
+#endif
+	float ratio_x = 0, ratio_y = 0;
+	int16 direction_res = 0;
+	const int COUNTS_HIGH_SP = 6;
+	const int COUNTS_MID_SP	= 15;
+	int num;
+
+	//// Diff calculation ////
+	data_y = *(sub_os_data+2) + *(sub_os_data+3) - *sub_os_data - *(sub_os_data+1);
+	if( ((data_y > -(p_gs->ignore_diff_th)) && (data_y < (p_gs->ignore_diff_th))) ||
+		(*(sub_os_data  ) == OVER_FLOW_DATA) || (*(sub_os_data+1) == OVER_FLOW_DATA) ||
+		(*(sub_os_data+2) == OVER_FLOW_DATA) || (*(sub_os_data+3) == OVER_FLOW_DATA) )
+	{
+		data_y = 0;
+	}
+	data_x = *(sub_os_data+1) + *(sub_os_data+2) - *(sub_os_data) - *(sub_os_data+3);
+	if( ((data_x > -(p_gs->ignore_diff_th)) && (data_x < (p_gs->ignore_diff_th))) ||
+		(*(sub_os_data  ) == OVER_FLOW_DATA) || (*(sub_os_data+1) == OVER_FLOW_DATA) ||
+		(*(sub_os_data+2) == OVER_FLOW_DATA) || (*(sub_os_data+3) == OVER_FLOW_DATA) )
+	{
+		data_x = 0;
+	}
+	for(num=0; num<4; num++){
+		data_z += *(sub_os_data+num);
+		//ALOGE("%d data_z = %x",num, data_z);
+	}
+	//// Ratio calculation ////
+	if(data_z == 0){
+		ratio_y = 0;
+		ratio_x = 0;
+	}else{
+		ratio_y = (float)data_y / (float)data_z;
+		ratio_x = (float)data_x / (float)data_z;
+	}
+	//// Judgement FSM start ////
+	//ALOGE("p_gs->gs_state = %d", p_gs->gs_state);
+	switch (p_gs->gs_state)
+	{
+		case STATE_ONE:
+			if(data_z >= p_gs->ignore_z_th){
+				if(ratio_x > (p_gs->ratio_th)){
+					p_gs->x_plus = 1;
+					p_gs->max_x1 = ratio_x;
+				}else{
+					p_gs->x_plus = 0;
+					p_gs->max_x1 = 0;
+				}
+					
+				if(ratio_x < -(p_gs->ratio_th)){
+					p_gs->x_minus = 1 ;
+					p_gs->min_x1 = ratio_x;
+				}else{
+					p_gs->x_minus = 0;
+					p_gs->min_x1 = 0;
+				}
+				
+				if(ratio_y > (p_gs->ratio_th)){
+					p_gs->y_plus = 1;
+					p_gs->max_y1 = ratio_y;
+				}else{
+					p_gs->y_plus = 0;
+					p_gs->max_y1 = 0;
+				}
+				
+				if(ratio_y < -(p_gs->ratio_th)){
+					p_gs->y_minus = 1;
+					p_gs->min_y1 = ratio_y;
+				}else{
+					p_gs->y_minus = 0;
+					p_gs->min_y1 = 0;
+				}
+			}
+
+			if( (p_gs->x_plus > 0) | (p_gs->x_minus > 0) |
+				(p_gs->y_plus > 0) | (p_gs->y_minus > 0) )
+			{
+				p_gs->gs_state = STATE_TWO;
+			}else{
+				p_gs->gs_state = STATE_ONE;
+			}
+			
+		break;
+		
+		case STATE_TWO:
+			if( (data_z < p_gs->ignore_z_th) )
+			{
+				clearGSparams(p_gs);
+			}else if( 
+				      ((p_gs->x_plus ) && (ratio_x < -(p_gs->ratio_th))) ||
+				      ((p_gs->x_minus) && (ratio_x >  (p_gs->ratio_th))) ||
+				      ((p_gs->y_plus ) && (ratio_y < -(p_gs->ratio_th))) ||
+				      ((p_gs->y_minus) && (ratio_y >  (p_gs->ratio_th))) )
+			{
+				if(ratio_x > (p_gs->ratio_th)){
+					p_gs->max_x2 = ratio_x;
+				}else{
+					p_gs->max_x2 = 0;
+				}
+			
+				if(ratio_x < -(p_gs->ratio_th)){
+					p_gs->min_x2 = ratio_x;
+				}else{
+					p_gs->min_x2 = 0;
+				}
+			
+				if(ratio_y > (p_gs->ratio_th)){
+					p_gs->max_y2 = ratio_y;
+				}else{
+					p_gs->max_y2 = 0;
+				}
+			
+				if(ratio_y < -(p_gs->ratio_th)){
+					p_gs->min_y2 = ratio_y;
+				}else{
+					p_gs->min_y2 = 0;
+				}
+				p_gs->gs_state = STATE_THREE;
+			
+			}else {
+				if( (ratio_x > (p_gs->max_x1)) && (ratio_x > (p_gs->ratio_th))){
+					p_gs->max_x1 = ratio_x;
+					p_gs->x_plus = 1;
+				}else if( (ratio_x < (p_gs->min_x1)) & (ratio_x < -(p_gs->ratio_th)) ){
+					p_gs->min_x1 = ratio_x;
+					p_gs->x_minus = 1;
+				}
+				if( (ratio_y > (p_gs->max_y1)) & (ratio_y > (p_gs->ratio_th)) ){
+					p_gs->max_y1 = ratio_y;
+					p_gs->y_plus = 1;
+				}else if( (ratio_y < (p_gs->min_y1)) & (ratio_y < -(p_gs->ratio_th)) ){
+					p_gs->min_y1 = ratio_y;
+					p_gs->y_minus =1;
+				}
+				if( p_gs->x_plus && p_gs->x_minus){
+					if((p_gs->max_x1) > -(p_gs->min_x1)) {
+						p_gs->x_plus  = 1;
+						p_gs->x_minus = 0;
+					}else {		 
+						p_gs->x_plus  = 0;
+						p_gs->x_minus = 1;
+					}
+				}
+				if( p_gs->y_plus && p_gs->y_minus){
+					if((p_gs->max_y1) > -(p_gs->min_y1)) {
+						p_gs->y_plus  = 1;
+						p_gs->y_minus = 0;
+					}else {
+						p_gs->y_plus  = 0;
+						p_gs->y_minus = 1;
+					}
+				}
+				p_gs->gs_state = STATE_TWO;
+			}
+		break;
+		
+		case STATE_THREE:
+			if( data_z < (p_gs->ignore_z_th) )
+			{
+				if( (p_gs->x_plus) & (p_gs->min_x2 < -(p_gs->ratio_th))){
+					p_gs->diff_max_x = p_gs->max_x1 - p_gs->min_x2;
+				}else if( (p_gs->x_minus) & (p_gs->max_x2 > p_gs->ratio_th) ){
+					p_gs->diff_max_x = p_gs->max_x2 - p_gs->min_x1;
+				}else {
+					p_gs->diff_max_x = 0;
+				}
+				
+				if( (p_gs->y_plus) & (p_gs->min_y2 < -(p_gs->ratio_th)) ){
+					p_gs->diff_max_y = p_gs->max_y1 - p_gs->min_y2;
+				}else if( (p_gs->y_minus) & (p_gs->max_y2 > p_gs->ratio_th) ){
+					p_gs->diff_max_y = p_gs->max_y2 - p_gs->min_y1;
+				}else{
+					p_gs->diff_max_y = 0;
+				}
+				
+				//// Final direction Judgement ////
+				if( p_gs->diff_max_x >= p_gs->diff_max_y){
+					if(p_gs->x_plus == 1){
+						direction_res = DIR_RIGHT;
+						ALOGE("->->->->->->->->->->->->->->->->->right");
+					}else {
+						direction_res = DIR_LEFT;
+						ALOGE("<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-left");
+					}
+					clearGSparams(p_gs);
+					return direction_res;
+				}else{
+					if(p_gs->y_plus == 1){
+						direction_res = DIR_TOP;
+						ALOGE("**********************************up");
+					}else {
+						direction_res = DIR_BOTTOM;
+						ALOGE("##################################down");
+					}
+					clearGSparams(p_gs);
+					return direction_res;
+				}
+				
+				if(p_gs->speed_counts < (int16)COUNTS_HIGH_SP*(int16)sampling_rate/(int16)STANDARD_SAMPLING_RATE){
+					direction_res |=((int16)SPEED_HIGH<<4);
+				}else if(p_gs->speed_counts < (int16)COUNTS_MID_SP*(int16)sampling_rate/(int16)STANDARD_SAMPLING_RATE){
+					direction_res |=((int16)SPEED_MID<<4);
+				}
+				clearGSparams(p_gs);
+			
+			}else {
+				if( (ratio_x > p_gs->max_x2) & (ratio_x > p_gs->ratio_th) ){
+					p_gs->max_x2 = ratio_x;
+				}else if ( (ratio_x < (p_gs->min_x2)) & (ratio_x < -(p_gs->ratio_th))){
+					p_gs->min_x2 = ratio_x;
+				}
+				if( (ratio_y > (p_gs->max_y2)) & (ratio_y > (p_gs->ratio_th)) ){
+					p_gs->max_y2 = ratio_y;
+				}else if( (ratio_y < (p_gs->min_y2)) & (ratio_y < -(p_gs->ratio_th))){
+					p_gs->min_y2 = ratio_y;
+				}
+				p_gs->gs_state = STATE_THREE;
+			}
+			
+		break;
+
+		default:
+		break;
+	}
+
+	//// Speed Judgement counts////
+	if(p_gs->gs_state > STATE_ONE){
+		p_gs->speed_counts++;
+	}else{
+		p_gs->speed_counts = 0;
+	}
+	return direction_res;
+}// End of getDirection()
+
+// *******************************************************************
+// * Name	: getActiveOffset(Input1, Output, Input2)
+// * Input	: Input1 = raw_data[5], Input2 = struct gs_params pointer
+// * Output	: act_os_d[4]
+// * Note	: to get offset value from acquisition times of raw data.
+// *******************************************************************
+void getActiveOffset(int16 *raw_data, int16 *act_os_d, struct gs_params *p_gs){
+	
+	int num;
+	
+#if 0 // org
+	static int act_os_counts=0;
+	static int16 max_d[4]={0};
+	static int16 min_d[4]={0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+	static int32 avg_d[4]={0};
+#else
+	static int act_os_counts=0;
+	static int max_d[4]={0};
+	static int min_d[4]={0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+	static long avg_d[4]={0};
+#endif
+	if( (p_gs->saturated_data[0]) || (p_gs->saturated_data[1]) ||
+		(p_gs->saturated_data[2]) || (p_gs->saturated_data[3]) ){
+		act_os_counts = 0;
+		return;
+	}
+	
+	if( ( *(raw_data+4) <= p_gs->max_aoc_counts) && ( *(raw_data+4) >= p_gs->min_aoc_counts) ) {
+		//// The last measurement of offset
+		if(act_os_counts == p_gs->acquisition_num -1){
+			for(num=0;num<4;num++){
+				avg_d[num] = avg_d[num] + *(raw_data+num);
+				if(*(raw_data+num) > max_d[num]){
+					max_d[num] = *(raw_data+num);
+				}
+				if(*(raw_data+num) < min_d[num]){
+					min_d[num] = *(raw_data+num);
+				}
+			}
+			for(num=0;num<4;num++){
+				avg_d[num] = avg_d[num] - max_d[num] - min_d[num];
+				avg_d[num] = avg_d[num]/(p_gs->acquisition_num-2);
+				//// If data variation is large, offset data doesn't update and uses the former data.
+				if( (max_d[num] < avg_d[num] + p_gs->allowable_variation) && 
+					(min_d[num] + p_gs->allowable_variation > avg_d[num])){
+						*(act_os_d+num) = avg_d[num] + p_gs->allowable_variation;
+					/*
+					if(max_d[num] < (p_gs->ignore_z_th/4)){
+						*(act_os_d+num) = max_d[num];
+					}else{
+						*(act_os_d+num) = max_d[num] -(p_gs->ignore_z_th/4);
+					}
+					*/
+				}
+			}
+			act_os_counts = 0;
+		//// The first measurement of offset
+		}else if(act_os_counts == 0){
+			for(num=0;num<4;num++){
+				avg_d[num] = *(raw_data+num);
+				max_d[num] = *(raw_data+num);
+				min_d[num] = *(raw_data+num);
+			}
+			act_os_counts++;
+		}else{
+			for(num=0;num<4;num++){
+				avg_d[num] = avg_d[num] + *(raw_data+num);
+				if(*(raw_data+num) > max_d[num]){
+					max_d[num] = *(raw_data+num);
+				}
+				if(*(raw_data+num) < min_d[num]){
+					min_d[num] = *(raw_data+num);
+				}
+			}
+			act_os_counts++;
+		}
+
+	}else{
+		act_os_counts = 0;
+	}
+	return;
+}
+
+int getGP2AP050Gesture(int* raw_data){
+	int num, ret = 0;
+	int16 act_os_d[4]={0};
+#if 0 //org
+	unsigned int16 sub_os_data[4];
+#else
+	unsigned int sub_os_data[4];
+#endif
+	//ALOGE("raw_data[0] = %x raw_data[1] = %x raw_data[2] = %x raw_data[3] = %x", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
+	for(num=0;num<4;num++){
+		act_os_d[num] = st_gs.max_aoc_counts/4;
+	}
+	
+	//// Saturation function ////
+	if( (raw_data[0] & 0x8000) || (raw_data[1] & 0x8000) ||
+		(raw_data[2] & 0x8000) || (raw_data[3] & 0x8000) ){
+		for(num=0;num<4;num++){
+			if((raw_data[num] & 0x8000)==0x8000){
+				st_gs.saturated_data[num] = 1;
+			}else{
+				st_gs.saturated_data[num] = 0;
+			}
+			raw_data[num] = 0;
+		}
+	}else{
+		for(num=0;num<4;num++){
+			st_gs.saturated_data[num] = 0;
+		}
+	}
+	
+	//// Active offset calibration ////
+	if(st_gs.active_osc_on == 1){
+		getActiveOffset(raw_data, act_os_d, &st_gs);
+		//// Offset subtraction ////
+		for(num=0;num<4;num++){
+			if(raw_data[num] > act_os_d[num]){
+				sub_os_data[num] = raw_data[num] - act_os_d[num];
+			}else{
+				sub_os_data[num] = 0;
+			}
+		}
+	}else{
+		for(num=0;num<4;num++){
+			sub_os_data[num] = raw_data[num];
+		}
+	}
+	
+	//// Data Clipping ////
+	for(num=0;num<4;num++){
+		if(sub_os_data[num] > OVER_FLOW_DATA){
+			sub_os_data[num] = OVER_FLOW_DATA;
+		}
+	}
+	
+	//// Calculation & get direction results ////
+	ret = getDirection(sub_os_data, &st_gs);
+	//// Zoom mode ////
+	if(st_gs.zoomFuncOn){
+		num = getZoom(raw_data, act_os_d, &st_gs);
+		if(num != 0){
+			ret = num;
+		}
+	}
+	
+	return ret;
+
+}
+/*********************************************************************/
 void CursorInputMapper::process(const RawEvent* rawEvent) {
     mCursorButtonAccumulator.process(rawEvent);
     mCursorMotionAccumulator.process(rawEvent);
@@ -2414,27 +3042,83 @@ void CursorInputMapper::process(const RawEvent* rawEvent) {
 }
 
 void CursorInputMapper::sync(nsecs_t when) {
+
+    int rdata[4] ;
+    int retval[2] = { 0, 0 };
+    static int gp2ap_flag = 0;
+
     int32_t lastButtonState = mButtonState;
     int32_t currentButtonState = mCursorMotionAccumulator.getRelativeZ();
     mButtonState = currentButtonState;
-#if defined(INPUT_ZET6231)
-    float deltaX = mCursorMotionAccumulator.getRelativeX()*2;
-    float deltaY = mCursorMotionAccumulator.getRelativeY()*2;
+// #if defined(INPUT_ZET6231)
+//     float deltaX = mCursorMotionAccumulator.getRelativeX()*2;
+//     float deltaY = mCursorMotionAccumulator.getRelativeY()*2;
+#if defined(INPUT_CP2615)
+    float deltaX = mCursorMotionAccumulator.getRelativeX()*10;
+    float deltaY = mCursorMotionAccumulator.getRelativeY()*10;
 #else
-    float deltaX = mCursorMotionAccumulator.getRelativeX();
-    float deltaY = mCursorMotionAccumulator.getRelativeY();
+    int deltaX = mCursorMotionAccumulator.getRelativeX();
+    int deltaY = mCursorMotionAccumulator.getRelativeY();
+    //float deltaX = mCursorMotionAccumulator.getRelativeX();
+    //float deltaY = mCursorMotionAccumulator.getRelativeY();
 #endif
     bool moved = deltaX != 0 || deltaY != 0;
-    bool wasDown = (lastButtonState == 0 ? false : true);
-    bool down = (currentButtonState == 0 ? false : true);
+    bool wasDown = (lastButtonState == 0x81 ? true : false);
+    bool down = (currentButtonState == 0x81 ? true : false);
     bool downChanged;
 
+    bool upaction = (currentButtonState == 0x4 ? true : false);
+    bool downaction = (currentButtonState == 0x8 ? true : false);
+
+    int guest = 256;
+
+#define DIR_RIGHT 			 0x8
+#define DIR_LEFT 			 0x4
+#define DIR_TOP 			 0x2
+#define DIR_BOTTOM 			 0x1
+
+    if (currentButtonState == 16){
+      rdata[0] = ((int)deltaX >> 0) & 0x0000ffff;
+      rdata[1] = ((int)deltaX >> 16) & 0x0000ffff;
+      rdata[2] = ((int)deltaY >> 0) & 0x0000ffff;
+      rdata[3] = ((int)deltaY >> 16) & 0x0000ffff;
+
+      //retval[0] = deltaX;
+      //retval[1] = deltaY;
+      //ALOGE("x:%x y:%x z:%x", deltaX, deltaY, currentButtonState);
+      //ALOGE("%x %x %x %x", rdata[0], rdata[1], rdata[2], rdata[3]);
+
+      if (gp2ap_flag == 0){
+	initGSparams(&st_gs);
+	gp2ap_flag = 1;
+      }
+    
+      int ret = getGP2AP050Gesture(rdata);
+      if (ret)
+	ALOGE("ret:%d", ret);
+      if (ret != 0){
+	if (ret == DIR_RIGHT)
+	  guest = 4;
+	else if (ret == DIR_LEFT)
+	  guest = 0;
+	else if (ret == DIR_TOP){
+	  guest = 5;//left
+	}else if (ret == DIR_BOTTOM)
+	  guest = 6;//right
+      }
+
+      if (guest == 256)
+	return;
+    }
+
+    //ALOGE("x:%f y:%f z:%d", deltaX, deltaY, currentButtonState);
+    //ALOGE("upaction %d downaction:%d", upaction, downaction);
 
     if (!wasDown && down) {
         mDownTime = when;
         downChanged = true;
-	mXPosition = mDisplayWidth/2;
-	mYPosition = mDisplayHeight/2;
+    	mXPosition = mDisplayWidth/2;
+    	mYPosition = mDisplayHeight/2;
     } else if (wasDown && !down) {
         downChanged = true;
     } else {
@@ -2444,16 +3128,16 @@ void CursorInputMapper::sync(nsecs_t when) {
     nsecs_t downTime = mDownTime;
 
     if(moved && !downChanged){
-	mXPosition += deltaX;
-	mYPosition += deltaY;
-	//ALOGE("mXPosition:%f  mYPosition:%f", mXPosition, mYPosition);
+    	mXPosition += deltaX;
+    	mYPosition += deltaY;
+    	//ALOGE("mXPosition:%f  mYPosition:%f", mXPosition, mYPosition);
     }
 
     // Rotate delta according to orientation if needed.
-    if (mParameters.orientationAware && mParameters.hasAssociatedDisplay
-            && (deltaX != 0.0f || deltaY != 0.0f)) {
-        rotateDelta(mOrientation, &deltaX, &deltaY);
-    }
+    // if (mParameters.orientationAware && mParameters.hasAssociatedDisplay
+    //         && (deltaX != 0.0f || deltaY != 0.0f)) {
+    //     rotateDelta(mOrientation, &deltaX, &deltaY);
+    // }
 
     // Move the pointer.
     PointerProperties pointerProperties;
@@ -2486,6 +3170,23 @@ void CursorInputMapper::sync(nsecs_t when) {
         policyFlags |= POLICY_FLAG_WAKE_DROPPED;
     }
 
+    if (guest != 256){
+      ALOGE("guest");
+
+      pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, guest);
+
+      NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+			    20, 0, 0, 0, 0,
+			    displayId, 1, &pointerProperties, &pointerCoords,
+			    mXPrecision, mYPrecision, downTime);
+      getListener()->notifyMotion(&args);
+
+      mCursorMotionAccumulator.finishSync();
+      mCursorScrollAccumulator.finishSync();
+
+      return;
+    }
+
     // Send motion event.
     if (downChanged || moved) {
         int32_t metaState = mContext->getGlobalMetaState();
@@ -2496,11 +3197,19 @@ void CursorInputMapper::sync(nsecs_t when) {
             motionEventAction = AMOTION_EVENT_ACTION_MOVE;
         } 
 
-	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
-			      motionEventAction, 0, 0, 0, 0,
-			      displayId, 1, &pointerProperties, &pointerCoords,
-			      mXPrecision, mYPrecision, downTime);
-	getListener()->notifyMotion(&args);
+    	if (upaction){
+    		ALOGE("upaction");
+    		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, 0);
+    	}else if (downaction){
+    		ALOGE("downaction");
+    		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mDisplayHeight);
+    	}
+
+    	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+    			      motionEventAction, 0, 0, 0, 0,
+    			      displayId, 1, &pointerProperties, &pointerCoords,
+    			      mXPrecision, mYPrecision, downTime);
+    	getListener()->notifyMotion(&args);
     }
 
     mCursorMotionAccumulator.finishSync();

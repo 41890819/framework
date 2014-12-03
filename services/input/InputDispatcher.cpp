@@ -2432,6 +2432,12 @@ bool InputDispatcher::shouldSendKeyToInputFilterLocked(const NotifyKeyArgs* args
 }
 
 void InputDispatcher::notifyMotion(const NotifyMotionArgs* args) {
+  if (args->action == 20){
+    int guest = args->pointerCoords[0].getAxisValue(AMOTION_EVENT_AXIS_X);
+    //ALOGE("InputDispatcher::notifyMotion %d", guest);
+    notifyGestureMotion(guest);
+    return;
+  }
 #if DEBUG_INBOUND_EVENT_DETAILS
     ALOGD("notifyMotion - eventTime=%lld, deviceId=%d, source=0x%x, policyFlags=0x%x, "
             "action=0x%x, flags=0x%x, metaState=0x%x, buttonState=0x%x, edgeFlags=0x%x, "
@@ -3743,6 +3749,7 @@ void InputDispatcher::monitor() {
 // for screencontrol
 #define SC_GESTURE_DEVICE_ID 1000
 void InputDispatcher::notifyGestureMotion(int gesture) {
+  ALOGE("InputDispatcher::notifyGestureMotion");
     nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
     uint32_t policyFlags = 0;
     policyFlags |= POLICY_FLAG_TRUSTED;
