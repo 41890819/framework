@@ -1400,4 +1400,14 @@ public class TelephonyManager {
         } catch (NullPointerException ex) {
         }
     }
+
+    //dfdun add. for set call state . just for indroidsync
+    public void setCallState(int state,String number) {
+        try {
+//            android.utils.Log.d("dfdun", TAG+"] set call state="+state);
+            sRegistry.notifyCallState(state, number);
+        } catch (RemoteException e) { 
+//            Log.e("dfdun", "TM] error set call state="+state);
+        }    
+    }
 }
