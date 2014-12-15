@@ -198,18 +198,21 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	private boolean mUseSoundEffect = false;
 
 	protected BaseAdapter mAdapter;
-	private boolean mDataChanged = false;
+	private boolean mDataChangedForLayout = false;
+	private boolean mDataChangedForMeasure = false;
 	private Queue<View> mRemovedViewQueue = new LinkedList<View>();
 	protected int[] mVisiblePagesRange = new int[2];
 	protected int[] mVisiblePagesIDRange = new int[2];
 	private int mShouldToScreen = -1;
+	private int mHeightMeasureSpec = Integer.MIN_VALUE;
 	
 	private DataSetObserver mDataObserver = new DataSetObserver() {
 
 		@Override
 		public void onChanged() {
 			synchronized (AdapterPagedView.this) {
-				mDataChanged = true;
+				mDataChangedForLayout = true;
+				mDataChangedForMeasure = true;
 			}
 			invalidate();
 			requestLayout();
@@ -322,7 +325,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 					: mScreenQueue.getScreenAt(mVisiblePagesRange[1]).childId;
 //			if (mVisiblePagesRange[0] != -1 && mVisiblePagesRange[1] != -1)
 //				Log.e("sn",
-//						mDataChanged
+//						mDataChangedForLayout
 //								+ " ooo "
 //								+ mScreenQueue
 //										.getScreenAt(mVisiblePagesRange[0]).childId
@@ -332,7 +335,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 //								+ " : " + lastVisiblePagesID[0] + " "
 //								+ lastVisiblePagesID[1]);
 //			else
-//				Log.e("sn", mDataChanged
+//				Log.e("sn", mDataChangedForLayout
 //						+ " **oooooooooooooooooooooooooooooooooooooooooo "
 //						+ mVisiblePagesRange[0] + " " + mVisiblePagesRange[1]
 //						+ " : " + lastVisiblePagesID[0] + " "
@@ -367,16 +370,25 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						}
 						child = mAdapter.getView(childSi.childId,
 								mRemovedViewQueue.poll(), this);
+						int heightMode = mHeightMeasureSpec == Integer.MIN_VALUE ? 
+						    MeasureSpec.EXACTLY : MeasureSpec.getMode(mHeightMeasureSpec);
 						LayoutParams params = child.getLayoutParams();
 						// if(params == null) {
-						params = new LayoutParams(LayoutParams.MATCH_PARENT,
+						if (heightMode == MeasureSpec.EXACTLY)
+						    params = new LayoutParams(LayoutParams.MATCH_PARENT,
 								LayoutParams.MATCH_PARENT);
 						// }
 						addViewInLayout(child, -1, params, true);
-						child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
+						if (heightMode == MeasureSpec.EXACTLY)
+						    child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
 								MeasureSpec.EXACTLY), MeasureSpec
 								.makeMeasureSpec(getHeight(),
 										MeasureSpec.EXACTLY));
+						else
+						    child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
+								MeasureSpec.EXACTLY), 
+							        getChildMeasureSpec(mHeightMeasureSpec, 
+								mPaddingTop + mPaddingBottom, params.height));
 						child.layout(left, 0, left + child.getMeasuredWidth(),
 								child.getMeasuredHeight());
 
@@ -474,8 +486,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			return;
 		}
 		// removeAllViewsInLayout();
-		if (mDataChanged) {
-			mDataChanged = false;
+		if (mDataChangedForLayout) {
+			mDataChangedForLayout = false;
 			resetScreenQueue(mPageWidth);
 			detectFlyAndCycle();
 			if (mAdapter.getCount() == 1)
@@ -505,7 +517,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		}
 
 		// super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
+		mHeightMeasureSpec = heightMeasureSpec;
 		final int width = MeasureSpec.getSize(widthMeasureSpec);
 		final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		if (widthMode != MeasureSpec.EXACTLY) {
@@ -514,10 +526,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		}
 
 		final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-		if (heightMode != MeasureSpec.EXACTLY) {
-			throw new IllegalStateException(
-					"ScrollLayout only can run at EXACTLY mode!");
-		}
+		// if (heightMode != MeasureSpec.EXACTLY) {
+		// 	throw new IllegalStateException(
+		// 			"ScrollLayout only can run at EXACTLY mode!");
+		// }
 
 		/*
 		 * final int count = getChildCount(); for (int i = 0; i < count; i++) {
@@ -572,15 +584,20 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 			final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
 					mPageWidth - horizontalPadding, childWidthMode);
-			final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
+			int childHeightMeasureSpec;
+			if (heightMode == MeasureSpec.AT_MOST)
+			    childHeightMeasureSpec = getChildMeasureSpec(
+					heightMeasureSpec, mPaddingTop + mPaddingBottom,
+					lp.height);
+			else
+			    childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
 					heightSize - verticalPadding, childHeightMode);
 
 			child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 			maxChildHeight = Math
 					.max(maxChildHeight, child.getMeasuredHeight());
 		}
-
-		if (heightMode == MeasureSpec.AT_MOST) {
+		if (heightMode == MeasureSpec.AT_MOST && maxChildHeight > 0) {
 			heightSize = maxChildHeight + verticalPadding;
 		}
 
@@ -588,12 +605,15 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 		updateScrollingIndicatorPosition();
 
-	        if (mScreenQueue.getChildCount() > 0){
-		        scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
+		if (mDataChangedForMeasure) {
+			mDataChangedForMeasure = false;
+			if (mScreenQueue.getChildCount() > 0){
+			    scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
 					- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
+			}
+			else
+			    scrollTo(mCurScreen * (mPageWidth + mPageMargin), 0);
 		}
-		else
-		scrollTo(mCurScreen * (mPageWidth + mPageMargin), 0);
 
 		if (childCount > 0) {
 			// mMaxScrollX = (mPagedViewList.size() - 1) * (mPageWidth +
@@ -2098,7 +2118,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mAdapter = adapter;
 		if (mAdapter != null) {
 			mAdapter.registerDataSetObserver(mDataObserver);
-			mDataChanged = true;
+			mDataChangedForLayout = true;
+			mDataChangedForMeasure = true;
 			mIsDataReady = true;
 			reset();
 		}
