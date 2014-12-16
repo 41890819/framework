@@ -36,6 +36,8 @@ public abstract class BluetoothGattCallback {
                                         int newState) {
     }
 
+    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState, String sAddr) {
+    }
     /**
      * Callback invoked when the list of remote services, characteristics and descriptors
      * for the remote device have been updated, ie new services have been discovered.

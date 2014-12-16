@@ -1664,7 +1664,7 @@ public final class BluetoothAdapter {
         }
 
         public void onClientConnectionState(int status, int clientIf,
-                                            boolean connected, String address) {
+                                            boolean connected, String address, String sAddr) {
             // no op
         }
 

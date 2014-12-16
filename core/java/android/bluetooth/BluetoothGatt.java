@@ -139,6 +139,8 @@ public final class BluetoothGatt implements BluetoothProfile {
                 mClientIf = clientIf;
                 if (status != GATT_SUCCESS) {
                     mCallback.onConnectionStateChange(BluetoothGatt.this, GATT_FAILURE,
+                                                      BluetoothProfile.STATE_DISCONNECTED, null);
+                    mCallback.onConnectionStateChange(BluetoothGatt.this, GATT_FAILURE,
                                                       BluetoothProfile.STATE_DISCONNECTED);
                     synchronized(mStateLock) {
                         mConnState = CONN_STATE_IDLE;
@@ -160,15 +162,16 @@ public final class BluetoothGatt implements BluetoothProfile {
              * @hide
              */
             public void onClientConnectionState(int status, int clientIf,
-                                                boolean connected, String address) {
+                                                boolean connected, String address, String sAddr) {
                 if (DBG) Log.d(TAG, "onClientConnectionState() - status=" + status
-                                 + " clientIf=" + clientIf + " device=" + address);
+                                 + " clientIf=" + clientIf + " device=" + address+" sAddr="+sAddr);
                 if (!address.equals(mDevice.getAddress())) {
                     return;
                 }
                 int profileState = connected ? BluetoothProfile.STATE_CONNECTED :
                                                BluetoothProfile.STATE_DISCONNECTED;
                 try {
+                    mCallback.onConnectionStateChange(BluetoothGatt.this, status, profileState, sAddr);
                     mCallback.onConnectionStateChange(BluetoothGatt.this, status, profileState);
                 } catch (Exception ex) {
                     Log.w(TAG, "Unhandled exception in callback", ex);

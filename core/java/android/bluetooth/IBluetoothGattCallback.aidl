@@ -25,7 +25,7 @@ import android.os.ParcelUuid;
 interface IBluetoothGattCallback {
     void onClientRegistered(in int status, in int clientIf);
     void onClientConnectionState(in int status, in int clientIf,
-                                 in boolean connected, in String address);
+                                 in boolean connected, in String address, in String sAddr);
     void onScanResult(in String address, in int rssi, in byte[] advData);
     void onGetService(in String address, in int srvcType, in int srvcInstId,
                       in ParcelUuid srvcUuid);
