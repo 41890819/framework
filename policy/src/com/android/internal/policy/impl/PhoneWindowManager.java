@@ -695,6 +695,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         @Override
         public void run() {
             // The context isn't read
+	    Log.e(TAG, "###$$$ mPowerLongPress " + FactoryTest.isLongPressOnPowerOffEnabled());
             if (mLongPressOnPowerBehavior < 0) {
                 mLongPressOnPowerBehavior = mContext.getResources().getInteger(
                         com.android.internal.R.integer.config_longPressOnPowerBehavior);
@@ -703,6 +704,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (FactoryTest.isLongPressOnPowerOffEnabled()) {
                 resolvedBehavior = LONG_PRESS_POWER_SHUT_OFF_NO_CONFIRM;
             }
+
+	    resolvedBehavior = LONG_PRESS_POWER_SHUT_OFF_NO_CONFIRM;
 
             switch (resolvedBehavior) {
             case LONG_PRESS_POWER_NOTHING:

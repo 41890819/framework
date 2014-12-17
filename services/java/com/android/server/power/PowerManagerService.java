@@ -141,7 +141,7 @@ public final class PowerManagerService extends IPowerManager.Stub
     private static final int USER_ACTIVITY_SCREEN_DIM = 1 << 1;
 
     // Default and minimum screen off timeout in milliseconds.
-    private static final int DEFAULT_SCREEN_OFF_TIMEOUT = 15 * 1000;
+    private static final int DEFAULT_SCREEN_OFF_TIMEOUT = 600 * 1000;
     private static final int MINIMUM_SCREEN_OFF_TIMEOUT = 10 * 1000;
 
     // The screen dim duration, in milliseconds.
