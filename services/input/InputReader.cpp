@@ -3054,13 +3054,14 @@ void CursorInputMapper::sync(nsecs_t when) {
 //     float deltaX = mCursorMotionAccumulator.getRelativeX()*2;
 //     float deltaY = mCursorMotionAccumulator.getRelativeY()*2;
 #if defined(INPUT_CP2615)
-    float deltaX = mCursorMotionAccumulator.getRelativeX()*10;
-    float deltaY = mCursorMotionAccumulator.getRelativeY()*10;
+    int deltaX = mCursorMotionAccumulator.getRelativeX()*3;
+    int deltaY = mCursorMotionAccumulator.getRelativeY()*3;
 #else
     int deltaX = mCursorMotionAccumulator.getRelativeX();
     int deltaY = mCursorMotionAccumulator.getRelativeY();
     //float deltaX = mCursorMotionAccumulator.getRelativeX();
     //float deltaY = mCursorMotionAccumulator.getRelativeY();
+    ALOGE("x:%d z:%d", deltaX, currentButtonState);
 #endif
     bool moved = deltaX != 0 || deltaY != 0;
     bool wasDown = (lastButtonState == 0x81 ? true : false);
@@ -3077,7 +3078,7 @@ void CursorInputMapper::sync(nsecs_t when) {
 #define DIR_TOP 			 0x2
 #define DIR_BOTTOM 			 0x1
 
-    if (currentButtonState == 16){
+    if (currentButtonState == 16){ //only for october guest
       rdata[0] = ((int)deltaX >> 0) & 0x0000ffff;
       rdata[1] = ((int)deltaX >> 16) & 0x0000ffff;
       rdata[2] = ((int)deltaY >> 0) & 0x0000ffff;
@@ -3109,6 +3110,11 @@ void CursorInputMapper::sync(nsecs_t when) {
 
       if (guest == 256)
 	return;
+    }else if (currentButtonState == 17){//only for coldwave cp2615 and monday cp2615
+      if (deltaX == 101)
+	guest = 0;
+      else
+	guest = deltaX;
     }
 
     //ALOGE("x:%f y:%f z:%d", deltaX, deltaY, currentButtonState);
