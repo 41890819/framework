@@ -5111,6 +5111,7 @@ package android.bluetooth {
     method public void onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int);
     method public void onCharacteristicWrite(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int);
     method public void onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int);
+    method public void onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int, java.lang.String);
     method public void onDescriptorRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattDescriptor, int);
     method public void onDescriptorWrite(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattDescriptor, int);
     method public void onReadRemoteRssi(android.bluetooth.BluetoothGatt, int, int);
@@ -22351,6 +22352,7 @@ package android.telephony {
     method public boolean hasIccCard();
     method public boolean isNetworkRoaming();
     method public void listen(android.telephony.PhoneStateListener, int);
+    method public void setCallState(int, java.lang.String);
     field public static final java.lang.String ACTION_PHONE_STATE_CHANGED = "android.intent.action.PHONE_STATE";
     field public static final java.lang.String ACTION_RESPOND_VIA_MESSAGE = "android.intent.action.RESPOND_VIA_MESSAGE";
     field public static final int CALL_STATE_IDLE = 0; // 0x0

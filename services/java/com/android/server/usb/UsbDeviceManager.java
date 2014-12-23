@@ -117,6 +117,7 @@ public class UsbDeviceManager {
     private Map<String, List<Pair<String, String>>> mOemModeMap;
     private String[] mAccessoryStrings;
     private UsbDebuggingManager mDebuggingManager;
+    private boolean mNotificationEnable;
 
     private class AdbSettingsObserver extends ContentObserver {
         public AdbSettingsObserver() {
@@ -171,6 +172,9 @@ public class UsbDeviceManager {
 
         boolean secureAdbEnabled = SystemProperties.getBoolean("ro.adb.secure", false);
         boolean dataEncrypted = "1".equals(SystemProperties.get("vold.decrypt"));
+	mNotificationEnable = "true".equals(SystemProperties.get("ro.notification.enable"));
+	Slog.i(TAG, SystemProperties.get("ro.notification.enable")+"UsbDeviceMessage---mNotificationEnable " + mNotificationEnable);
+
         if (secureAdbEnabled && !dataEncrypted) {
             mDebuggingManager = new UsbDebuggingManager(context);
         }
@@ -452,7 +456,10 @@ public class UsbDeviceManager {
                 // Due to the persist.sys.usb.config property trigger, changing adb state requires
                 // switching to default function
                 setEnabledFunctions(mDefaultFunctions, true);
-                updateAdbNotification();
+		Slog.i(TAG,mNotificationEnable+ "notificationEnable----setAdbEnable");
+		if(!mNotificationEnable){
+		    updateAdbNotification();
+		}
             }
             if (mDebuggingManager != null) {
                 mDebuggingManager.setAdbEnabled(mAdbEnabled);
@@ -598,8 +605,12 @@ public class UsbDeviceManager {
                 case MSG_UPDATE_STATE:
                     mConnected = (msg.arg1 == 1);
                     mConfigured = (msg.arg2 == 1);
-                    updateUsbNotification();
-                    updateAdbNotification();
+		    Slog.i(TAG,mNotificationEnable+"notificationEnable----handleMessage--what=MSG_UPDATE_STATE");
+		    if(!mNotificationEnable){
+			updateUsbNotification();
+			updateAdbNotification();
+		    }
+		   
                     if (containsFunction(mCurrentFunctions,
                             UsbManager.USB_FUNCTION_ACCESSORY)) {
                         updateCurrentAccessory();
@@ -623,8 +634,12 @@ public class UsbDeviceManager {
                     setEnabledFunctions(functions, makeDefault);
                     break;
                 case MSG_SYSTEM_READY:
-                    updateUsbNotification();
-                    updateAdbNotification();
+		    Slog.i(TAG,mNotificationEnable+"notificationEnable----handleMessage--what=MSG_SYSTEM_READY");
+		    if(!mNotificationEnable){
+			updateUsbNotification();
+			updateAdbNotification();
+		    }
+		   
                     updateUsbState();
                     updateAudioSourceFunction();
                     break;
