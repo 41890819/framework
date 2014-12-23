@@ -39,8 +39,8 @@ import android.widget.ImageView;
 import android.graphics.Color;
 
 import android.view.MotionEvent;
-import android.widget.IngGestureDetectListener;
-import android.widget.IngGestureDetector;
+import android.widget.GestureDetector.OnGestureListener;
+import android.widget.GestureDetector;
 import java.util.ArrayList;
 import android.util.Log;
 
@@ -121,14 +121,14 @@ public class AlertDialog extends Dialog implements DialogInterface {
 
 	////////////////////////////////////jim add for view above the alert dialog to capture gestures.
 	private AlertCoverView mCoverView = null;
-	public class AlertCoverView extends ImageView implements IngGestureDetectListener {
+	public class AlertCoverView extends ImageView implements OnGestureListener {
 		public AlertCoverView(Context context) {
 			super(context);
-			mGestureDetector = new IngGestureDetector(context, this);
+			mGestureDetector = new GestureDetector(context, this);
 		}
 		
 		private String TAG = "AlertCoverView";
-		private IngGestureDetector mGestureDetector = null;
+		private GestureDetector mGestureDetector = null;
 		
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
@@ -139,28 +139,33 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		}
 	
 		@Override
-		public boolean onDoubleTap() {
+		public boolean onDoubleTap(boolean fromPhone) {
 			//Log.e(TAG, "onDoubleTap");
 			
 			return false;
 		}
+		@Override
+		    public boolean onDown(boolean fromPhone){
+		    return true;
+		}
+		@Override
+		    public boolean onUp(MotionEvent ev,boolean fromPhone) {
+		    return false;
+		}
 		
 		@Override
-		public boolean onLongPress() {
-			//Log.e(TAG, "onLongPress");
+		public boolean onLongPress(boolean fromPhone) {
 			return false;
 		}
 		
 		@Override
 		public boolean onScroll(MotionEvent arg0, MotionEvent arg1, float arg2,
-									float arg3) {
-			//Log.e(TAG, "onScroll");
+					float arg3,boolean fromPhone) {
 			return false;
 		}
 		
 		@Override
-		public boolean onSlideDown() {
-			//Log.e(TAG, "onSlideDown");
+		public boolean onSlideDown(boolean fromPhone) {
 			
 			onCoverSlideDown();
 			
@@ -168,8 +173,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		}
 		
 		@Override
-		public boolean onSlideLeft() {
-			//Log.e(TAG, "onSlideLeft");
+		public boolean onSlideLeft(boolean fromPhone) {
 			
 			onCoverSlideLeft();
 			
@@ -177,27 +181,23 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		}
 		
 		@Override
-		public boolean onSlideRight() {
-			//Log.e(TAG, "onSlideRight");
-			
-			onCoverSlideRight();
-			
+		public boolean onSlideRight(boolean fromPhone) {
+			onCoverSlideRight();			
 			return true;
 		}
 		
 		@Override
-		public boolean onSlideUp() {
-			//Log.e(TAG, "onSlideUp");
+		public boolean onSlideUp(boolean fromPhone) {
 			return false;
 		}
 		
 		@Override
-		public boolean onTap() {
+		public boolean onTap(boolean fromPhone) {
 			onCoverTap();
 			
 			return true;
 		}
-	}
+  	}
 
 	public void onCoverSlideDown(){
 		dismiss();
@@ -260,7 +260,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		Button mButtons[] = { getButton(BUTTON_POSITIVE), getButton(BUTTON_NEUTRAL), getButton(BUTTON_NEGATIVE) };
 		
 		for(int i = 0; i < 3; ++i){			
-			if(mButtons[i] == null || mButtons[i].getVisibility() != View.VISIBLE){
+		    if(mButtons[i] == null || mButtons[i].getVisibility() != View.VISIBLE){
 				continue;
 			}
 			
@@ -291,9 +291,9 @@ public class AlertDialog extends Dialog implements DialogInterface {
 
 		////////////////////////////////////jim add for view above the alert dialog to capture gestures.
 		mCoverView = new AlertCoverView(mContext);
-		mCoverView.setAlpha(0.0F);
+		mCoverView.setAlpha(0.0f);
 		mCoverView.setBackgroundColor(Color.BLUE);
-		setCoverView(mCoverView);
+		setCoverView(mCoverView);		
 		////////////////////////////////////
     }
 
