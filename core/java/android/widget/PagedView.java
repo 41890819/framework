@@ -1815,8 +1815,8 @@ public class PagedView extends ViewGroup {
 	 * 2. mPageCountInScreen == 1 && mPagedViewList.size() >= FAST_SNAP_SCREENS
 	 */
 	public void setFlyFlip (boolean enable) {
-		mCanFlyFlip = mFlyFlipByUser = enable;
-		detectFlyAndCycle();
+		// mCanFlyFlip = mFlyFlipByUser = enable;
+		// detectFlyAndCycle();
 	}
 	
 	/**
