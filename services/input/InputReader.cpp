@@ -3061,15 +3061,17 @@ void CursorInputMapper::sync(nsecs_t when) {
     int deltaY = mCursorMotionAccumulator.getRelativeY();
     //float deltaX = mCursorMotionAccumulator.getRelativeX();
     //float deltaY = mCursorMotionAccumulator.getRelativeY();
-    ALOGE("x:%d z:%d", deltaX, currentButtonState);
+    ALOGE("x : %d  y : %d  z : %d", deltaX, deltaY, currentButtonState);
 #endif
     bool moved = deltaX != 0 || deltaY != 0;
     bool wasDown = (lastButtonState == 0x81 ? true : false);
     bool down = (currentButtonState == 0x81 ? true : false);
     bool downChanged;
 
+#if defined(INPUT_CP2615)
     bool upaction = (currentButtonState == 0x4 ? true : false);
     bool downaction = (currentButtonState == 0x8 ? true : false);
+#endif
 
     int guest = 256;
 
@@ -3199,10 +3201,13 @@ void CursorInputMapper::sync(nsecs_t when) {
         int32_t motionEventAction;
         if (downChanged) {
             motionEventAction = down ? AMOTION_EVENT_ACTION_DOWN : AMOTION_EVENT_ACTION_UP;
+	    ALOGE("motionEventAction is %s", down ? "AMOTION_EVENT_ACTION_DOWN" : "AMOTION_EVENT_ACTION_UP");
         } else {
             motionEventAction = AMOTION_EVENT_ACTION_MOVE;
+	    ALOGE("motionEventAction is AMOTION_EVENT_ACTION_MOVE");
         } 
 
+#if defined(INPUT_CP2615)
     	if (upaction){
     		ALOGE("upaction");
     		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, 0);
@@ -3210,6 +3215,7 @@ void CursorInputMapper::sync(nsecs_t when) {
     		ALOGE("downaction");
     		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mDisplayHeight);
     	}
+#endif
 
     	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
     			      motionEventAction, 0, 0, 0, 0,
