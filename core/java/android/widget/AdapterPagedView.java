@@ -470,11 +470,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		}
 		mScreenQueue.clear();
 		final int height = getMeasuredHeight();
-		int childLeft = (int) (getX() + ((pageWidth + mPageMargin) * mSpacePageCount));
+		int childLeft = (int) (getPaddingLeft() + ((pageWidth + mPageMargin) * mSpacePageCount));
 		for (int i = 0; i < mAdapter.getCount(); ++i) {
 			// 这里的screen们必须是按顺序添加的，否则就会出现混乱的view显示特征。
 			// 而且，应该注意到，view的出现顺序i，被用作了相应screen的ID。
-			mScreenQueue.addScreen(new ScreenInfo(i, childLeft, 0, pageWidth,
+			mScreenQueue.addScreen(new ScreenInfo(i, childLeft, getPaddingTop(), pageWidth,
 					height, null));
 			childLeft += pageWidth + mPageMargin;
 		}

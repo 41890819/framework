@@ -321,7 +321,7 @@ public class PagedView extends ViewGroup {
 		mFirstLayout = false;
 		if (DEBUG)
 			Log.i(TAG, "onLayout " + this + "....");
-		int childLeft = (int) getX();
+		int childLeft = (int) getPaddingLeft();
 		int childCount = getChildCount();
 		// for (int i = 0; i < mSpacePageList.size(); i++) {
 		// 	final View childView = mSpacePageList.get(i);
@@ -347,10 +347,10 @@ public class PagedView extends ViewGroup {
 			if (DEBUG)
 			    Log.d(TAG, "\tlayout-child" + i + ": " + childLeft + " "
 				  + childView.getX());
-			childView.layout(childLeft, 0, childLeft + childWidth,
+			childView.layout(childLeft, getPaddingTop(), childLeft + childWidth,
 					 childView.getMeasuredHeight());
 			if (i >= mSpacePageList.size())
-			    mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), childLeft, 0, childWidth, childView.getMeasuredHeight(), childView));
+			    mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), childLeft, getPaddingTop(), childWidth, childView.getMeasuredHeight(), childView));
 			childLeft += childWidth + mPageMargin;
 		    }
 		}
@@ -469,12 +469,11 @@ public class PagedView extends ViewGroup {
 			mScreenQueue.clear();
 			// 添加子View循环控制
 			final int height = MeasureSpec.getSize(heightMeasureSpec);
-			int childLeft = (int) getX();
+			int childLeft = (int) getPaddingLeft();
 			for (int i = mSpacePageList.size(); i < childCount; ++i) {
 				// 这里的screen们必须是按顺序添加的，否则就会出现混乱的view显示特征。
 				// 而且，应该注意到，view的出现顺序i，被用作了相应screen的ID。
-				mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), childLeft, 0, mPageWidth,
-						height, getChildAt(i)));
+				mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), childLeft, getPaddingTop(), mPageWidth, height, getChildAt(i)));
 				childLeft += mPageWidth + mPageMargin;
 			}
 		}
@@ -503,7 +502,7 @@ public class PagedView extends ViewGroup {
 			      // getChildAt(i).measure(newWidthSpec, newHeightSpec);
 			}
 			int top = getMeasuredHeight() / 2 - height / 2;
-			int left = (int) getX();
+			int left = (int) getPaddingLeft();
 			mScreenQueue.clear();
 			for (int i = 0; i < getChildCount(); i++) {			    
 //				 getChildAt(i).layout(left, top, left + width, top + height);
@@ -821,14 +820,13 @@ public class PagedView extends ViewGroup {
 			// getChildAt(i).measure(newWidthSpec, newHeightSpec);
 		}
 		int height = getHeight();
-		int left = (int) getX();
+		int left = (int) getPaddingLeft();
 		mScreenQueue.clear();
 		for (int i = 0; i < getChildCount(); i++) {
 			getChildAt(i).layout(left, 0, left + pageWidth, height);
 			getChildAt(i).setX(left);
 			if (i >= mSpacePageList.size())
-				mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), left, 0,
-						pageWidth, height, getChildAt(i)));
+				mScreenQueue.addScreen(new ScreenInfo(i - mSpacePageList.size(), left, getPaddingTop(), pageWidth, height, getChildAt(i)));
 			left += pageWidth + mPageMargin;
 		}
 		scrollTo(mNextScreen * (mPageWidth + mPageMargin), 0);
