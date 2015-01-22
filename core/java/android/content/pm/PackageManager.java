@@ -364,6 +364,14 @@ public abstract class PackageManager {
 
     /**
      * Installation return code: this is passed to the {@link IPackageInstallObserver} by
+     * {@link #installPackage(android.net.Uri, IPackageInstallObserver, int)} if the package not
+     * depend on the glass.
+     * @hide
+     */
+    public static final int INSTALL_FAILED_NOT_DEPEND_ON_GLASS = 1212;
+
+    /**
+     * Installation return code: this is passed to the {@link IPackageInstallObserver} by
      * {@link #installPackage(android.net.Uri, IPackageInstallObserver, int)} if the package is
      * already installed.
      * @hide

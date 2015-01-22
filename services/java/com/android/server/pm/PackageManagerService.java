@@ -8421,6 +8421,14 @@ public class PackageManagerService extends IPackageManager.Stub {
             return;
         }
         String pkgName = res.name = pkg.packageName;
+	Slog.v(TAG, "packageName = "+pkgName);
+	if(!pkgName.contains("ingenic.glass")){
+	    Slog.e(TAG, "Please install the software based on the development of glassssss");
+	    res.returnCode = PackageManager.INSTALL_FAILED_NOT_DEPEND_ON_GLASS;
+	    //args.observer.packageInstalled(res.name, res.returnCode);
+	    return;
+	}
+
         if ((pkg.applicationInfo.flags&ApplicationInfo.FLAG_TEST_ONLY) != 0) {
             if ((pFlags&PackageManager.INSTALL_ALLOW_TEST) == 0) {
                 res.returnCode = PackageManager.INSTALL_FAILED_TEST_ONLY;
