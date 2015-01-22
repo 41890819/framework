@@ -77,32 +77,32 @@ please see styles_device_defaults.xml.
 
     <!-- Standard animations for a full-screen window or activity. -->
     <style name="Animation.Activity">
-        <item name="activityOpenEnterAnimation">@anim/activity_open_enter</item>
-        <item name="activityOpenExitAnimation">@anim/activity_open_exit</item>
-        <item name="activityCloseEnterAnimation">@anim/activity_close_enter</item>
-        <item name="activityCloseExitAnimation">@anim/activity_close_exit</item>
+        <item name="activityOpenEnterAnimation">@anim/task_open_enter</item>
+        <item name="activityOpenExitAnimation">@anim/task_open_exit</item>
+        <item name="activityCloseEnterAnimation">@anim/task_open_enter</item>
+        <item name="activityCloseExitAnimation">@anim/task_open_exit</item>
         <item name="taskOpenEnterAnimation">@anim/task_open_enter</item>
         <item name="taskOpenExitAnimation">@anim/task_open_exit</item>
-        <item name="taskCloseEnterAnimation">@anim/task_close_enter</item>
-        <item name="taskCloseExitAnimation">@anim/task_close_exit</item>
+        <item name="taskCloseEnterAnimation">@anim/task_open_enter</item>
+        <item name="taskCloseExitAnimation">@anim/task_open_exit</item>
         <item name="taskToFrontEnterAnimation">@anim/task_open_enter</item>
         <item name="taskToFrontExitAnimation">@anim/task_open_exit</item>
-        <item name="taskToBackEnterAnimation">@anim/task_close_enter</item>
-        <item name="taskToBackExitAnimation">@anim/task_close_exit</item>
-        <item name="wallpaperOpenEnterAnimation">@anim/wallpaper_open_enter</item>
-        <item name="wallpaperOpenExitAnimation">@anim/wallpaper_open_exit</item>
-        <item name="wallpaperCloseEnterAnimation">@anim/wallpaper_close_enter</item>
-        <item name="wallpaperCloseExitAnimation">@anim/wallpaper_close_exit</item>
-        <item name="wallpaperIntraOpenEnterAnimation">@anim/wallpaper_intra_open_enter</item>
-        <item name="wallpaperIntraOpenExitAnimation">@anim/wallpaper_intra_open_exit</item>
-        <item name="wallpaperIntraCloseEnterAnimation">@anim/wallpaper_intra_close_enter</item>
-        <item name="wallpaperIntraCloseExitAnimation">@anim/wallpaper_intra_close_exit</item>
-        <item name="fragmentOpenEnterAnimation">@animator/fragment_open_enter</item>
-        <item name="fragmentOpenExitAnimation">@animator/fragment_open_exit</item>
-        <item name="fragmentCloseEnterAnimation">@animator/fragment_close_enter</item>
-        <item name="fragmentCloseExitAnimation">@animator/fragment_close_exit</item>
-        <item name="fragmentFadeEnterAnimation">@animator/fragment_fade_enter</item>
-        <item name="fragmentFadeExitAnimation">@animator/fragment_fade_exit</item>
+        <item name="taskToBackEnterAnimation">@anim/task_open_enter</item>
+        <item name="taskToBackExitAnimation">@anim/task_open_exit</item>
+        <item name="wallpaperOpenEnterAnimation">@null</item>
+        <item name="wallpaperOpenExitAnimation">@null</item>
+        <item name="wallpaperCloseEnterAnimation">null</item>
+        <item name="wallpaperCloseExitAnimation">@null</item>
+        <item name="wallpaperIntraOpenEnterAnimation">@null</item>
+        <item name="wallpaperIntraOpenExitAnimation">@null</item>
+        <item name="wallpaperIntraCloseEnterAnimation">@null</item>
+        <item name="wallpaperIntraCloseExitAnimation">@null</item>
+        <item name="fragmentOpenEnterAnimation">@null</item>
+        <item name="fragmentOpenExitAnimation">@null</item>
+        <item name="fragmentCloseEnterAnimation">@null</item>
+        <item name="fragmentCloseExitAnimation">@null</item>
+        <item name="fragmentFadeEnterAnimation">@null</item>
+        <item name="fragmentFadeExitAnimation">@null</item>
     </style>
 
     <!-- Standard animations for a non-full-screen window or activity. -->
