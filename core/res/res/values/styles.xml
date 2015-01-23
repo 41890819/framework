@@ -91,7 +91,7 @@ please see styles_device_defaults.xml.
         <item name="taskToBackExitAnimation">@anim/task_open_exit</item>
         <item name="wallpaperOpenEnterAnimation">@null</item>
         <item name="wallpaperOpenExitAnimation">@null</item>
-        <item name="wallpaperCloseEnterAnimation">null</item>
+        <item name="wallpaperCloseEnterAnimation">@null</item>
         <item name="wallpaperCloseExitAnimation">@null</item>
         <item name="wallpaperIntraOpenEnterAnimation">@null</item>
         <item name="wallpaperIntraOpenExitAnimation">@null</item>
