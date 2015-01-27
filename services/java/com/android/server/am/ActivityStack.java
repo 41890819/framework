@@ -130,7 +130,7 @@ final class ActivityStack {
     
     // Set to false to disable the preview that is shown while a new activity
     // is being started.
-    static final boolean SHOW_APP_STARTING_PREVIEW = true;
+    static final boolean SHOW_APP_STARTING_PREVIEW = false;
     
     enum ActivityState {
         INITIALIZING,
