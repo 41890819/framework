@@ -1011,11 +1011,11 @@ class ServerThread extends Thread {
     }
 
     static final void startSystemUi(Context context) {
-        Intent intent = new Intent();
-        intent.setComponent(new ComponentName("com.android.systemui",
-                    "com.android.systemui.SystemUIService"));
-        //Slog.d(TAG, "Starting service: " + intent);
-        context.startServiceAsUser(intent, UserHandle.OWNER);
+        // Intent intent = new Intent();
+        // intent.setComponent(new ComponentName("com.android.systemui",
+        //             "com.android.systemui.SystemUIService"));
+        // //Slog.d(TAG, "Starting service: " + intent);
+        // context.startServiceAsUser(intent, UserHandle.OWNER);
 
         Intent msgintent = new Intent();
         msgintent.setComponent(new ComponentName("com.android.msgcenter",
