@@ -3086,16 +3086,18 @@ package android.app {
     field public static final int THEME_TRADITIONAL = 1; // 0x1
   }
 
-  public class AlertDialog.AlertCoverView extends android.widget.ImageView implements android.widget.IngGestureDetectListener {
+  public class AlertDialog.AlertCoverView extends android.widget.ImageView implements android.widget.GestureDetector.OnGestureListener {
     ctor public AlertDialog.AlertCoverView(android.content.Context);
-    method public boolean onDoubleTap();
-    method public boolean onLongPress();
-    method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float);
-    method public boolean onSlideDown();
-    method public boolean onSlideLeft();
-    method public boolean onSlideRight();
-    method public boolean onSlideUp();
-    method public boolean onTap();
+    method public boolean onDoubleTap(boolean);
+    method public boolean onDown(boolean);
+    method public boolean onLongPress(boolean);
+    method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
+    method public boolean onSlideDown(boolean);
+    method public boolean onSlideLeft(boolean);
+    method public boolean onSlideRight(boolean);
+    method public boolean onSlideUp(boolean);
+    method public boolean onTap(boolean);
+    method public boolean onUp(android.view.MotionEvent, boolean);
   }
 
   public static class AlertDialog.Builder {
@@ -30198,22 +30200,6 @@ package android.widget {
     enum_constant public static final android.widget.ImageView.ScaleType FIT_START;
     enum_constant public static final android.widget.ImageView.ScaleType FIT_XY;
     enum_constant public static final android.widget.ImageView.ScaleType MATRIX;
-  }
-
-  public abstract interface IngGestureDetectListener {
-    method public abstract boolean onDoubleTap();
-    method public abstract boolean onLongPress();
-    method public abstract boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float);
-    method public abstract boolean onSlideDown();
-    method public abstract boolean onSlideLeft();
-    method public abstract boolean onSlideRight();
-    method public abstract boolean onSlideUp();
-    method public abstract boolean onTap();
-  }
-
-  public class IngGestureDetector {
-    ctor public IngGestureDetector(android.content.Context, android.widget.IngGestureDetectListener);
-    method public boolean onTouchEvent(android.view.MotionEvent);
   }
 
   public class LinearLayout extends android.view.ViewGroup {

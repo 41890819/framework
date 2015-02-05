@@ -27,6 +27,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import com.android.internal.R;
@@ -152,8 +153,8 @@ public class GpsNetInitiatedHandler {
 
             // if mPopupImmediately == FALSE and needVerify == TRUE, a dialog will be opened
             // when the user opens the notification message
-
-            setNiNotification(notif);
+	    if("true".equals(SystemProperties.get("ro.notification.enable")))
+		setNiNotification(notif);
         }
 
         // ACCEPT cases: 1. Notify, no verify; 2. no notify, no verify; 3. privacy override.

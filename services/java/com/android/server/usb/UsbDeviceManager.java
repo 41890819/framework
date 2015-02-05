@@ -457,7 +457,7 @@ public class UsbDeviceManager {
                 // switching to default function
                 setEnabledFunctions(mDefaultFunctions, true);
 		Slog.i(TAG,mNotificationEnable+ "notificationEnable----setAdbEnable");
-		if(!mNotificationEnable){
+		if(mNotificationEnable){
 		    updateAdbNotification();
 		}
             }
@@ -606,7 +606,7 @@ public class UsbDeviceManager {
                     mConnected = (msg.arg1 == 1);
                     mConfigured = (msg.arg2 == 1);
 		    Slog.i(TAG,mNotificationEnable+"notificationEnable----handleMessage--what=MSG_UPDATE_STATE");
-		    if(!mNotificationEnable){
+		    if(mNotificationEnable){
 			updateUsbNotification();
 			updateAdbNotification();
 		    }
@@ -635,7 +635,7 @@ public class UsbDeviceManager {
                     break;
                 case MSG_SYSTEM_READY:
 		    Slog.i(TAG,mNotificationEnable+"notificationEnable----handleMessage--what=MSG_SYSTEM_READY");
-		    if(!mNotificationEnable){
+		    if(mNotificationEnable){
 			updateUsbNotification();
 			updateAdbNotification();
 		    }
