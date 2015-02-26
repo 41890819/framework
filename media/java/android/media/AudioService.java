@@ -71,7 +71,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
-import android.view.VolumePanel;
+import android.view.IngenicVolumePanel;
 import android.view.WindowManager;
 
 import com.android.internal.telephony.ITelephony;
@@ -122,7 +122,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
     private boolean mVoiceCapable;
 
     /** The UI */
-    private VolumePanel mVolumePanel;
+    private IngenicVolumePanel mVolumePanel;
 
     // sendMsg() flags
     /** If the msg is already queued, replace it with this one. */
@@ -478,7 +478,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         sSoundEffectVolumeDb = context.getResources().getInteger(
                 com.android.internal.R.integer.config_soundEffectVolumeDb);
 
-        mVolumePanel = new VolumePanel(context, this);
+        mVolumePanel = new IngenicVolumePanel(context, this);
         mMode = AudioSystem.MODE_NORMAL;
         mForcedUseForComm = AudioSystem.FORCE_NONE;
 

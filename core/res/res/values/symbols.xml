@@ -184,6 +184,7 @@
   <java-symbol type="id" name="up" />
   <java-symbol type="id" name="value" />
   <java-symbol type="id" name="visible_panel" />
+  <java-symbol type="id" name="textView_group"/>
   <java-symbol type="id" name="websearch" />
   <java-symbol type="id" name="wifi_p2p_wps_pin" />
   <java-symbol type="id" name="year" />
@@ -929,6 +930,12 @@
   <java-symbol type="array" name="config_cdma_dun_supported_types" />
   <java-symbol type="array" name="config_disabledUntilUsedPreinstalledImes" />
 
+
+  <java-symbol type="drawable" name="volume_background"/>
+  <java-symbol type="drawable" name="volume_background_checked"/>
+  <java-symbol type="drawable" name="set_volume"/>
+  <java-symbol type="drawable" name="volume_mute"/>
+
   <java-symbol type="drawable" name="default_wallpaper" />
   <java-symbol type="drawable" name="indicator_input_error" />
   <java-symbol type="drawable" name="overscroll_edge" />
@@ -1122,6 +1129,7 @@
   <java-symbol type="layout" name="time_picker_dialog" />
   <java-symbol type="layout" name="transient_notification" />
   <java-symbol type="layout" name="volume_adjust" />
+  <java-symbol type="layout" name="glass_volume_adjust" />
   <java-symbol type="layout" name="volume_adjust_item" />
   <java-symbol type="layout" name="web_text_view_dropdown" />
   <java-symbol type="layout" name="webview_find" />
@@ -1305,6 +1313,7 @@
   <java-symbol type="drawable" name="menu_background" />
   <java-symbol type="drawable" name="stat_sys_secure" />
   <java-symbol type="drawable" name="kg_widget_bg_padded" />
+  <java-symbol type="id" name="set_volume_icon"/>
   <java-symbol type="id" name="action_mode_bar_stub" />
   <java-symbol type="id" name="alarm_status" />
   <java-symbol type="id" name="button0" />
