@@ -192,7 +192,7 @@ public class KeyguardViewMediator {
     /**
      * External apps (like the phone app) can tell us to disable the keygaurd.
      */
-    private boolean mExternallyEnabled = false;
+    private boolean mExternallyEnabled = true;
 
     /**
      * Remember if an external call to {@link #setKeyguardEnabled} with value
@@ -909,7 +909,7 @@ public class KeyguardViewMediator {
         }
 
         if (DEBUG) Log.d(TAG, "doKeyguard: showing the lock screen");
-        showLocked(options);
+	  //    showLocked(options);
     }
 
     /**
