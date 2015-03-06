@@ -186,7 +186,7 @@ public class PagedView extends ViewGroup {
 	protected boolean mIsDownWhenFlaying = false;
 	private boolean mCanHorizontalOverScroll = true;
 	private boolean mCanVerticalOverScroll = true;
-
+        private boolean mCanLeftOrRightSliding=true;  
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
 
@@ -900,7 +900,7 @@ public class PagedView extends ViewGroup {
 	    final int action = event.getAction();
 	    final float x = event.getX();
 	    final float y = event.getY();
-
+	    if(mCanLeftOrRightSliding)
 	    switch (action & MotionEvent.ACTION_MASK) {
 	    case MotionEvent.ACTION_DOWN:
 		mLastMotionX = x;
@@ -1257,14 +1257,14 @@ public class PagedView extends ViewGroup {
 
 		@Override
 	        public boolean onSlideLeft(boolean fromPhone){
-		    if (fromPhone)
+		    if (fromPhone && mCanLeftOrRightSliding)
 			scrollRight();
 		    return true;
 		}
 
 		@Override
 	        public boolean onSlideRight(boolean fromPhone){
-		    if (fromPhone)
+		    if (fromPhone && mCanLeftOrRightSliding)
 			scrollLeft();
 		    return true;
 		}
@@ -1899,6 +1899,15 @@ public class PagedView extends ViewGroup {
 			}
 		}
 	}
+    /**
+     * Set whether page can right or left over sliding. Default true.
+     * @param enable
+     * 	true: page will continue to sliding right or left.
+     * 	false: page can not sliding right or left  over .
+     */
+        public void setCanLeftOrRightSliding(boolean enable){
+	    mCanLeftOrRightSliding=enable;
+        }
 
         /**
 	 * get the current page.
