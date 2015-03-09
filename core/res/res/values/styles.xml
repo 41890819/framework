@@ -1515,8 +1515,8 @@ please see styles_device_defaults.xml.
     </style>
 
     <style name="TextAppearance.Holo.Light.DialogWindowTitle">
-        <item name="android:textSize">22sp</item>
-        <item name="android:textColor">@android:color/holo_blue_light</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="TextAppearance.Holo.Light.CalendarViewWeekDayView" parent="TextAppearance.Small.CalendarViewWeekDayView">
@@ -2361,16 +2361,16 @@ please see styles_device_defaults.xml.
     <!-- Dialog styles -->
 
     <style name="AlertDialog.Holo" parent="AlertDialog">
-        <item name="fullDark">@android:drawable/dialog_full_holo_dark</item>
-        <item name="topDark">@android:drawable/dialog_top_holo_dark</item>
-        <item name="centerDark">@android:drawable/dialog_middle_holo_dark</item>
-        <item name="bottomDark">@android:drawable/dialog_bottom_holo_dark</item>
-        <item name="fullBright">@android:drawable/dialog_full_holo_dark</item>
-        <item name="topBright">@android:drawable/dialog_top_holo_dark</item>
-        <item name="centerBright">@android:drawable/dialog_middle_holo_dark</item>
-        <item name="bottomBright">@android:drawable/dialog_bottom_holo_dark</item>
-        <item name="bottomMedium">@android:drawable/dialog_bottom_holo_dark</item>
-        <item name="centerMedium">@android:drawable/dialog_middle_holo_dark</item>
+        <item name="fullDark">@android:drawable/alert_dialog_background</item>
+        <item name="topDark">@android:drawable/alert_dialog_background</item>
+        <item name="centerDark">@android:drawable/alert_dialog_background</item>
+        <item name="bottomDark">@android:drawable/alert_dialog_background</item>
+        <item name="fullBright">@android:drawable/alert_dialog_background</item>
+        <item name="topBright">@android:drawable/alert_dialog_background</item>
+        <item name="centerBright">@android:drawable/alert_dialog_background</item>
+        <item name="bottomBright">@android:drawable/alert_dialog_background</item>
+        <item name="bottomMedium">@android:drawable/alert_dialog_background</item>
+        <item name="centerMedium">@android:drawable/alert_dialog_background</item>
         <item name="layout">@android:layout/alert_dialog_holo</item>
         <item name="listLayout">@android:layout/select_dialog_holo</item>
         <item name="progressLayout">@android:layout/progress_dialog_holo</item>
