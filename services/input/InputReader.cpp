@@ -3050,17 +3050,18 @@ void CursorInputMapper::sync(nsecs_t when) {
     int32_t lastButtonState = mButtonState;
     int32_t currentButtonState = mCursorMotionAccumulator.getRelativeZ();
     mButtonState = currentButtonState;
-// #if defined(INPUT_ZET6231)
-//     float deltaX = mCursorMotionAccumulator.getRelativeX()*2;
-//     float deltaY = mCursorMotionAccumulator.getRelativeY()*2;
+
+    int deltaX = mCursorMotionAccumulator.getRelativeX();;
+    int deltaY = mCursorMotionAccumulator.getRelativeY();;
 #if defined(INPUT_CP2615)
-    int deltaX = mCursorMotionAccumulator.getRelativeX()*3;
-    int deltaY = mCursorMotionAccumulator.getRelativeY()*3;
-#else
-    int deltaX = mCursorMotionAccumulator.getRelativeX();
-    int deltaY = mCursorMotionAccumulator.getRelativeY();
-    //float deltaX = mCursorMotionAccumulator.getRelativeX();
-    //float deltaY = mCursorMotionAccumulator.getRelativeY();
+    deltaX *= 3;
+    deltaY *= 3;
+#endif
+
+#if defined(INPUT_ITE7236)
+    if (currentButtonState != 17){
+      deltaX *= 5;
+    }
     ALOGE("x : %d  y : %d  z : %d", deltaX, deltaY, currentButtonState);
 #endif
     bool moved = deltaX != 0 || deltaY != 0;

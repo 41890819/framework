@@ -1957,8 +1957,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	 * == 1 && mPagedViewList.size() >= FAST_SNAP_SCREENS
 	 */
 	public void setFlyFlip(boolean enable) {
-		// mCanFlyFlip = mFlyFlipByUser = enable;
-		// detectFlyAndCycle();
+	    mCanFlyFlip = mFlyFlipByUser = enable;
+	    detectFlyAndCycle();
 	}
 
 	/**
