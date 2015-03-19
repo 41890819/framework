@@ -1206,8 +1206,10 @@ package android {
 
   public static final class R.color {
     ctor public R.color();
+    field public static final int background = 17170460; // 0x106001c
     field public static final int background_dark = 17170446; // 0x106000e
     field public static final int background_light = 17170447; // 0x106000f
+    field public static final int background_two = 17170461; // 0x106001d
     field public static final int black = 17170444; // 0x106000c
     field public static final int darker_gray = 17170432; // 0x1060000
     field public static final int holo_blue_bright = 17170459; // 0x106001b
@@ -1231,6 +1233,7 @@ package android {
     field public static final int tab_indicator_text = 17170441; // 0x1060009
     field public static final int tertiary_text_dark = 17170448; // 0x1060010
     field public static final int tertiary_text_light = 17170449; // 0x1060011
+    field public static final int text = 17170462; // 0x106001e
     field public static final int transparent = 17170445; // 0x106000d
     field public static final int white = 17170443; // 0x106000b
     field public static final int widget_edittext_dark = 17170442; // 0x106000a
@@ -30489,6 +30492,7 @@ package android.widget {
     method public void scrollLeft();
     method public void scrollRight();
     method public void setCanHorizontalOverScroll(boolean);
+    method public void setCanLeftOrRightSliding(boolean);
     method public void setCanVerticalOverScroll(boolean);
     method public void setCircleFlip(boolean);
     method public void setCurrentScreen(int);
