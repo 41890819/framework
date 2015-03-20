@@ -838,10 +838,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mWindowManager = windowManager;
         mWindowManagerFuncs = windowManagerFuncs;
         mHeadless = "1".equals(SystemProperties.get("ro.config.headless", "0"));
-        if (!mHeadless) {
-            // don't create KeyguardViewMediator if headless
-            mKeyguardMediator = new KeyguardViewMediator(context, null);
-        }
+	// // Screen lock mechanism not needed in glass, remove it.
+        // if (!mHeadless) {
+        //     // don't create KeyguardViewMediator if headless
+        //     mKeyguardMediator = new KeyguardViewMediator(context, null);
+        // }
         mHandler = new PolicyHandler();
         mOrientationListener = new MyOrientationListener(mContext, mHandler);
         try {
