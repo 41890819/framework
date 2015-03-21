@@ -3060,7 +3060,7 @@ void CursorInputMapper::sync(nsecs_t when) {
 
 #if defined(INPUT_ITE7236)
     if (currentButtonState != 17){
-      deltaX *= 5;
+      deltaX *= 3;
     }
     ALOGE("x : %d  y : %d  z : %d", deltaX, deltaY, currentButtonState);
 #endif
