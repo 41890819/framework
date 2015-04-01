@@ -160,6 +160,7 @@ public class MenuView extends FrameLayout implements OnItemClickListener,
 	@Override
 	public void onDownSlidingBack(AdapterPagedView pagedView) {
 		// TODO Auto-generated method stub
+	    if(mOnBackListener != null)
 		mOnBackListener.onBack(mOnBackView);
 	}
 
@@ -167,6 +168,7 @@ public class MenuView extends FrameLayout implements OnItemClickListener,
 	public void onItemClick(AdapterPagedView pagedView, View view, int position) {
 		// TODO Auto-generated method stubd
 		if (DEBUG)Log.d(TAG, "onItemClick");
+		if(mOnClickListener != null)
 		mOnClickListener.onClick(mOnClickView, position);
 
 	}
