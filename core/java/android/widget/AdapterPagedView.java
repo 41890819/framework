@@ -547,6 +547,21 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 		mPageWidth = (widthSize - mPageMargin * (mPageCountInScreen - 1))
 				/ mPageCountInScreen;
+
+		if (mDataChangedForMeasure) {
+			resetScreenQueue(mPageWidth);
+			detectFlyAndCycle();
+			if (mAdapter.getCount() == 1)
+				hideScrollingIndicator(true);
+			Log.e(TAG,
+					"mCurScreen=" + mCurScreen + " count="
+							+ mAdapter.getCount());
+			if (mCurScreen >= mAdapter.getCount())
+				mCurScreen = mAdapter.getCount() - 1;
+			scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
+					- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
+			makeAndAddVisibleViews();
+		}
 		// Log.e("sn","uuu "+mPageWidth+" "+heightSize);
 		/*
 		 * Allow the height to be set as WRAP_CONTENT. This allows the
