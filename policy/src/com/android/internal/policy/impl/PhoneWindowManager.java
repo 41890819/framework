@@ -41,6 +41,7 @@ import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.media.AudioManager;
+import android.provider.MediaStore;
 import android.media.IAudioService;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -443,6 +444,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // What we do when the user double-taps on home
     private int mDoubleTapOnHomeBehavior;
 
+    // What we do when the user long presses on camera
+    private boolean mIsLongPressOnCameraBehavior = false;
     // Screenshot trigger states
     // Time to volume and power must be pressed within this interval of each other.
     private static final long SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS = 150;
@@ -472,7 +475,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_DISABLE_POINTER_LOCATION = 2;
     private static final int MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK = 3;
     private static final int MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4;
-
+    /*
+      mHandler's messages about CmeraKey;
+     */
+    private static final int MSG_ACTION_CAMERA = 5;
+    private static final int MSG_ACTION_VIDEO = 6;
+    private boolean mIsActionMoveOnCameraBehavior = false;
     private class PolicyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -489,6 +497,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 case MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK:
                     dispatchMediaKeyRepeatWithWakeLock((KeyEvent)msg.obj);
                     break;
+	        case MSG_ACTION_CAMERA:
+		    if(DEBUG)Log.d(TAG,"---------MSG_ACTION_CAMERA");
+		    Intent intentCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);	        
+		    intentCapture.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		    mContext.startActivity(intentCapture);
+		    break;
+	        case MSG_ACTION_VIDEO:
+		    if(DEBUG)Log.d(TAG,"---------MSG_ACTION_VIDEO");
+		    mIsLongPressOnCameraBehavior = true;
+		    Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+		    intentVideo.putExtra("from", "PhoneWindowManager");
+		    intentVideo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		    mContext.startActivity(intentVideo);
+		    break;
             }
         }
     }
@@ -2041,6 +2063,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     return -1;
                 }
             }
+        } else if (keyCode == KeyEvent.KEYCODE_CAMERA){
+	    if(down && mIsActionMoveOnCameraBehavior == false){
+		mIsActionMoveOnCameraBehavior = true;
+		mIsLongPressOnCameraBehavior = false;
+		Message video = mHandler.obtainMessage();
+		video.what = MSG_ACTION_VIDEO;
+		mHandler.sendMessageDelayed(video,ViewConfiguration.getGlobalActionKeyTimeout());
+	    }
+	    if(event.getAction() == KeyEvent.ACTION_UP){
+		mIsActionMoveOnCameraBehavior = false;
+		if(mIsLongPressOnCameraBehavior == false){
+		    Message camera = mHandler.obtainMessage();
+		    camera.what = MSG_ACTION_CAMERA;
+		    mHandler.sendMessage(camera);
+		    mHandler.removeMessages(MSG_ACTION_VIDEO);
+		}
+	    }
+	    return -1;
         } else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
             if (down) {
                 if (repeatCount == 0) {
