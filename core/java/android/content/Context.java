@@ -2012,6 +2012,8 @@ public abstract class Context {
 
     public static final String STATUS_MSGCENTER_SERVICE = "msgcenter";
 
+    public static final String STATUS_VOICE_RECOG_SERVICE = "voicerecog";
+
     /**
      * Use with {@link #getSystemService} to retrieve a {@link
      * android.net.ConnectivityManager} for handling management of

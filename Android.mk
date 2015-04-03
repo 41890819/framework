@@ -193,6 +193,9 @@ LOCAL_SRC_FILES += \
 	core/java/com/android/internal/statusbar/IStatusBarService.aidl \
 	core/java/com/android/internal/msgcenter/IMessageCenter.aidl \
 	core/java/com/android/internal/msgcenter/IMessageCenterService.aidl \
+	core/java/com/android/internal/voicerecognizer/IVoiceRecognizer.aidl \
+	core/java/com/android/internal/voicerecognizer/IVoiceRecognizerListener.aidl \
+	core/java/com/android/internal/voicerecognizer/IVoiceRecognizerManager.aidl \
 	core/java/com/android/internal/textservice/ISpellCheckerService.aidl \
 	core/java/com/android/internal/textservice/ISpellCheckerSession.aidl \
 	core/java/com/android/internal/textservice/ISpellCheckerSessionListener.aidl \

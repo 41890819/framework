@@ -357,6 +357,7 @@ class ServerThread extends Thread {
         TextServicesManagerService tsms = null;
         LockSettingsService lockSettings = null;
         DreamManagerService dreamy = null;
+        VoiceRecognizerManagerService voiceRecognizer = null;
 
         // Bring up services needed for UI.
         if (factoryTest != SystemServer.FACTORY_TEST_LOW_LEVEL) {
@@ -442,6 +443,14 @@ class ServerThread extends Thread {
                 ServiceManager.addService(Context.STATUS_MSGCENTER_SERVICE, msgCenter);
             } catch (Throwable e) {
                 reportWtf("starting MessageCenterManagerService", e);
+            }
+
+            try {
+                Slog.i(TAG, "Voice Recognizer");
+                voiceRecognizer = new VoiceRecognizerManagerService();
+                ServiceManager.addService(Context.STATUS_VOICE_RECOG_SERVICE, voiceRecognizer);
+            } catch (Throwable e) {
+                reportWtf("starting VoiceRecognizerManagerService", e);
             }
 
             try {
