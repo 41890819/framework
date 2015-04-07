@@ -103,4 +103,18 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 			}
 		}
 	}
+
+	/**
+	 * 关闭语音识别
+	 */
+	@Override
+	public void closeRecognize() {
+		if (mVoiceRecognizer != null) {
+			try {
+				mVoiceRecognizer.close();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

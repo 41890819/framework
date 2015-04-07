@@ -9,4 +9,6 @@ interface IVoiceRecognizer {
     boolean trigger(in RecognizeClient client);
     boolean stop(in RecognizeClient client);
     boolean stopImmediate(in RecognizeClient client);
+
+    void close();
 }
