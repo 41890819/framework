@@ -30,7 +30,7 @@ public class GestureDetector {
     private boolean DEBUG = false;
     private static final int DOUBLE_TAP_SLOP = 100; //from ViewConfiguration
     private static final int MINIMUM_FLING_VELOCITY = 50;
-    private static final int TOUCH_SLOP = 13;
+    private static final int TOUCH_SLOP = 10;
     private static final int MAXIMUM_FLING_VELOCITY = 8000;
     //事件监听接口
     public interface OnGestureListener {
@@ -117,7 +117,7 @@ public class GestureDetector {
     private final Handler mHandler;
     private final OnGestureListener mListener;
     private boolean mStillDown;
-    private boolean mDeferConfirmSingleTap;
+    private boolean mDeferConfirmDoubleTap;
     private boolean mInLongPress;
     private boolean mUsedLongPress; //if app
     private boolean mAlwaysInTapRegion;
@@ -131,8 +131,8 @@ public class GestureDetector {
     private float mDownFocusX;
     private float mDownFocusY;
 	
-    private static final int MIN_QUICK_SLIDE_VELOCITY_X = 500;
-    private static final int MIN_QUICK_SLIDE_VELOCITY_Y = 600;
+    // private static final int MIN_QUICK_SLIDE_VELOCITY_X = 500;
+    // private static final int MIN_QUICK_SLIDE_VELOCITY_Y = 600;
     private static final int MIN_QUICK_SLIDE_DISTANCE_X = 20;
     private static final int MIN_QUICK_SLIDE_DISTANCE_Y = 20;
 		
@@ -160,14 +160,8 @@ public class GestureDetector {
                 break;
                 
             case TAP:
-                // If the user's finger is still down, do not count it as a tap             
-		if (!mStillDown) {
-		    Log.d(TAG,"onTap");
-		    mListener.onTap(false);
-		} else {
-		    Log.d(TAG,"mDeferConfirmSingleTap=true");
-		    mDeferConfirmSingleTap = true;
-		}               
+		if(DEBUG)Log.d(TAG,"MESSAGE ----------onTap");
+		mListener.onTap(false);              
                 break;
 
             default:
@@ -282,20 +276,19 @@ public class GestureDetector {
             break;
 
         case MotionEvent.ACTION_DOWN:
-		Log.d(TAG,"--ACTION_DOWN x="+ ev.getX()+" --y="+ev.getY());
+	    if(DEBUG)Log.d(TAG,"--ACTION_DOWN x="+ ev.getX()+" --y="+ev.getY());
 
-                boolean hadTapMessage = mHandler.hasMessages(TAP);
-                if (hadTapMessage) mHandler.removeMessages(TAP);
-                if ((mCurrentDownEvent != null) && (mPreviousUpEvent != null) && hadTapMessage &&
-                        isConsideredDoubleTap(mCurrentDownEvent, mPreviousUpEvent, ev)) {
-		    if (DEBUG)Log.d(TAG,"onDoubleTap");
-                    // Give a callback with the first tap of the double-tap
-                    handled |= mListener.onDoubleTap(false);
-                } else {
-                    // This is a first tap
-		    if (DEBUG)Log.d(TAG,"send TAP DOUBLE_TAP_TIMEOUT"+DOUBLE_TAP_TIMEOUT);
-                    mHandler.sendEmptyMessageDelayed(TAP, DOUBLE_TAP_TIMEOUT);
-                }
+	    boolean hadTapMessage = mHandler.hasMessages(TAP);
+	    if (hadTapMessage) mHandler.removeMessages(TAP);
+	    if ((mCurrentDownEvent != null) && (mPreviousUpEvent != null) && hadTapMessage &&
+		isConsideredDoubleTap(mCurrentDownEvent, mPreviousUpEvent, ev)) {
+		if (DEBUG)Log.d(TAG,"onDoubleTap");
+		// Give a callback with the first tap of the double-tap
+		handled |= mListener.onDoubleTap(false);
+		mDeferConfirmDoubleTap = true;
+	    } else {
+		mDeferConfirmDoubleTap = false;
+	    }
             
 
             mDownFocusX = mLastFocusX = focusX;
@@ -309,10 +302,9 @@ public class GestureDetector {
             mStillDown = true;
             mInLongPress = false;
             mUsedLongPress = false;
-            mDeferConfirmSingleTap = false;
             if (mIsLongpressEnabled) {
-	if (DEBUG)Log.d(TAG,"send long press...."+mCurrentDownEvent.getDownTime() +"  "+ LONGPRESS_TIMEOUT);
-	    mHandler.sendEmptyMessageAtTime(LONG_PRESS,mCurrentDownEvent.getDownTime() + LONGPRESS_TIMEOUT);
+		if (DEBUG)Log.d(TAG,"send long press...."+mCurrentDownEvent.getDownTime() +"  "+ LONGPRESS_TIMEOUT);
+		mHandler.sendEmptyMessageAtTime(LONG_PRESS,mCurrentDownEvent.getDownTime() + LONGPRESS_TIMEOUT);
 	    }
             handled |= mListener.onDown(false);
             break;
@@ -330,40 +322,40 @@ public class GestureDetector {
                 final int deltaX = (int) (focusX - mDownFocusX);
                 final int deltaY = (int) (focusY - mDownFocusY);
                 int distance = (deltaX * deltaX) + (deltaY * deltaY);
+		if(DEBUG)Log.d(TAG,"distance="+distance);
                 if (distance > mTouchSlopSquare ) {
-		    Log.d(TAG,"remove longpress..."+mTouchSlopSquare );
+		    if(DEBUG)Log.d(TAG,"remove longpress...mTouchSlopSquare="+mTouchSlopSquare+"  distance"+distance );
                     handled = mListener.onScroll(mCurrentDownEvent, ev, scrollX, scrollY,false);
                     mLastFocusX = focusX;
                     mLastFocusY = focusY;
 		    mHandler.removeMessages(LONG_PRESS);
                     mAlwaysInTapRegion = false;
-                    mHandler.removeMessages(TAP);
                   
                 }
                 if (distance > mDoubleTapTouchSlopSquare) {
                     mAlwaysInBiggerTapRegion = false;
                 }
-                } else if ((Math.abs(scrollX) >= 1) || (Math.abs(scrollY) >= 1)) {
-                  handled = mListener.onScroll(mCurrentDownEvent, ev, scrollX, scrollY,false);
-                  mLastFocusX = focusX;
-                  mLastFocusY = focusY;
- }
+	    } else if ((Math.abs(scrollX) >= 1) || (Math.abs(scrollY) >= 1)) {
+		handled = mListener.onScroll(mCurrentDownEvent, ev, scrollX, scrollY,false);
+		mLastFocusX = focusX;
+		mLastFocusY = focusY;
+	    }
             break;
 
         case MotionEvent.ACTION_UP:
-	    Log.d(TAG,"ACTION_UP");
+	    if(DEBUG)Log.d(TAG,"----ACTION_UP x="+ ev.getX()+" --y="+ev.getY());
             mStillDown = false;
             MotionEvent currentUpEvent = MotionEvent.obtain(ev);
 	    mListener.onUp(ev,false);
 	    if (mInLongPress) {
-                mHandler.removeMessages(TAP);
                 mInLongPress = false;
             } else if (mAlwaysInTapRegion) {
-		if (DEBUG)Log.d(TAG,"mAlwaysInTapRegion"+mAlwaysInTapRegion+"   mDeferConfirmSingleTap"+mDeferConfirmSingleTap);
-                if ( mDeferConfirmSingleTap ) {
-		    if (DEBUG)Log.d(TAG,"onTAP..");
-                    mListener.onTap(false);
-                }
+		if (DEBUG)Log.d(TAG,"   mDeferConfirmDoubleTap"+mDeferConfirmDoubleTap);
+                if (mDeferConfirmDoubleTap == false) {
+		    if (DEBUG)Log.d(TAG,"send TAP message ..");
+		    // This is a first tap
+                    mHandler.sendEmptyMessageDelayed(TAP, DOUBLE_TAP_TIMEOUT);
+		    }
             } else {
 
                 // A fling must travel the minimum tap distance
@@ -372,12 +364,17 @@ public class GestureDetector {
                 velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
                 final float velocityY = velocityTracker.getYVelocity(pointerId);
                 final float velocityX = velocityTracker.getXVelocity(pointerId);
+		if(DEBUG)Log.d(TAG,"(Math.abs(velocityY)"+(Math.abs(velocityY))+"  (Math.abs(velocityX)"+(Math.abs(velocityX)));
+            
                 if ((Math.abs(velocityY) > mMinimumFlingVelocity)
 		    || (Math.abs(velocityX) > mMinimumFlingVelocity)){
-		    Log.d(TAG,"mMinimumFlingVelocity"+mMinimumFlingVelocity);
+		    if(DEBUG)Log.d(TAG,"mMinimumFlingVelocity"+mMinimumFlingVelocity);
 		    onFling(mCurrentDownEvent,ev,velocityX,velocityY);
 		    //mListener.onScroll(mCurrentDownEvent, ev, velocityX,velocityY,false);
-                }
+                }else{
+		    Log.d(TAG,"-----------onTap");
+                    mListener.onTap(false);
+		}
             }
             if (mPreviousUpEvent != null) {
                 mPreviousUpEvent.recycle();
@@ -391,9 +388,8 @@ public class GestureDetector {
                 mVelocityTracker = null;
             }
 	    mUsedLongPress = false;
-            mDeferConfirmSingleTap = false;
 	   if (DEBUG) Log.d(TAG,"action up remove longpress...");
-	    mHandler.removeMessages(LONG_PRESS);
+	   if(mHandler.hasMessages(LONG_PRESS))mHandler.removeMessages(LONG_PRESS);
             break;
 
         case MotionEvent.ACTION_CANCEL:
@@ -412,7 +408,7 @@ public class GestureDetector {
         mStillDown = false;
         mAlwaysInTapRegion = false;
         mAlwaysInBiggerTapRegion = false;
-        mDeferConfirmSingleTap = false;
+        mDeferConfirmDoubleTap = false;
         if (mInLongPress) {
             mInLongPress = false;
         }
@@ -423,7 +419,7 @@ public class GestureDetector {
         mHandler.removeMessages(TAP);
         mAlwaysInTapRegion = false;
         mAlwaysInBiggerTapRegion = false;
-        mDeferConfirmSingleTap = false;
+        mDeferConfirmDoubleTap = false;
         if (mInLongPress) {
             mInLongPress = false;
         }
@@ -446,8 +442,6 @@ public class GestureDetector {
 
     private void dispatchLongPress() {
 	if (DEBUG)Log.d(TAG,"--dispatchLongPress"+mTouchSlopSquare);
-        mHandler.removeMessages(TAP);
-        mDeferConfirmSingleTap = false;
         mInLongPress = true;
 	if(mListener.onLongPress(false) == true){
 	    mUsedLongPress = true;
@@ -457,27 +451,31 @@ public class GestureDetector {
 	//计算滑动事件
 	if (DEBUG)Log.d(TAG,"onFling"+"  mCurrentDownEvent.getY()="+mCurrentDownEvent.getY()+" ev.getY()="+ev.getY()+"   mCurrentDownEvent.getX()="+mCurrentDownEvent.getX()+" ev.getX()="+ev.getX());
 	if (DEBUG)Log.d(TAG,"onFling"+"  velocityX="+velocityX+"  velocityY= "+velocityY);
-	if( Math.abs(mCurrentDownEvent.getY() - ev.getY()) <  Math.abs(mCurrentDownEvent.getX() - ev.getX())){
-	   if (DEBUG) Log.d("test","left or right");
-	    if((mCurrentDownEvent.getX() - ev.getX()) > MIN_QUICK_SLIDE_DISTANCE_X &&
-	       Math.abs(velocityX) > MIN_QUICK_SLIDE_VELOCITY_X) {
+	if(DEBUG)Log.d(TAG,"distance Y"+(Math.abs(mCurrentDownEvent.getY() - ev.getY())));
+	if(DEBUG)Log.d(TAG,"distances X"+(Math.abs(mCurrentDownEvent.getX() - ev.getX())));
+	if(Math.abs(mCurrentDownEvent.getY() - ev.getY()) <  Math.abs(mCurrentDownEvent.getX() - ev.getX())){
+	    if((mCurrentDownEvent.getX() - ev.getX()) > MIN_QUICK_SLIDE_DISTANCE_X) {
 		if (DEBUG)Log.d(TAG,"slide left");
 		mListener.onSlideLeft(false);
 
-	    }else if((ev.getX() - mCurrentDownEvent.getX()) > MIN_QUICK_SLIDE_DISTANCE_X &&
-		     Math.abs(velocityX) > MIN_QUICK_SLIDE_VELOCITY_X) {
+	    }else if((ev.getX() - mCurrentDownEvent.getX()) > MIN_QUICK_SLIDE_DISTANCE_X) {
 		if (DEBUG)Log.d(TAG,"slide right");
 		mListener.onSlideRight(false);
+	    }else{
+		if(DEBUG)Log.d(TAG,"--ontap");
+		mListener.onTap(false);
 	    }
-	}else if ((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y &&
-		  Math.abs(velocityY) > MIN_QUICK_SLIDE_VELOCITY_Y){          
+	}else if ((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
 	    if (DEBUG)Log.d(TAG,"slide up");
 	    //mListener.onSlideUp(false);
 
-	}else if((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y &&
-		 Math.abs(velocityY) > MIN_QUICK_SLIDE_VELOCITY_Y){
+	}else if((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
 	    if (DEBUG)Log.d(TAG,"slide down");
 	    mListener.onSlideDown(false);
+	}else{
+	    Log.d(TAG,"onfling---------ontap");
+	    mListener.onTap(false);
+
 	}
     }
     private boolean handleSCGestureEvent(MotionEvent event) {
