@@ -371,7 +371,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						child = mAdapter.getView(childSi.childId,
 								mRemovedViewQueue.poll(), this);
 						int heightMode = mHeightMeasureSpec == Integer.MIN_VALUE ? 
-						    MeasureSpec.EXACTLY : MeasureSpec.getMode(mHeightMeasureSpec);
+						  MeasureSpec.EXACTLY : MeasureSpec.getMode(mHeightMeasureSpec);
+						int heightSize = mHeightMeasureSpec == Integer.MIN_VALUE ? 
+						  getHeight() : MeasureSpec.getSize(mHeightMeasureSpec);
 						LayoutParams params = child.getLayoutParams();
 						// if(params == null) {
 						if (heightMode == MeasureSpec.EXACTLY)
@@ -382,13 +384,14 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						if (heightMode == MeasureSpec.EXACTLY)
 						    child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
 								MeasureSpec.EXACTLY), MeasureSpec
-								.makeMeasureSpec(getHeight(),
+								.makeMeasureSpec(heightSize,
 										MeasureSpec.EXACTLY));
 						else
 						    child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
 								MeasureSpec.EXACTLY), 
 							        getChildMeasureSpec(mHeightMeasureSpec, 
 								mPaddingTop + mPaddingBottom, params.height));
+						// Log.e(TAG,i+" cw:"+child.getMeasuredWidth()+" ch:"+child.getMeasuredHeight()+" w:"+getMeasuredWidth()+" h:"+getMeasuredHeight()+" "+heightSize+" "+mHeightMeasureSpec);
 						child.layout(left, 0, left + child.getMeasuredWidth(),
 								child.getMeasuredHeight());
 
@@ -403,7 +406,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							child.setX(childSi.left);
 						}
 
-						// Log.e(TAG,i+" x:"+child.getX()+" left:"+childSi.left+" w:"+child.getWidth()+" cX:"+getScrollX());
+						// Log.e(TAG,i+" x:"+child.getX()+" left:"+childSi.left+" w:"+child.getWidth()+" h:"+child.getHeight()+" cX:"+getScrollX());
 						childSi.childView = child;
 						left += child.getMeasuredWidth()
 								+ child.getPaddingRight() + mPageMargin;
@@ -548,20 +551,6 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mPageWidth = (widthSize - mPageMargin * (mPageCountInScreen - 1))
 				/ mPageCountInScreen;
 
-		if (mDataChangedForMeasure) {
-			resetScreenQueue(mPageWidth);
-			detectFlyAndCycle();
-			if (mAdapter.getCount() == 1)
-				hideScrollingIndicator(true);
-			Log.e(TAG,
-					"mCurScreen=" + mCurScreen + " count="
-							+ mAdapter.getCount());
-			if (mCurScreen >= mAdapter.getCount())
-				mCurScreen = mAdapter.getCount() - 1;
-			scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
-					- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
-			makeAndAddVisibleViews();
-		}
 		// Log.e("sn","uuu "+mPageWidth+" "+heightSize);
 		/*
 		 * Allow the height to be set as WRAP_CONTENT. This allows the
@@ -571,6 +560,24 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		 * the same width.
 		 */
 		int maxChildHeight = 0;
+
+		if ((heightMode == MeasureSpec.UNSPECIFIED
+		     || heightMode == MeasureSpec.AT_MOST)
+		    && getChildCount() <= 0) {
+			Log.d(TAG, "get measured child height");
+			ScreenInfo childSi = mScreenQueue.getChildById(mCurScreen);
+			View child = null;
+			if (childSi != null)
+				child = childSi.childView;
+			if (child == null) {
+				child = mAdapter.getView(mCurScreen,
+							 mRemovedViewQueue.poll(), this);
+				mRemovedViewQueue.offer(child);
+			}
+			measureScrapChild(child, heightMeasureSpec);
+
+			maxChildHeight = child.getMeasuredHeight();
+		}
 
 		final int verticalPadding = getPaddingTop() + getPaddingBottom();
 		final int horizontalPadding = getPaddingLeft() + getPaddingRight();
@@ -638,6 +645,25 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		} else {
 			mMaxScrollX = 0;
 		}
+	}
+
+	private void measureScrapChild(View child, int heightMeasureSpec) {
+		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+		LayoutParams params = child.getLayoutParams();
+		if (heightMode == MeasureSpec.EXACTLY)
+			params = new LayoutParams(LayoutParams.MATCH_PARENT,
+						  LayoutParams.MATCH_PARENT);
+
+		if (heightMode == MeasureSpec.EXACTLY)
+			child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
+								  MeasureSpec.EXACTLY), MeasureSpec
+				      .makeMeasureSpec(getHeight(),
+						       MeasureSpec.EXACTLY));
+		else
+			child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
+								  MeasureSpec.EXACTLY), 
+				      getChildMeasureSpec(mHeightMeasureSpec, 
+							  mPaddingTop + mPaddingBottom, params.height));
 	}
 
 	protected void snapFast(int whichScreen) {
