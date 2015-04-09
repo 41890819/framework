@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.view.MotionEvent;
+import android.view.KeyEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -189,6 +190,7 @@ public class PagedView extends ViewGroup {
         private boolean mCanLeftOrRightSliding=true;  
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
+        private MySimpleGesture mMySimpleGesture;
 
 	public PagedView(Context context) {
 	        this(context, null);
@@ -201,6 +203,11 @@ public class PagedView extends ViewGroup {
 	public PagedView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initializeView(context);
+
+		  //for get key event
+		this.setFocusable(true);
+		this.setFocusableInTouchMode(true);
+		this.requestFocus();
 	}
 
 	private void initializeView(Context context) {
@@ -209,7 +216,8 @@ public class PagedView extends ViewGroup {
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		mPagingTouchSlop = ViewConfiguration.get(getContext())
 				.getScaledPagingTouchSlop();
-		mGestureDetector = new GestureDetector(context, new MySimpleGesture());
+		mMySimpleGesture = new MySimpleGesture();
+		mGestureDetector = new GestureDetector(context, mMySimpleGesture);
 	}
 
 	@Override
@@ -2007,4 +2015,30 @@ public class PagedView extends ViewGroup {
 	public void setOnPageSelectedListener(OnPageSelectedListener listener) {
 		mOnPageSelectedListener = listener;
 	}
+
+    @Override
+	public boolean dispatchKeyEvent(KeyEvent event){
+	Log.e(TAG, "------dispatchKeyEvent -event action="+event.getAction()+" --keyCode="+event.getKeyCode()
+	      +"state = " );
+	if (event.getAction() == KeyEvent.ACTION_DOWN) {
+	    switch (event.getKeyCode()) {
+	    case KeyEvent.KEYCODE_DPAD_LEFT:
+		mMySimpleGesture.onSlideLeft(true);
+		break;
+	    case KeyEvent.KEYCODE_DPAD_RIGHT:
+		mMySimpleGesture.onSlideRight(true);
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_UP:
+		mMySimpleGesture.onSlideUp(true);
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_DOWN:
+		mMySimpleGesture.onSlideDown(true);
+		return true;
+	    case KeyEvent.KEYCODE_DPAD_CENTER:
+		mMySimpleGesture.onTap(true);
+		return true;
+	    }	    
+	}
+	return super.dispatchKeyEvent(event);
+    }
 }
