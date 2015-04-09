@@ -346,7 +346,7 @@ public class GestureDetector {
 	    if(DEBUG)Log.d(TAG,"----ACTION_UP x="+ ev.getX()+" --y="+ev.getY());
             mStillDown = false;
             MotionEvent currentUpEvent = MotionEvent.obtain(ev);
-	    mListener.onUp(ev,false);
+	    handled = mListener.onUp(ev,false);
 	    if (mInLongPress) {
                 mInLongPress = false;
             } else if (mAlwaysInTapRegion) {
@@ -369,11 +369,11 @@ public class GestureDetector {
                 if ((Math.abs(velocityY) > mMinimumFlingVelocity)
 		    || (Math.abs(velocityX) > mMinimumFlingVelocity)){
 		    if(DEBUG)Log.d(TAG,"mMinimumFlingVelocity"+mMinimumFlingVelocity);
-		    onFling(mCurrentDownEvent,ev,velocityX,velocityY);
+		    handled = onFling(mCurrentDownEvent,ev,velocityX,velocityY);
 		    //mListener.onScroll(mCurrentDownEvent, ev, velocityX,velocityY,false);
                 }else{
 		    Log.d(TAG,"-----------onTap");
-                    mListener.onTap(false);
+                    handled = mListener.onTap(false);
 		}
             }
             if (mPreviousUpEvent != null) {
@@ -447,7 +447,7 @@ public class GestureDetector {
 	    mUsedLongPress = true;
 	}
     }
-    private void onFling(MotionEvent mCurrentDownEvent, MotionEvent ev,float velocityX,float velocityY){
+    private boolean onFling(MotionEvent mCurrentDownEvent, MotionEvent ev,float velocityX,float velocityY){
 	//计算滑动事件
 	if (DEBUG)Log.d(TAG,"onFling"+"  mCurrentDownEvent.getY()="+mCurrentDownEvent.getY()+" ev.getY()="+ev.getY()+"   mCurrentDownEvent.getX()="+mCurrentDownEvent.getX()+" ev.getX()="+ev.getX());
 	if (DEBUG)Log.d(TAG,"onFling"+"  velocityX="+velocityX+"  velocityY= "+velocityY);
@@ -456,25 +456,25 @@ public class GestureDetector {
 	if(Math.abs(mCurrentDownEvent.getY() - ev.getY()) <  Math.abs(mCurrentDownEvent.getX() - ev.getX())){
 	    if((mCurrentDownEvent.getX() - ev.getX()) > MIN_QUICK_SLIDE_DISTANCE_X) {
 		if (DEBUG)Log.d(TAG,"slide left");
-		mListener.onSlideLeft(false);
+		return mListener.onSlideLeft(false);
 
 	    }else if((ev.getX() - mCurrentDownEvent.getX()) > MIN_QUICK_SLIDE_DISTANCE_X) {
 		if (DEBUG)Log.d(TAG,"slide right");
-		mListener.onSlideRight(false);
+		return mListener.onSlideRight(false);
 	    }else{
 		if(DEBUG)Log.d(TAG,"--ontap");
-		mListener.onTap(false);
+		 return mListener.onTap(false);
 	    }
 	}else if ((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
 	    if (DEBUG)Log.d(TAG,"slide up");
-	    //mListener.onSlideUp(false);
+	    return mListener.onSlideUp(false);
 
 	}else if((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
 	    if (DEBUG)Log.d(TAG,"slide down");
-	    mListener.onSlideDown(false);
+	    return mListener.onSlideDown(false);
 	}else{
 	    Log.d(TAG,"onfling---------ontap");
-	    mListener.onTap(false);
+	    return mListener.onTap(false);
 
 	}
     }
