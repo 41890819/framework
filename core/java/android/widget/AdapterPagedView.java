@@ -147,6 +147,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected int mMaxScrollX;
 	protected int mMinScrollX;
 
+	final boolean[] mIsScrap = new boolean[1];
+
 	protected float mLayoutScale = 1.0f;
 	/**
 	 * It true, use a different slop parameter (pagingTouchSlop = 2 * touchSlop)
@@ -279,6 +281,16 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		super.onVisibilityChanged(changedView, visibility);
 	}
 
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		clearAllViews();
+		if (mAdapter != null && mDataObserver != null) {
+			mAdapter.unregisterDataSetObserver(mDataObserver);
+			mDataObserver = null;
+		}
+	}
+	
 	protected void screenScrolled(int screenCenter) {
 		updateScrollingIndicator();
 	}
@@ -372,12 +384,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 								&& childSi.childId <= lastVisiblePagesID[1])
 							continue;
 						View convertView = childSi.childView;
-						if (convertView != null) {
-							removeViewInLayout(convertView);
-							mRemovedViewQueue.offer(convertView);
-						}
-						child = mAdapter.getView(childSi.childId,
-								mRemovedViewQueue.poll(), this);
+						child = obtainView(childSi.childId, convertView, mIsScrap);
+						// if (convertView != null) {
+						//	removeViewInLayout(convertView);
+						//	mRemovedViewQueue.offer(convertView);
+						// }
+						// child = mAdapter.getView(childSi.childId,
+						// 		mRemovedViewQueue.poll(), this);
 						int heightMode = mHeightMeasureSpec == Integer.MIN_VALUE ? 
 						  MeasureSpec.EXACTLY : MeasureSpec.getMode(mHeightMeasureSpec);
 						int heightSize = mHeightMeasureSpec == Integer.MIN_VALUE ? 
@@ -388,7 +401,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						    params = new LayoutParams(LayoutParams.MATCH_PARENT,
 								LayoutParams.MATCH_PARENT);
 						// }
-						addViewInLayout(child, -1, params, true);
+						if (mIsScrap[0]) {
+							attachViewToParent(child, -1, params);
+							child.jumpDrawablesToCurrentState();
+						} else
+							addViewInLayout(child, -1, params, true);
 						if (heightMode == MeasureSpec.EXACTLY)
 						    child.measure(MeasureSpec.makeMeasureSpec(mPageWidth,
 								MeasureSpec.EXACTLY), MeasureSpec
@@ -423,13 +440,46 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						if (child != null) {
 							mScreenQueue.getScreenAt(i).childView = null;
 							mRemovedViewQueue.offer(child);
-							removeViewInLayout(child);
+							detachViewFromParent(child);
+							// removeViewInLayout(child);
 							// Log.e(TAG,"remove child "+i+" mRemovedViewQueue.size="+mRemovedViewQueue.size());
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private View obtainWithConvertview(int id, View convertView, boolean[] isScrap) {
+		isScrap[0] = false;
+		View child = mAdapter.getView(id, convertView, this);
+		if (child != convertView)
+			mRemovedViewQueue.offer(convertView);  
+		else {
+			isScrap[0] = true;
+			child.dispatchFinishTemporaryDetach();
+		}
+		return child;
+	}
+
+	private View obtainView(int id, View convertView, boolean[] isScrap) {
+		isScrap[0] = false;
+		View child = null;
+		if (convertView != null) {
+			Log.e("sn","convertView != null --1");
+			detachViewFromParent(convertView);
+			child = obtainWithConvertview(id, convertView, isScrap);
+		} else {
+			Log.e("sn","convertView == null");	
+			convertView = mRemovedViewQueue.poll();
+			if (convertView != null) {
+				Log.e("sn","convertView != null --2");
+				child = obtainWithConvertview(id, convertView, isScrap);
+			} else
+				child = mAdapter.getView(id, null, this);
+		}
+
+		return child;
 	}
 
 	@Override
@@ -472,7 +522,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	}
 
 	private void resetScreenQueue(int pageWidth) {
-		removeAllViewsInLayout();
+		// removeAllViewsInLayout();
+		detachAllViewsFromParent();
 		mVisiblePagesRange[0] = mVisiblePagesRange[1] = -1;
 		mVisiblePagesIDRange[0] = mVisiblePagesIDRange[1] = -1;
 		for (int i = 0; i < mScreenQueue.getChildCount(); i++) {
@@ -1059,6 +1110,12 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mVisiblePagesRange[0] = mVisiblePagesRange[1] = -1;
 		mVisiblePagesIDRange[0] = mVisiblePagesIDRange[1] = -1;
 		removeAllViewsInLayout();
+		View v = mRemovedViewQueue.poll();
+		while (v != null) {
+			removeDetachedView(v, false);
+			v = mRemovedViewQueue.poll();
+		}
+		Log.d(TAG, "reset "+mRemovedViewQueue.size());
 		requestLayout();
 		mScreenQueue.clear();
 	}
@@ -1965,6 +2022,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	 */
 	public void clearAllViews() {
 		removeAllViewsInLayout();
+		View v = mRemovedViewQueue.poll();
+		while (v != null) {
+			removeDetachedView(v, false);
+			v = mRemovedViewQueue.poll();
+		}
 		mScreenQueue.clear();
 		mCanCycleFlip = false;
 		mCanFlyFlip = false;
