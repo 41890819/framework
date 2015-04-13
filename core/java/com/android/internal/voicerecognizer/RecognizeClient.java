@@ -18,6 +18,8 @@ public class RecognizeClient implements Parcelable {
 	private String mPackageName = null;
 	private String mAppName = null;
         private ArrayList<String> mCommands = new ArrayList<String>();
+        private ArrayList<String> mDisplayCommands = new ArrayList<String>();
+	private String mDisplayStr = null;
 	private IVoiceRecognizerListener mListener = null;
 	private int mIcon = -1;
 	private int mUserId = -1;
@@ -142,6 +144,33 @@ public class RecognizeClient implements Parcelable {
 		return mUseTimeout;
 	}
 	
+	public void setDisplayStr(String str) {
+		mDisplayStr = str;
+	}
+
+	public String getDisplayStr() {
+		return mDisplayStr;
+	}
+
+	public void setDisplayCommands(ArrayList<String> cmds) {
+	        mDisplayCommands = cmds;
+	}
+
+	public void addDisplayCommands(ArrayList<String> cmds) {
+		mDisplayCommands.addAll(cmds);
+	}
+
+	public void addDisplayCommand(String cmd) {
+		mDisplayCommands.add(cmd);
+	}
+
+	public final ArrayList<String> getDisplayCommands() {
+		if (mDisplayCommands == null || mDisplayCommands.size() <= 0)
+			return mCommands;
+		else
+			return mDisplayCommands;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -160,15 +189,22 @@ public class RecognizeClient implements Parcelable {
 		if (source.readInt() != 0)
 			mAppName = source.readString();
 		if (source.readInt() != 0) {
-		    mCommands = new ArrayList<String>();
+			mCommands = new ArrayList<String>();
 			source.readStringList(mCommands);
 		}
+		if (source.readInt() != 0) {
+			mDisplayCommands = new ArrayList<String>();
+			source.readStringList(mDisplayCommands);
+		}
+		if (source.readInt() != 0)
+			mDisplayStr = source.readString();
 	}
 
 	@Override
 	public String toString() {
 		return "[id:"+mId+" packageName:"+mPackageName
-			+" appName:"+mAppName+" commands:"+mCommands+"]";
+			+" appName:"+mAppName+" commands:"+mCommands
+			+" displayCmds:"+mDisplayCommands+" displayStr:"+mDisplayStr+"]";
 	}
 
 	@Override
@@ -193,6 +229,16 @@ public class RecognizeClient implements Parcelable {
 		if (mCommands != null) {
 			dest.writeInt(1);
 			dest.writeStringList(mCommands);
+		} else
+			dest.writeInt(0);
+		if (mDisplayCommands != null) {
+			dest.writeInt(1);
+			dest.writeStringList(mDisplayCommands);
+		} else
+			dest.writeInt(0);
+		if (mDisplayStr != null) {
+			dest.writeInt(1);
+			dest.writeString(mDisplayStr);
 		} else
 			dest.writeInt(0);
 	}
