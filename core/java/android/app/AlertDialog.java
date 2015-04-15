@@ -137,13 +137,6 @@ public class AlertDialog extends Dialog implements DialogInterface {
 			else
 				return false;
 		}
-	
-		@Override
-		public boolean onDoubleTap(boolean fromPhone) {
-			//Log.e(TAG, "onDoubleTap");
-			
-			return false;
-		}
 		@Override
 		    public boolean onDown(boolean fromPhone){
 		    return true;

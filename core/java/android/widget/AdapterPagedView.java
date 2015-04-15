@@ -20,6 +20,7 @@ import android.os.StrictMode;
 import android.os.RemoteException;
 import android.widget.GestureDetector;
 import android.widget.GestureDetector.SimpleOnGestureListener;
+import android.widget.GestureDetector.OnDoubleTapListener;
 import android.view.SoundEffectConstants;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -208,7 +209,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected int[] mVisiblePagesIDRange = new int[2];
 	private int mShouldToScreen = -1;
 	private int mHeightMeasureSpec = Integer.MIN_VALUE;
-        private MySimpleGesture mMySimpleGesture;	
+    private MySimpleGesture mMySimpleGesture;
+	private MyDoubleGesture mMyDoubleGesture;	
 	private DataSetObserver mDataObserver = new DataSetObserver() {
 
 		@Override
@@ -1505,20 +1507,23 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		return true;
 
 	}
+    private class MyDoubleGesture implements OnDoubleTapListener{
+	@Override
+	    public boolean onDoubleTap(boolean fromPhone) {
+	    Log.d(TAG,"-----onDoubleTap");
+	    if (fromPhone)
+		mIsLongPress = false;
+	    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST
+		    && mOnItemDoubleClickListener != null)
+		mOnItemDoubleClickListener.onItemDoubleClick(AdapterPagedView.this,
+							     mScreenQueue.getChildById(getCurScreen()).childView,
+							     getCurScreen());
+	    return true;
+	}
+	
+    }
 
 	private class MySimpleGesture extends SimpleOnGestureListener {
-		@Override
-		public boolean onDoubleTap(boolean fromPhone) {
-		        if (fromPhone)
-			        mIsLongPress = false;
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST
-					&& mOnItemDoubleClickListener != null)
-				mOnItemDoubleClickListener.onItemDoubleClick(AdapterPagedView.this,
-						mScreenQueue.getChildById(getCurScreen()).childView,
-						getCurScreen());
-			return true;
-		}
-
 		@Override
 		public boolean onSlideDown(boolean fromPhone) {
 		        if (fromPhone)
@@ -2296,6 +2301,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 	public void setOnItemDoubleClickListener(OnItemDoubleClickListener listener) {
 		mOnItemDoubleClickListener = listener;
+	    if(mMyDoubleGesture == null){
+		mMyDoubleGesture = new MyDoubleGesture ();
+		mGestureDetector.setOnDoubleTapListener(mMyDoubleGesture);
+	    }
 	}
 
 	// back

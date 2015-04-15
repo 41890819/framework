@@ -16,6 +16,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.widget.GestureDetector;
 import android.widget.GestureDetector.SimpleOnGestureListener;
+import android.widget.GestureDetector.OnDoubleTapListener;
 import android.view.SoundEffectConstants;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -191,6 +192,7 @@ public class PagedView extends ViewGroup {
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
         private MySimpleGesture mMySimpleGesture;
+    private OnDoubleTapListener mMyDoubleGesture;
 
 	public PagedView(Context context) {
 	        this(context, null);
@@ -1221,16 +1223,17 @@ public class PagedView extends ViewGroup {
 	    return true;
 
 	}
-
+    private class MyDoubleGesture implements OnDoubleTapListener{
+	@Override
+	    public boolean onDoubleTap(boolean fromPhone) {
+	    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemDoubleClickListener != null)
+		mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
+							     mPagedViewList.get(getCurScreen()), getCurScreen());
+	    return true;
+	}
+	
+    }
 	private class MySimpleGesture extends SimpleOnGestureListener {
-		@Override
-		public boolean onDoubleTap(boolean fromPhone) {
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemDoubleClickListener != null)
-				mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
-						mPagedViewList.get(getCurScreen()), getCurScreen());
-			return true;
-		}
-
 		@Override
 		public boolean onSlideDown(boolean fromPhone) {
 		      // 鍚戜笅绉诲姩
@@ -1987,6 +1990,10 @@ public class PagedView extends ViewGroup {
 
 	public void setOnItemDoubleClickListener(OnItemDoubleClickListener listener) {
 		mOnItemDoubleClickListener = listener;
+		if(mMyDoubleGesture == null){
+		mMyDoubleGesture = new MyDoubleGesture();
+		mGestureDetector.setOnDoubleTapListener(mMyDoubleGesture);
+		}
 	}
 
 	// back
