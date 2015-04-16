@@ -285,12 +285,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 	@Override
 	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
-		clearAllViews();
+	        mRemovedViewQueue.clear();
+		mScreenQueue.clear();
 		if (mAdapter != null && mDataObserver != null) {
 			mAdapter.unregisterDataSetObserver(mDataObserver);
 			mDataObserver = null;
 		}
+		super.onDetachedFromWindow();
 	}
 	
 	protected void screenScrolled(int screenCenter) {
