@@ -10,5 +10,5 @@ interface IVoiceRecognizer {
     boolean stop(in RecognizeClient client);
     boolean stopImmediate(in RecognizeClient client);
 
-    void close();
+    void setParameter(String key, String value);
 }

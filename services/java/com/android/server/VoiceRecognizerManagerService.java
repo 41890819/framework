@@ -105,16 +105,16 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 	}
 
 	/**
-	 * 关闭语音识别
-	 */
+	 * 设置语音识别参数，如开启关闭语音、开启关闭语音播报等
+	 */	
 	@Override
-	public void closeRecognize() {
+	public void setParameter(String key, String value) {
 		if (mVoiceRecognizer != null) {
 			try {
-				mVoiceRecognizer.close();
+				mVoiceRecognizer.setParameter(key, value);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-		}
+		}	
 	}
 }

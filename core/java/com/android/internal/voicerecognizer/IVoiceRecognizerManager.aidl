@@ -13,5 +13,6 @@ interface IVoiceRecognizerManager
 	void startRecognize(in RecognizeClient client);
 	void stopRecognize(in RecognizeClient client);
 	void stopRecognizeImmediate(in RecognizeClient client);
-	void closeRecognize();
+
+	void setParameter(String key, String value);
 }
