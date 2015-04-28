@@ -89,7 +89,7 @@ public class PagedView extends ViewGroup {
 	/**
 	 * fast fly snap x velocity
 	 */
-	private static final int FAST_FLY_SNAP_X_VELOCITY = 2000;	
+	private static final int FAST_FLY_SNAP_X_VELOCITY = 6000;	
 	/**
 	 * fast fly snap x distance
 	 */
@@ -187,7 +187,7 @@ public class PagedView extends ViewGroup {
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
 	private boolean mCanHorizontalOverScroll = true;
-	private boolean mCanVerticalOverScroll = true;
+	private boolean mCanVerticalOverScroll = false;
         private boolean mCanLeftOrRightSliding=true;  
 	private boolean mUseSoundEffect = false;
         private int mLastLeftScreen;
@@ -901,6 +901,7 @@ public class PagedView extends ViewGroup {
 	public boolean onTouchEvent(MotionEvent event) {
 //	       Log.e("sn", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 	      // Skip touch handling if there are no pages to swipe
+	    mGestureDetector.onTouchEvent(event);
 	    if (!mIsDataReady || getChildCount() <= 0 || mPageWidth <= 0)
 		return super.onTouchEvent(event);
 	      // Skip touch handling if there are no pages to swipe
@@ -1219,7 +1220,6 @@ public class PagedView extends ViewGroup {
 		    mTouchState = TOUCH_STATE_REST;
 		break;
 	    }
-	    mGestureDetector.onTouchEvent(event);
 	    return true;
 
 	}
@@ -1237,7 +1237,7 @@ public class PagedView extends ViewGroup {
 		@Override
 		public boolean onSlideDown(boolean fromPhone) {
 		      // 鍚戜笅绉诲姩
-		    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnDownSlidingBackListener != null) {
+		    if (!mIsDownWhenFlaying && mOnDownSlidingBackListener != null) {
 			mOnDownSlidingBackListener.onDownSlidingBack(PagedView.this);
 			if (mUseSoundEffect)
 			    playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
@@ -1248,7 +1248,7 @@ public class PagedView extends ViewGroup {
 		// Touch了不移动一直Touch down时触发
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemLongPressListener != null)
+			if (!mIsDownWhenFlaying && mOnItemLongPressListener != null)
 				mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
 			return true;
@@ -1256,7 +1256,7 @@ public class PagedView extends ViewGroup {
 
 		@Override
 		public boolean onTap(boolean fromPhone){
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemClickListener != null) {
+			if (!mIsDownWhenFlaying && mOnItemClickListener != null) {
 				Log.e("sn","onSingleTapConfirmed "+getCurScreen());
 				if (mUseSoundEffect)
 				    playSoundEffect(SoundEffectConstants.CLICK);
@@ -1868,7 +1868,7 @@ public class PagedView extends ViewGroup {
 	 * 	false: page can not scroll vertically over edge.
 	 */
 	public void setCanVerticalOverScroll(boolean enable) {
-		mCanVerticalOverScroll = enable;
+	    //mCanVerticalOverScroll = enable;
 	}
 	
         /**

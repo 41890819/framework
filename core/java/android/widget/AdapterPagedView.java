@@ -96,7 +96,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	/**
 	 * fast fly snap x velocity
 	 */
-	private static final int FAST_FLY_SNAP_X_VELOCITY = 3000;
+	private static final int FAST_FLY_SNAP_X_VELOCITY = 6000;
 	/**
 	 * fast fly snap x distance
 	 */
@@ -197,7 +197,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	private float mFlyPageSizeScale = FLY_PAGE_SIZE_SCALE;
 	protected boolean mIsDownWhenFlaying = false;
 	private boolean mCanHorizontalOverScroll = true;
-	private boolean mCanVerticalOverScroll = true;
+	private boolean mCanVerticalOverScroll = false;
 
 	private boolean mUseSoundEffect = false;
 
@@ -2118,7 +2118,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	 *            scroll vertically over edge.
 	 */
 	public void setCanVerticalOverScroll(boolean enable) {
-		mCanVerticalOverScroll = enable;
+		// mCanVerticalOverScroll = enable;
 	}
 
 	/**

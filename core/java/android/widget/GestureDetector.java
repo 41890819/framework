@@ -27,9 +27,9 @@ import android.view.ViewConfiguration;
 public class GestureDetector {
 
     private static String TAG="GestureDetector";
-    private boolean DEBUG = false;
-    private static final int MINIMUM_FLING_VELOCITY = 50;
-    private static final int TOUCH_SLOP = 10;
+    private boolean DEBUG = true;
+    private static final int MINIMUM_FLING_VELOCITY = 100;
+    private static final int TOUCH_SLOP = 7;
     private static final int MAXIMUM_FLING_VELOCITY = 8000;
     private OnDoubleTapListener mDoubleTapListener = null;
     public interface OnGestureListener {
@@ -405,11 +405,11 @@ public class GestureDetector {
 		if(DEBUG)Log.d(TAG,"Does not meet the left slide right slide-->isConsiderDoubleTapOrTap");
 		return isConsiderDoubleTapOrTap();
 	    }
-	}else if ((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
+	}else if ((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
 	    if (DEBUG)Log.d(TAG,"slide up");
 	    return mListener.onSlideUp(false);
 
-	}else if((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
+	}else if((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
 	    if (DEBUG)Log.d(TAG,"slide down");
 	    return mListener.onSlideDown(false);
 	}else{
