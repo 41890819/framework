@@ -3051,20 +3051,17 @@ void CursorInputMapper::sync(nsecs_t when) {
     int32_t currentButtonState = mCursorMotionAccumulator.getRelativeZ();
     mButtonState = currentButtonState;
 
-    int deltaX = mCursorMotionAccumulator.getRelativeX();;
-    int deltaY = mCursorMotionAccumulator.getRelativeY();;
+    int X = mCursorMotionAccumulator.getRelativeX();;
+    int Y = mCursorMotionAccumulator.getRelativeY();;
+    if(DEBUG_POINTERS)
+    ALOGD("x : %d  y : %d  z : %d", X, Y, currentButtonState);
+
 #if defined(INPUT_CP2615)
-    deltaX *= 3;
-    deltaY *= 3;
+    X *= 3;
+    Y *= 3;
 #endif
 
-#if defined(INPUT_ITE7236)
-    if (currentButtonState != 17){
-      deltaX *= 3;
-    }
-    ALOGE("x : %d  y : %d  z : %d", deltaX, deltaY, currentButtonState);
-#endif
-    bool moved = deltaX != 0 || deltaY != 0;
+    bool moved = X != 0 || Y != 0;
     bool wasDown = (lastButtonState == 0x81 ? true : false);
     bool down = (currentButtonState == 0x81 ? true : false);
     bool downChanged;
@@ -3082,14 +3079,14 @@ void CursorInputMapper::sync(nsecs_t when) {
 #define DIR_BOTTOM 			 0x1
 
     if (currentButtonState == 16){ //only for october guest
-      rdata[0] = ((int)deltaX >> 0) & 0x0000ffff;
-      rdata[1] = ((int)deltaX >> 16) & 0x0000ffff;
-      rdata[2] = ((int)deltaY >> 0) & 0x0000ffff;
-      rdata[3] = ((int)deltaY >> 16) & 0x0000ffff;
+      rdata[0] = ((int)X >> 0) & 0x0000ffff;
+      rdata[1] = ((int)X >> 16) & 0x0000ffff;
+      rdata[2] = ((int)Y >> 0) & 0x0000ffff;
+      rdata[3] = ((int)Y >> 16) & 0x0000ffff;
 
-      //retval[0] = deltaX;
-      //retval[1] = deltaY;
-      //ALOGE("x:%x y:%x z:%x", deltaX, deltaY, currentButtonState);
+      //retval[0] = X;
+      //retval[1] = Y;
+      //ALOGE("x:%x y:%x z:%x", X, Y, currentButtonState);
       //ALOGE("%x %x %x %x", rdata[0], rdata[1], rdata[2], rdata[3]);
 
       if (gp2ap_flag == 0){
@@ -3114,13 +3111,13 @@ void CursorInputMapper::sync(nsecs_t when) {
       if (guest == 256)
 	return;
     }else if (currentButtonState == 17){//only for coldwave cp2615 and monday cp2615
-      if (deltaX == 101)
+      if (X == 101)
 	guest = 0;
       else
-	guest = deltaX;
+	guest = X;
     }
 
-    //ALOGE("x:%f y:%f z:%d", deltaX, deltaY, currentButtonState);
+    //ALOGE("x:%f y:%f z:%d", X, Y, currentButtonState);
     //ALOGE("upaction %d downaction:%d", upaction, downaction);
 
     if (!wasDown && down) {
@@ -3137,15 +3134,15 @@ void CursorInputMapper::sync(nsecs_t when) {
     nsecs_t downTime = mDownTime;
 
     if(moved && !downChanged){
-    	mXPosition += deltaX;
-    	mYPosition += deltaY;
+    	mXPosition += X;
+    	mYPosition += Y;
     	//ALOGE("mXPosition:%f  mYPosition:%f", mXPosition, mYPosition);
     }
 
     // Rotate delta according to orientation if needed.
     // if (mParameters.orientationAware && mParameters.hasAssociatedDisplay
-    //         && (deltaX != 0.0f || deltaY != 0.0f)) {
-    //     rotateDelta(mOrientation, &deltaX, &deltaY);
+    //         && (X != 0.0f || Y != 0.0f)) {
+    //     rotateDelta(mOrientation, &X, &Y);
     // }
 
     // Move the pointer.
@@ -3156,8 +3153,8 @@ void CursorInputMapper::sync(nsecs_t when) {
 
     PointerCoords pointerCoords;
     pointerCoords.clear();
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, mXPosition);
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mYPosition);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, X);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, Y);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, down ? 1.0f : 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);
