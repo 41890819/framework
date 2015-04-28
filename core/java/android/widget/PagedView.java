@@ -1256,7 +1256,7 @@ public class PagedView extends ViewGroup {
 
 		@Override
 		public boolean onTap(boolean fromPhone){
-			if (!mIsDownWhenFlaying && mOnItemClickListener != null) {
+			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemClickListener != null) {
 				Log.e("sn","onSingleTapConfirmed "+getCurScreen());
 				if (mUseSoundEffect)
 				    playSoundEffect(SoundEffectConstants.CLICK);
