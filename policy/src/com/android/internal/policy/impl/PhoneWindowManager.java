@@ -499,9 +499,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     break;
 	        case MSG_ACTION_CAMERA:
 		    if(DEBUG)Log.d(TAG,"---------MSG_ACTION_CAMERA");
-		    Intent intentCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);	        
-		    intentCapture.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		    mContext.startActivity(intentCapture);
+		    Intent intentCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		    mContext.sendBroadcast(intentCapture);
 		    break;
 	        case MSG_ACTION_VIDEO:
 		    if(DEBUG)Log.d(TAG,"---------MSG_ACTION_VIDEO");
