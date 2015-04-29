@@ -406,12 +406,13 @@ public class GestureDetector {
 		return isConsiderDoubleTapOrTap();
 	    }
 	}else if ((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
-	    if (DEBUG)Log.d(TAG,"slide up");
-	    return mListener.onSlideUp(false);
-
-	}else if((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
 	    if (DEBUG)Log.d(TAG,"slide down");
 	    return mListener.onSlideDown(false);
+
+	}else if((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
+	    if (DEBUG)Log.d(TAG,"slide up");
+	    return mListener.onSlideUp(false);
+	    
 	}else{
 	    Log.d(TAG,"Does not meet the slide-->isConsiderDoubleTapOrTap");
 	    return isConsiderDoubleTapOrTap();
