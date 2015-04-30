@@ -3091,7 +3091,6 @@ package android.app {
 
   public class AlertDialog.AlertCoverView extends android.widget.ImageView implements android.widget.GestureDetector.OnGestureListener {
     ctor public AlertDialog.AlertCoverView(android.content.Context);
-    method public boolean onDoubleTap(boolean);
     method public boolean onDown(boolean);
     method public boolean onLongPress(boolean);
     method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
@@ -6109,6 +6108,7 @@ package android.content {
     field public static final java.lang.String SEARCH_SERVICE = "search";
     field public static final java.lang.String SENSOR_SERVICE = "sensor";
     field public static final java.lang.String STATUS_MSGCENTER_SERVICE = "msgcenter";
+    field public static final java.lang.String STATUS_VOICE_RECOG_SERVICE = "voicerecog";
     field public static final java.lang.String STORAGE_SERVICE = "storage";
     field public static final java.lang.String TELEPHONY_SERVICE = "phone";
     field public static final java.lang.String TEXT_SERVICES_MANAGER_SERVICE = "textservices";
@@ -29978,10 +29978,19 @@ package android.widget {
     method public boolean isLongpressEnabled();
     method public boolean onTouchEvent(android.view.MotionEvent);
     method public void setIsLongpressEnabled(boolean);
+    method public void setOnDoubleTapListener(android.widget.GestureDetector.OnDoubleTapListener);
+  }
+
+  public static class GestureDetector.CompleteOnGestureListener extends android.widget.GestureDetector.SimpleOnGestureListener implements android.widget.GestureDetector.OnDoubleTapListener {
+    ctor public GestureDetector.CompleteOnGestureListener();
+    method public boolean onDoubleTap(boolean);
+  }
+
+  public static abstract interface GestureDetector.OnDoubleTapListener {
+    method public abstract boolean onDoubleTap(boolean);
   }
 
   public static abstract interface GestureDetector.OnGestureListener {
-    method public abstract boolean onDoubleTap(boolean);
     method public abstract boolean onDown(boolean);
     method public abstract boolean onLongPress(boolean);
     method public abstract boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
@@ -29995,7 +30004,6 @@ package android.widget {
 
   public static class GestureDetector.SimpleOnGestureListener implements android.widget.GestureDetector.OnGestureListener {
     ctor public GestureDetector.SimpleOnGestureListener();
-    method public boolean onDoubleTap(boolean);
     method public boolean onDown(boolean);
     method public boolean onLongPress(boolean);
     method public boolean onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float, boolean);
@@ -30005,6 +30013,19 @@ package android.widget {
     method public boolean onSlideUp(boolean);
     method public boolean onTap(boolean);
     method public boolean onUp(android.view.MotionEvent, boolean);
+  }
+
+  public class GlassFrameLayout extends android.widget.FrameLayout {
+    ctor public GlassFrameLayout(android.content.Context);
+    ctor public GlassFrameLayout(android.content.Context, android.util.AttributeSet);
+    ctor public GlassFrameLayout(android.content.Context, android.util.AttributeSet, int);
+    method public void requestGfFocus();
+    method public void setLifeState(int);
+    method public void setSimpleGesture(android.widget.GestureDetector.OnGestureListener);
+    field public static final boolean DEBUG = true;
+    field public static final int PAUSE = 0; // 0x0
+    field public static final int RESUME = 1; // 0x1
+    field public int mLifeState;
   }
 
   public class GridLayout extends android.view.ViewGroup {
@@ -30380,6 +30401,32 @@ package android.widget {
     method public abstract void pause();
     method public abstract void seekTo(int);
     method public abstract void start();
+  }
+
+  public class MenuView extends android.widget.FrameLayout implements android.widget.AdapterPagedView.OnDownSlidingBackListener android.widget.AdapterPagedView.OnItemClickListener {
+    ctor public MenuView(android.content.Context);
+    method public void addMenuItemInfo(java.lang.String);
+    method public void onDownSlidingBack(android.widget.AdapterPagedView);
+    method public void onItemClick(android.widget.AdapterPagedView, android.view.View, int);
+    method public void removeMenuItemInfo(java.lang.String);
+    method public void setOnBackListener(android.view.View, android.widget.MenuView.OnBackListener);
+    method public void setOnClickListener(android.view.View, android.widget.MenuView.OnClickListener);
+  }
+
+  public class MenuView.MyAdapter extends android.widget.BaseAdapter {
+    ctor public MenuView.MyAdapter();
+    method public int getCount();
+    method public java.lang.Object getItem(int);
+    method public long getItemId(int);
+    method public android.view.View getView(int, android.view.View, android.view.ViewGroup);
+  }
+
+  public static abstract interface MenuView.OnBackListener {
+    method public abstract void onBack(android.view.View);
+  }
+
+  public static abstract interface MenuView.OnClickListener {
+    method public abstract void onClick(android.view.View, int);
   }
 
   public class MultiAutoCompleteTextView extends android.widget.AutoCompleteTextView {
@@ -31728,6 +31775,82 @@ package com.android.internal.util {
 
   public abstract interface Predicate {
     method public abstract boolean apply(T);
+  }
+
+}
+
+package com.android.internal.voicerecognizer {
+
+  public abstract interface IVoiceRecognizer implements android.os.IInterface {
+    method public abstract boolean register(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+    method public abstract void setParameter(java.lang.String, java.lang.String) throws android.os.RemoteException;
+    method public abstract boolean stop(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+    method public abstract boolean stopImmediate(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+    method public abstract boolean trigger(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+    method public abstract boolean unRegister(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+  }
+
+  public static abstract class IVoiceRecognizer.Stub extends android.os.Binder implements com.android.internal.voicerecognizer.IVoiceRecognizer {
+    ctor public IVoiceRecognizer.Stub();
+    method public android.os.IBinder asBinder();
+    method public static com.android.internal.voicerecognizer.IVoiceRecognizer asInterface(android.os.IBinder);
+    method public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+  }
+
+  public abstract interface IVoiceRecognizerListener implements android.os.IInterface {
+    method public abstract boolean onCanceled() throws android.os.RemoteException;
+    method public abstract boolean onEnd(java.lang.String) throws android.os.RemoteException;
+    method public abstract void onReadyForSpeaking() throws android.os.RemoteException;
+    method public abstract boolean onRecordingStop() throws android.os.RemoteException;
+    method public abstract boolean onResult(java.lang.String, float) throws android.os.RemoteException;
+    method public abstract void onUpdateVolume(int) throws android.os.RemoteException;
+    method public abstract void onWakeup() throws android.os.RemoteException;
+  }
+
+  public static abstract class IVoiceRecognizerListener.Stub extends android.os.Binder implements com.android.internal.voicerecognizer.IVoiceRecognizerListener {
+    ctor public IVoiceRecognizerListener.Stub();
+    method public android.os.IBinder asBinder();
+    method public static com.android.internal.voicerecognizer.IVoiceRecognizerListener asInterface(android.os.IBinder);
+    method public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+  }
+
+  public class RecognizeClient implements android.os.Parcelable {
+    ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
+    ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener, java.lang.String, java.lang.String, java.util.ArrayList<java.lang.String>, int, boolean, boolean);
+    ctor public RecognizeClient(android.os.Parcel);
+    method public void addCommand(java.lang.String);
+    method public void addCommands(java.util.ArrayList<java.lang.String>);
+    method public void addDisplayCommand(java.lang.String);
+    method public void addDisplayCommands(java.util.ArrayList<java.lang.String>);
+    method public int describeContents();
+    method public java.lang.String findCommand(java.lang.String);
+    method public final java.lang.String getAppName();
+    method public final java.util.ArrayList<java.lang.String> getCommands();
+    method public final java.util.ArrayList<java.lang.String> getDisplayCommands();
+    method public java.lang.String getDisplayStr();
+    method public final int getIcon();
+    method public long getId();
+    method public final com.android.internal.voicerecognizer.IVoiceRecognizerListener getListener();
+    method public final java.lang.String getPackageName();
+    method public boolean getShowWidget();
+    method public final int getType();
+    method public boolean getUseTimeout();
+    method public final int getUserId();
+    method public void setAppName(java.lang.String);
+    method public void setCommands(java.util.ArrayList<java.lang.String>);
+    method public void setDisplayCommands(java.util.ArrayList<java.lang.String>);
+    method public void setDisplayStr(java.lang.String);
+    method public void setIcon(int);
+    method public void setListener(com.android.internal.voicerecognizer.IVoiceRecognizerListener);
+    method public void setPackageName(java.lang.String);
+    method public void setShowWidget(boolean);
+    method public void setType(int);
+    method public void setUseTimeout(boolean);
+    method public void writeToParcel(android.os.Parcel, int);
+    field public static final java.lang.String CMD_EXIT = "\u9000\u51fa";
+    field public static final android.os.Parcelable.Creator CREATOR;
+    field public static final int REC_TYPE_COMMAND = 0; // 0x0
+    field public static final int REC_TYPE_DICTATION = 1; // 0x1
   }
 
 }
