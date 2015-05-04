@@ -118,6 +118,7 @@ public class PagedView extends ViewGroup {
 	 */
         private static final int TIMEOUT_DELAY = 500;
 
+        private boolean mIsDefinedGesture = false;
         final static float START_DAMPING_TOUCH_SLOP_ANGLE = (float) Math.PI / 6;
         final static float MAX_SWIPE_ANGLE = (float) Math.PI / 3;
         final static float TOUCH_SLOP_DAMPING_FACTOR = 4;
@@ -935,7 +936,7 @@ public class PagedView extends ViewGroup {
 		    pageBeginMoving();
 		    mTouchState = TOUCH_STATE_SCROLLING;
 		}
-
+		mIsDefinedGesture = false;
 		break;
 
 	    case MotionEvent.ACTION_MOVE:
@@ -996,6 +997,7 @@ public class PagedView extends ViewGroup {
 		break;
 
 	    case MotionEvent.ACTION_UP:
+	    if(mIsDefinedGesture) return true;
 	    	Log.e("sn","UP mTouchState="+mTouchState);
 		if (mTouchState == TOUCH_STATE_SCROLLING) {
 		    final VelocityTracker velocityTracker = mVelocityTracker;
@@ -1242,6 +1244,7 @@ public class PagedView extends ViewGroup {
 			if (mUseSoundEffect)
 			    playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
 		    }
+		    mIsDefinedGesture = true;
 		    return true;
 		}
 
@@ -1251,6 +1254,7 @@ public class PagedView extends ViewGroup {
 			if (!mIsDownWhenFlaying && mOnItemLongPressListener != null)
 				mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
+			mIsDefinedGesture = true;
 			return true;
 		}
 
@@ -1263,6 +1267,7 @@ public class PagedView extends ViewGroup {
 				mOnItemClickListener.onItemClick(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
 			}
+			mIsDefinedGesture = true;
 			return true;
 		}
 
