@@ -27,7 +27,7 @@ import android.view.ViewConfiguration;
 public class GestureDetector {
 
     private static String TAG="GestureDetector";
-    private boolean DEBUG = true;
+    private boolean DEBUG = false;
     private static final int MINIMUM_FLING_VELOCITY = 100;
     private static final int TOUCH_SLOP = 7;
     private static final int MAXIMUM_FLING_VELOCITY = 8000;
@@ -135,7 +135,7 @@ public class GestureDetector {
     private float mDownFocusY;
 
     private static final int MIN_QUICK_SLIDE_DISTANCE_X = 20;
-    private static final int MIN_QUICK_SLIDE_DISTANCE_Y = 20;
+    private static final int MIN_QUICK_SLIDE_DISTANCE_Y = 8;
 		
     private boolean mIsLongpressEnabled;
 
@@ -310,10 +310,10 @@ public class GestureDetector {
 		    if ((Math.abs(velocityY) > mMinimumFlingVelocity)
 			|| (Math.abs(velocityX) > mMinimumFlingVelocity)){
 			handled |= onFling(mCurrentDownEvent,ev,velocityX,velocityY);
-		    }else{
-			if(DEBUG)Log.d(TAG,"between tap and fling--->isConsiderDoubleTap()");
-			isConsiderDoubleTapOrTap();
-		    }
+		    }// else{
+		    // 	if(DEBUG)Log.d(TAG,"between tap and fling--->isConsiderDoubleTap()");
+		    // 	isConsiderDoubleTapOrTap();
+		    // }
 		}
             }
             if (mPreviousUpEvent != null) {
@@ -401,9 +401,6 @@ public class GestureDetector {
 	    }else if((ev.getX() - mCurrentDownEvent.getX()) > MIN_QUICK_SLIDE_DISTANCE_X) {
 		if (DEBUG)Log.d(TAG,"slide right");
 		return mListener.onSlideRight(false);
-	    }else{
-		if(DEBUG)Log.d(TAG,"Does not meet the left slide right slide-->isConsiderDoubleTapOrTap");
-		return isConsiderDoubleTapOrTap();
 	    }
 	}else if ((ev.getY() - mCurrentDownEvent.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){          
 	    if (DEBUG)Log.d(TAG,"slide down");
@@ -411,12 +408,9 @@ public class GestureDetector {
 
 	}else if((mCurrentDownEvent.getY() - ev.getY()) > MIN_QUICK_SLIDE_DISTANCE_Y){
 	    if (DEBUG)Log.d(TAG,"slide up");
-	    return mListener.onSlideUp(false);
-	    
-	}else{
-	    Log.d(TAG,"Does not meet the slide-->isConsiderDoubleTapOrTap");
-	    return isConsiderDoubleTapOrTap();
+	    return mListener.onSlideUp(false);	    
 	}
+	return true;
     }
     private boolean handleSCGestureEvent(MotionEvent event) {
 	if (mListener == null)
