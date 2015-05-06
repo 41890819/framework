@@ -167,7 +167,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected OnPageFlyingListener mOnPageFlyingListener = null;
 	protected OnPageSelectedListener mOnPageSelectedListener = null;
 	protected OnItemLongPressIdentifyFromListener mOnItemLongPressIdentifyFromListener = null;
-
+	private boolean scrollDirection = false; //set scroll direction
 	// Scrolling indicator
 	private ValueAnimator mScrollIndicatorAnimator;
 	private View mScrollIndicator;
@@ -745,8 +745,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			resetScreenQueue(width);
 			mMinScrollX = -(getMeasuredWidth() / 2 - mSpacePageCount
 					* (width + mPageMargin) - width / 2);
-			scrollTo(curScreen * (width + mPageMargin), 0);
-
+			if(scrollDirection) scrollTo(-curScreen * (width + mPageMargin), 0);
+			else scrollTo(curScreen * (width + mPageMargin), 0);
 			postInvalidate();
 			final int delta = (int) (mScreenQueue.getScreenAt(mNextScreen).left - getScrollX());
 			mScroller.startScroll(getScrollX(), 0, delta, 0,
@@ -1234,7 +1234,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				} else {
 					awakenScrollBars();
 				}
-				scrollBy(deltaX, 0);
+				if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
+				else scrollBy(deltaX, 0);
 			} else if (mTouchState == TOUCH_STATE_FLYING_SCROLLING) {
 				int deltaX = (int) (mLastMotionX - x);
 				mLastMotionX = x;
@@ -1243,7 +1244,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				} else {
 					awakenScrollBars();
 				}
-				scrollBy(deltaX, 0);
+				if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
+				else scrollBy(deltaX, 0);
 			} else {
 				determineScrollingStart(event);
 				if (mCanVerticalOverScroll) {
@@ -1329,9 +1331,12 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 							if (mPageCountInScreen > 1
 									&& velocityX > FAST_SNAP_VELOCITY)
-								tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
+							    if(scrollDirection) tmpScreen += velocityX / FAST_SNAP_VELOCITY;
+							    else tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
 							else
-								tmpScreen--;
+							    if(scrollDirection)
+								tmpScreen++;
+							    else tmpScreen--;
 							snapToScreenNoCircle(tmpScreen, mPageWidth);
 						}
 					} else if (velocityX < -SNAP_VELOCITY
@@ -1349,21 +1354,37 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						} else {
 							int tmpScreen = mCurScreen
 							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-							if (mPageCountInScreen > 1
-									&& velocityX < -FAST_SNAP_VELOCITY)
+							if(scrollDirection){
+							    if (mPageCountInScreen > 1 && velocityX < -FAST_SNAP_VELOCITY)
+								tmpScreen -= (-velocityX) / FAST_SNAP_VELOCITY;
+							    else
+								tmpScreen--;
+							}else{
+							    if (mPageCountInScreen > 1
+								&& velocityX < -FAST_SNAP_VELOCITY)
 								tmpScreen += (-velocityX) / FAST_SNAP_VELOCITY;
-							else
+							    else
 								tmpScreen++;
+							}
 							snapToScreenNoCircle(tmpScreen, mPageWidth);
 						}
 					} else {
 						int tmpScreen = mCurScreen;
-						if (deltaX > 0)
-							tmpScreen = mCurScreen
-							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-						else
+						if(scrollDirection){
+						    if (deltaX > 0)
 							tmpScreen = mCurScreen
 							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
+						    else 
+							tmpScreen = mCurScreen
+							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
+						}else{
+						    if (deltaX > 0)
+							tmpScreen = mCurScreen
+							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
+						    else
+							tmpScreen = mCurScreen
+							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
+						}
 						Log.e("sn", "............................. tmpScreen="
 								+ tmpScreen);
 						snapToDestinationNoCircle(tmpScreen, mPageWidth);
@@ -1587,7 +1608,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	        public boolean onSlideLeft(boolean fromPhone){
 		    if (fromPhone) {
 			mIsLongPress = false;
-			scrollRight();
+			if(scrollDirection)
+			    scrollLeft();
+			else
+			    scrollRight();			
 		    }
 		    return true;
 		}
@@ -1596,7 +1620,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	        public boolean onSlideRight(boolean fromPhone){
 		    if (fromPhone) {
 			mIsLongPress = false;
-			scrollLeft();
+			if(scrollDirection)
+			    scrollRight();
+			else
+			    scrollLeft();
 		    }
 		    return true;
 		}
@@ -2333,6 +2360,10 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 
 	public void setOnPageSelectedListener(OnPageSelectedListener listener) {
 		mOnPageSelectedListener = listener;
+	}
+
+	public void setDirectonScroll(boolean dir){
+	    scrollDirection = dir;
 	}
 
      @Override

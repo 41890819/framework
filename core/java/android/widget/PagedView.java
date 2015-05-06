@@ -156,7 +156,7 @@ public class PagedView extends ViewGroup {
 	protected OnDownSlidingBackListener mOnDownSlidingBackListener = null;
 	protected OnPageFlyingListener mOnPageFlyingListener = null;
         protected OnPageSelectedListener mOnPageSelectedListener = null;
-
+    private boolean  scrollDirection = false; //set scroll direction
 	// Scrolling indicator
 	private ValueAnimator mScrollIndicatorAnimator;
 	private View mScrollIndicator;
@@ -528,7 +528,11 @@ public class PagedView extends ViewGroup {
 			
 			postInvalidate();
 			final int delta = (int) (getChildAt(mNextScreen).getX() - getScrollX());// + mMinScrollX);
-			mScroller.startScroll(getScrollX(), 0, delta, 0, PAGE_SNAP_ANIMATION_DURATION);
+			if(scrollDirection) {
+			    mScroller.startScroll(getScrollX(), 0, -delta, 0, PAGE_SNAP_ANIMATION_DURATION);
+			}else{
+			    mScroller.startScroll(getScrollX(), 0, delta, 0, PAGE_SNAP_ANIMATION_DURATION);
+			}
 			pageBeginMoving();
 			invalidate();
 			
@@ -971,7 +975,8 @@ public class PagedView extends ViewGroup {
 		    } else {
 			awakenScrollBars();
 		    }
-		    scrollBy(deltaX, 0);
+		    if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
+		    else scrollBy(deltaX, 0);
 		} else if (mTouchState == TOUCH_STATE_FLYING_SCROLLING) {
 		    int deltaX = (int) (mLastMotionX - x);
 		    mLastMotionX = x;
@@ -980,7 +985,8 @@ public class PagedView extends ViewGroup {
 		    } else {
 			awakenScrollBars();
 		    }
-		    scrollBy(deltaX, 0);
+		    if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
+		    else scrollBy(deltaX, 0);
 		} else {
 		    determineScrollingStart(event);
 		    if (mCanVerticalOverScroll) {
@@ -1052,10 +1058,15 @@ public class PagedView extends ViewGroup {
 				break;
 			    } else {										
 				int tmpScreen = mCurScreen - (Math.abs(deltaX) / mPageWidth);
-				if (mPageCountInScreen > 1 && velocityX > FAST_SNAP_VELOCITY)
-				    tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
-				else 
-				    tmpScreen--;
+				if (mPageCountInScreen > 1 && velocityX > FAST_SNAP_VELOCITY){
+				    if(scrollDirection) tmpScreen += velocityX / FAST_SNAP_VELOCITY;
+				    else tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
+				}
+				else {
+				    if(scrollDirection)
+					tmpScreen++;
+				    else tmpScreen--;
+				}
 				snapToScreenNoCircle(tmpScreen, mPageWidth);
 			    }
 			} else if (velocityX < -SNAP_VELOCITY
@@ -1069,18 +1080,32 @@ public class PagedView extends ViewGroup {
 				break;
 			    } else {
 				int tmpScreen = mCurScreen + (Math.abs(deltaX) / mPageWidth);
-				if (mPageCountInScreen > 1 && velocityX < -FAST_SNAP_VELOCITY)
-				    tmpScreen += (-velocityX) / FAST_SNAP_VELOCITY;
-				else
-				    tmpScreen++;
+				if(scrollDirection){
+				    if (mPageCountInScreen > 1 && velocityX < -FAST_SNAP_VELOCITY)
+					tmpScreen -= (-velocityX) / FAST_SNAP_VELOCITY;
+				    else
+					tmpScreen--;
+				}else{
+				    if (mPageCountInScreen > 1 && velocityX < -FAST_SNAP_VELOCITY)
+					tmpScreen += (-velocityX) / FAST_SNAP_VELOCITY;
+				    else
+					tmpScreen++;
+				}
 				snapToScreenNoCircle(tmpScreen, mPageWidth);
 			    }
 			} else {
 			    int tmpScreen = mCurScreen;
-			    if (deltaX > 0)
-				tmpScreen = mCurScreen + (Math.abs(deltaX) / mPageWidth);
-			    else 
-				tmpScreen = mCurScreen - (Math.abs(deltaX) / mPageWidth);
+			    if(scrollDirection){
+				if (deltaX > 0)
+				    tmpScreen = mCurScreen - (Math.abs(deltaX) / mPageWidth);
+				else 
+				    tmpScreen = mCurScreen + (Math.abs(deltaX) / mPageWidth);
+			    }else{
+				if (deltaX > 0)
+				    tmpScreen = mCurScreen + (Math.abs(deltaX) / mPageWidth);
+				else 
+				    tmpScreen = mCurScreen - (Math.abs(deltaX) / mPageWidth);
+			    }
 			    snapToDestinationNoCircle(tmpScreen, mPageWidth);
 			}
 		    }
@@ -1273,15 +1298,23 @@ public class PagedView extends ViewGroup {
 
 		@Override
 	        public boolean onSlideLeft(boolean fromPhone){
-		    if (fromPhone && mCanLeftOrRightSliding)
-			scrollRight();
+		    if (fromPhone && mCanLeftOrRightSliding){
+			if(scrollDirection)
+			    scrollLeft();
+			else
+			    scrollRight();
+			}
 		    return true;
 		}
 
 		@Override
 	        public boolean onSlideRight(boolean fromPhone){
-		    if (fromPhone && mCanLeftOrRightSliding)
-			scrollLeft();
+		    if (fromPhone && mCanLeftOrRightSliding){
+			if(scrollDirection)
+			    scrollRight();
+			else
+			    scrollLeft();
+			}
 		    return true;
 		}
 	}
@@ -1969,6 +2002,9 @@ public class PagedView extends ViewGroup {
         public void setUseSoundEffect(boolean enable) {
 	    mUseSoundEffect = enable;	
 	}
+    public void setDirectonScroll(boolean dir){
+	scrollDirection = dir;
+    }
     
 	// single tap
 	public interface OnItemClickListener {
