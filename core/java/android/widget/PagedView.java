@@ -116,7 +116,7 @@ public class PagedView extends ViewGroup {
 	/**
 	 * fly pages restore after 500ms without touching
 	 */
-        private static final int TIMEOUT_DELAY = 500;
+        private static final int TIMEOUT_DELAY = 150;
 
         private boolean mIsDefinedGesture = false;
         final static float START_DAMPING_TOUCH_SLOP_ANGLE = (float) Math.PI / 6;
@@ -1003,9 +1003,14 @@ public class PagedView extends ViewGroup {
 		break;
 
 	    case MotionEvent.ACTION_UP:
-	    if(mIsDefinedGesture) return true;
 	    	Log.e("sn","UP mTouchState="+mTouchState);
-		if (mTouchState == TOUCH_STATE_SCROLLING) {
+		if(mIsDefinedGesture) {
+		    mTouchState = TOUCH_STATE_REST;
+		    mNextScreen = INVALID_SCREEN;
+		    releaseVelocityTracker();
+		    return true;
+		}
+		if(mTouchState == TOUCH_STATE_SCROLLING) {
 		    final VelocityTracker velocityTracker = mVelocityTracker;
 		    velocityTracker.computeCurrentVelocity(1000);
 		    int velocityX = (int) velocityTracker.getXVelocity();
@@ -1013,7 +1018,6 @@ public class PagedView extends ViewGroup {
 		    final int deltaX = (int) (mDownMotionX - x);
 		    if (mCanCycleFlip) {			
 			if (velocityX > SNAP_VELOCITY /*&& mCurScreen >= 0*/) {
-			      // 鍚戝乏绉诲姩
 			    if (mCanFlyFlip && velocityX > FAST_FLY_SNAP_X_VELOCITY
 //								&& mCurScreen >= mPageCountInScreen
 				&& deltaX < -FAST_FLY_SNAP_X_DISTANCE) {
@@ -1263,23 +1267,23 @@ public class PagedView extends ViewGroup {
 	private class MySimpleGesture extends SimpleOnGestureListener {
 		@Override
 		public boolean onSlideDown(boolean fromPhone) {
-		      // 鍚戜笅绉诲姩
 		    if (!mIsDownWhenFlaying && mOnDownSlidingBackListener != null) {
 			mOnDownSlidingBackListener.onDownSlidingBack(PagedView.this);
+			mIsDefinedGesture = true;
 			if (mUseSoundEffect)
 			    playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
 		    }
-		    mIsDefinedGesture = true;
 		    return true;
 		}
 
-		// Touch了不移动一直Touch down时触发
+
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
-			if (!mIsDownWhenFlaying && mOnItemLongPressListener != null)
+			if (!mIsDownWhenFlaying && mOnItemLongPressListener != null){
 				mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
 			mIsDefinedGesture = true;
+}
 			return true;
 		}
 
@@ -1291,8 +1295,8 @@ public class PagedView extends ViewGroup {
 				    playSoundEffect(SoundEffectConstants.CLICK);
 				mOnItemClickListener.onItemClick(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
-			}
 			mIsDefinedGesture = true;
+			}
 			return true;
 		}
 
