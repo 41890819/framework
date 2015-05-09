@@ -1257,7 +1257,7 @@ public class PagedView extends ViewGroup {
     private class MyDoubleGesture implements OnDoubleTapListener{
 	@Override
 	    public boolean onDoubleTap(boolean fromPhone) {
-	    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemDoubleClickListener != null)
+	    if (!mIsDownWhenFlaying && mNextScreen == INVALID_SCREEN && mTouchState == TOUCH_STATE_REST && mOnItemDoubleClickListener != null)
 		mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
 							     mPagedViewList.get(getCurScreen()), getCurScreen());
 	    return true;
@@ -1279,7 +1279,7 @@ public class PagedView extends ViewGroup {
 
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
-			if (!mIsDownWhenFlaying && mOnItemLongPressListener != null){
+			if (!mIsDownWhenFlaying && mNextScreen == INVALID_SCREEN && mOnItemLongPressListener != null){
 				mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
 			mIsDefinedGesture = true;
@@ -1289,7 +1289,7 @@ public class PagedView extends ViewGroup {
 
 		@Override
 		public boolean onTap(boolean fromPhone){
-			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST && mOnItemClickListener != null) {
+			if (!mIsDownWhenFlaying && mNextScreen == INVALID_SCREEN && mTouchState == TOUCH_STATE_REST && mOnItemClickListener != null) {
 				Log.e("sn","onSingleTapConfirmed "+getCurScreen());
 				if (mUseSoundEffect)
 				    playSoundEffect(SoundEffectConstants.CLICK);
