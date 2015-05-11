@@ -362,6 +362,15 @@ public class MediaRecorder
         setParameter("time-between-time-lapse-frame-capture=" + timeBetweenFrameCaptureMs);
     }
 
+    //a notification will be sent to mediarecorder, then get the encoded data
+    public void setCaptureCameraData(int gccd) {
+	if (gccd < 0) {
+            throw new IllegalArgumentException("Unknown tag");
+        }
+	setParameter("param-get-camera-encoded-data=" + gccd);
+    }
+
+
     /**
      * Sets the orientation hint for output video playback.
      * This method should be called before prepare(). This method will not
@@ -665,7 +674,6 @@ public class MediaRecorder
         } else {
             throw new IOException("No valid output file");
         }
-
         _prepare();
     }
 
