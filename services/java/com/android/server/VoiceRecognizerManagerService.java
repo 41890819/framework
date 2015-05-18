@@ -108,13 +108,29 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 	 * 设置语音识别参数，如开启关闭语音、开启关闭语音播报等
 	 */	
 	@Override
-	public void setParameter(String key, String value) {
+	public boolean setParameter(String key, String value) {
 		if (mVoiceRecognizer != null) {
 			try {
-				mVoiceRecognizer.setParameter(key, value);
+				return mVoiceRecognizer.setParameter(key, value);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}	
+		return false;
+	}
+
+	/**
+	 * 获取语音识别参数
+	 */	
+	@Override
+	public String getParameter(String key) {
+		if (mVoiceRecognizer != null) {
+			try {
+				return mVoiceRecognizer.getParameter(key);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}	
+		return null;
 	}
 }
