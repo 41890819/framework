@@ -3153,8 +3153,8 @@ void CursorInputMapper::sync(nsecs_t when) {
 
     PointerCoords pointerCoords;
     pointerCoords.clear();
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, X);
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, Y);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, mXPosition);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mYPosition);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, down ? 1.0f : 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);
