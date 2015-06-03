@@ -209,7 +209,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	protected int[] mVisiblePagesIDRange = new int[2];
 	private int mShouldToScreen = -1;
 	private int mHeightMeasureSpec = Integer.MIN_VALUE;
-    private MySimpleGesture mMySimpleGesture;
+	private MySimpleGesture mMySimpleGesture;
 	private MyDoubleGesture mMyDoubleGesture;	
 	private DataSetObserver mDataObserver = new DataSetObserver() {
 
@@ -565,6 +565,25 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			scrollTo((int) mScreenQueue.getChildById(mCurScreen).left
 					- (mPageWidth + mPageMargin) * mSpacePageCount, 0);
 			makeAndAddVisibleViews();
+		} else {
+			for (int i = 0; i < mScreenQueue.getChildCount(); i++) {
+				ScreenInfo curInfo = mScreenQueue.getChildById(i);
+				View child = curInfo.childView;
+				if (child != null) {
+					if (DEBUG) Log.d(TAG, "onLayout "+i+" "+getScrollX()+" curInfo("+curInfo.left+","+curInfo.top+","+child.getMeasuredWidth()+","+child.getMeasuredHeight()+") "+(child != null));
+					child.layout(curInfo.left, curInfo.top, curInfo.left + child.getMeasuredWidth(), curInfo.top + child.getMeasuredHeight());
+					if (isFlying()) {
+						child.setScaleX(mFlyPageSizeScale);
+						child.setScaleY(mFlyPageSizeScale);
+						child.setX(curInfo.left
+							   - (mPageWidth - curInfo.width) / 2);
+					} else {
+						child.setScaleX(1.0f);
+						child.setScaleY(1.0f);
+						child.setX(curInfo.left);
+					}
+				}
+			}
 		}
 
 		if (mCanCycleFlip) {
@@ -1529,21 +1548,22 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		return true;
 
 	}
-    private class MyDoubleGesture implements OnDoubleTapListener{
-	@Override
-	    public boolean onDoubleTap(boolean fromPhone) {
-	    Log.d(TAG,"-----onDoubleTap");
-	    if (fromPhone)
-		mIsLongPress = false;
-	    if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST
-		    && mOnItemDoubleClickListener != null)
-		mOnItemDoubleClickListener.onItemDoubleClick(AdapterPagedView.this,
-							     mScreenQueue.getChildById(getCurScreen()).childView,
-							     getCurScreen());
-	    return true;
-	}
+
+	private class MyDoubleGesture implements OnDoubleTapListener{
+		@Override
+		public boolean onDoubleTap(boolean fromPhone) {
+			Log.d(TAG,"-----onDoubleTap");
+			if (fromPhone)
+				mIsLongPress = false;
+			if (!mIsDownWhenFlaying && mTouchState == TOUCH_STATE_REST
+			    && mOnItemDoubleClickListener != null)
+				mOnItemDoubleClickListener.onItemDoubleClick(AdapterPagedView.this,
+									     mScreenQueue.getChildById(getCurScreen()).childView,
+									     getCurScreen());
+			return true;
+		}
 	
-    }
+	}
 
 	private class MySimpleGesture extends SimpleOnGestureListener {
 		@Override
@@ -1561,11 +1581,11 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 			}
 			return true;
 		}
-	    @Override
-		public boolean onDown(boolean fromPhone) {
-		return true;	    
 
-}
+		@Override
+		public boolean onDown(boolean fromPhone) {
+			return true;	    			
+		}
 
 		@Override
 		public boolean onLongPress(boolean fromPhone) {
@@ -1586,7 +1606,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				    return true;
 				    }
 
-		    @Override
+		@Override
 		public boolean onTap(boolean fromPhone){
 		        if (fromPhone)
 			        mIsLongPress = false;
@@ -2161,9 +2181,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		        if (mScroller.isFinished()) {
 			        if (mCurScreen > 0)
 				        snapToScreenNoCircle(mCurScreen - 1, mPageWidth);
+			        else
+			        	notifyPageSelected();
 			} else {
 			        if (mNextScreen > 0)
 				        snapToScreenNoCircle(mNextScreen - 1, mPageWidth);
+			        else
+			        	notifyPageSelected();
 			}
 		}
 	}
@@ -2181,9 +2205,13 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		        if (mScroller.isFinished()) {
 			        if (mCurScreen < mAdapter.getCount() - 1)
 				        snapToScreenNoCircle(mCurScreen + 1, mPageWidth);
+			        else
+			        	notifyPageSelected();
 			} else {
 			        if (mNextScreen < mAdapter.getCount() - 1)
 				        snapToScreenNoCircle(mNextScreen + 1, mPageWidth);
+			        else
+			        	notifyPageSelected();
 			}
 		}
 	}
@@ -2363,32 +2391,31 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	}
 
 	public void setDirectonScroll(boolean dir){
-	    scrollDirection = dir;
+		scrollDirection = dir;
 	}
 
-     @Override
+	@Override
 	public boolean dispatchKeyEvent(KeyEvent event){
-	Log.e(TAG, "------dispatchKeyEvent -event action="+event.getAction()+" --keyCode="+event.getKeyCode()
-	      +"state = ");
-	if (event.getAction() == KeyEvent.ACTION_DOWN) {
-	    switch (event.getKeyCode()) {
-	    case KeyEvent.KEYCODE_DPAD_LEFT:
-		mMySimpleGesture.onSlideLeft(true);
-		break;
-	    case KeyEvent.KEYCODE_DPAD_RIGHT:
-		mMySimpleGesture.onSlideRight(true);
-		return true;
-	    case KeyEvent.KEYCODE_DPAD_UP:
-		mMySimpleGesture.onSlideUp(true);
-		return true;
-	    case KeyEvent.KEYCODE_DPAD_DOWN:
-		mMySimpleGesture.onSlideDown(true);
-		return true;
-	    case KeyEvent.KEYCODE_DPAD_CENTER:
-		mMySimpleGesture.onTap(true);
-		return true;
-	    }	    
+		Log.e(TAG, "------dispatchKeyEvent -event action="+event.getAction()+" --keyCode="+event.getKeyCode()+"state = ");
+		if (event.getAction() == KeyEvent.ACTION_DOWN) {
+			switch (event.getKeyCode()) {
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+				mMySimpleGesture.onSlideLeft(true);
+				break;
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+				mMySimpleGesture.onSlideRight(true);
+				return true;
+			case KeyEvent.KEYCODE_DPAD_UP:
+				mMySimpleGesture.onSlideUp(true);
+				return true;
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				mMySimpleGesture.onSlideDown(true);
+				return true;
+			case KeyEvent.KEYCODE_DPAD_CENTER:
+				mMySimpleGesture.onTap(true);
+				return true;
+			}	    
+		}
+		return super.dispatchKeyEvent(event);
 	}
-	return super.dispatchKeyEvent(event);
-     }
 }
