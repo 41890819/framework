@@ -445,7 +445,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private int mDoubleTapOnHomeBehavior;
 
     // What we do when the user long presses on camera
-    private boolean mIsLongPressOnCameraBehavior = false;
+    private static final int LongPressCameraIDEL = 1;
+    private static final int LongPressCameraVIDEO1 = 2;
+    private static final int LongPressCameraVIDEO2 = 3;
+    private int mIsLongPressOnCameraBehavior = LongPressCameraIDEL;
     // Screenshot trigger states
     // Time to volume and power must be pressed within this interval of each other.
     private static final long SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS = 150;
@@ -504,7 +507,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 		    break;
 	        case MSG_ACTION_VIDEO:
 		    if(DEBUG)Log.d(TAG,"---------MSG_ACTION_VIDEO");
-		    mIsLongPressOnCameraBehavior = true;
+		    if (mIsLongPressOnCameraBehavior == LongPressCameraIDEL)
+			mIsLongPressOnCameraBehavior = LongPressCameraVIDEO1;
 		    Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 		    intentVideo.putExtra("from", "PhoneWindowManager");
 		    intentVideo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -2065,18 +2069,26 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (keyCode == KeyEvent.KEYCODE_CAMERA){
 	    if(down && mIsActionMoveOnCameraBehavior == false){
 		mIsActionMoveOnCameraBehavior = true;
-		mIsLongPressOnCameraBehavior = false;
-		Message video = mHandler.obtainMessage();
-		video.what = MSG_ACTION_VIDEO;
-		mHandler.sendMessageDelayed(video,ViewConfiguration.getGlobalActionKeyTimeout());
+		if (mIsLongPressOnCameraBehavior == LongPressCameraIDEL){
+		    Message video = mHandler.obtainMessage();
+		    video.what = MSG_ACTION_VIDEO;
+		    mHandler.sendMessageDelayed(video,ViewConfiguration.getGlobalActionKeyTimeout());
+		}else if (mIsLongPressOnCameraBehavior == LongPressCameraVIDEO1){
+		    mIsLongPressOnCameraBehavior = LongPressCameraVIDEO2;
+		    Message video = mHandler.obtainMessage();
+		    video.what = MSG_ACTION_VIDEO;
+		    mHandler.sendMessage(video);
+		}
 	    }
 	    if(event.getAction() == KeyEvent.ACTION_UP){
 		mIsActionMoveOnCameraBehavior = false;
-		if(mIsLongPressOnCameraBehavior == false){
+		if(mIsLongPressOnCameraBehavior == LongPressCameraIDEL){
 		    Message camera = mHandler.obtainMessage();
 		    camera.what = MSG_ACTION_CAMERA;
 		    mHandler.sendMessage(camera);
 		    mHandler.removeMessages(MSG_ACTION_VIDEO);
+		}else if (mIsLongPressOnCameraBehavior == LongPressCameraVIDEO2){
+		    mIsLongPressOnCameraBehavior = LongPressCameraIDEL;
 		}
 	    }
 	    return -1;
