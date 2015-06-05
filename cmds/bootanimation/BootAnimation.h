@@ -25,7 +25,7 @@
 
 #include <EGL/egl.h>
 #include <GLES/gl.h>
-
+#include <MusicThread.h>
 class SkBitmap;
 
 namespace android {
@@ -39,17 +39,18 @@ class SurfaceControl;
 class BootAnimation : public Thread, public IBinder::DeathRecipient
 {
 public:
-                BootAnimation();
+                BootAnimation(bool isShutdown);
     virtual     ~BootAnimation();
 
     sp<SurfaceComposerClient> session() const;
+    /* void        isShutdown(bool shutdown); */
 
 private:
     virtual bool        threadLoop();
     virtual status_t    readyToRun();
     virtual void        onFirstRef();
     virtual void        binderDied(const wp<IBinder>& who);
-
+    bool        mShutdown;
     struct Texture {
         GLint   w;
         GLint   h;
@@ -97,6 +98,7 @@ private:
     sp<Surface> mFlingerSurface;
     bool        mAndroidAnimation;
     ZipFileRO   mZip;
+    sp<MusicThread> mThread;
 };
 
 // ---------------------------------------------------------------------------

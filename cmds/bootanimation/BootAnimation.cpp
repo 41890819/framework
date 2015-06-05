@@ -54,6 +54,7 @@
 
 #define USER_BOOTANIMATION_FILE "/data/local/bootanimation.zip"
 #define SYSTEM_BOOTANIMATION_FILE "/system/media/bootanimation.zip"
+#define SYSTEM_SHOTDOWNANIMATION_FILE "/system/media/shutdownanimation.zip"
 #define SYSTEM_ENCRYPTED_BOOTANIMATION_FILE "/system/media/bootanimation-encrypted.zip"
 #define EXIT_PROP_NAME "service.bootanim.exit"
 
@@ -65,9 +66,13 @@ namespace android {
 
 // ---------------------------------------------------------------------------
 
-BootAnimation::BootAnimation() : Thread(false)
+BootAnimation::BootAnimation(bool isShutdown) : Thread(false)
 {
     mSession = new SurfaceComposerClient();
+    mThread = new MusicThread();
+    mThread->isShutdown(isShutdown);
+    mThread->run("musicthread", ANDROID_PRIORITY_AUDIO);
+    mShutdown = isShutdown;
 }
 
 BootAnimation::~BootAnimation() {
@@ -216,6 +221,7 @@ status_t BootAnimation::initTexture(void* buffer, size_t len)
 
 status_t BootAnimation::readyToRun() {
     mAssets.addDefaultAssets();
+    ALOGD("readyToRun----");
 
     sp<IBinder> dtoken(SurfaceComposerClient::getBuiltInDisplay(
             ISurfaceComposer::eDisplayIdMain));
@@ -276,7 +282,7 @@ status_t BootAnimation::readyToRun() {
     property_get("vold.decrypt", decrypt, "");
 
     bool encryptedAnimation = atoi(decrypt) != 0 || !strcmp("trigger_restart_min_framework", decrypt);
-
+    if(mShutdown == false) {
     if ((encryptedAnimation &&
             (access(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, R_OK) == 0) &&
             (mZip.open(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE) == NO_ERROR)) ||
@@ -288,12 +294,19 @@ status_t BootAnimation::readyToRun() {
             (mZip.open(SYSTEM_BOOTANIMATION_FILE) == NO_ERROR))) {
         mAndroidAnimation = false;
     }
-
+    }else{
+	status_t err = mZip.open(SYSTEM_SHOTDOWNANIMATION_FILE);
+	if (err == NO_ERROR) {
+	    mAndroidAnimation = false;	
+	}
+	mShutdown = false;
+    }
     return NO_ERROR;
 }
 
 bool BootAnimation::threadLoop()
 {
+    ALOGD("threadLoop----");
     bool r;
     if (mAndroidAnimation) {
         r = android();
@@ -393,7 +406,6 @@ void BootAnimation::checkExit() {
 bool BootAnimation::movie()
 {
     ZipFileRO& zip(mZip);
-
     size_t numEntries = zip.getNumEntries();
     ZipEntryRO desc = zip.findEntryByName("desc.txt");
     FileMap* descMap = zip.createEntryFileMap(desc);

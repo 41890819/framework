@@ -16,7 +16,7 @@
 
  
 package com.android.server.power;
-
+import java.io.File;
 import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -209,18 +209,22 @@ public final class ShutdownThread extends Thread {
             }
             sIsStarted = true;
         }
-
-        // throw up an indeterminate system dialog to indicate radio is
-        // shutting down.
-        ProgressDialog pd = new ProgressDialog(context);
-        pd.setTitle(context.getText(com.android.internal.R.string.power_off));
-        pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
-        pd.setIndeterminate(true);
-        pd.setCancelable(false);
-        pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-
-        pd.show();
-
+	File f = new File("/system/media/shutdownanimation.zip");
+	if (f.exists()) {
+	    Log.d(TAG, "----start shutdownanim");
+	    android.os.SystemProperties.set("ctl.start", "shutdownanim");
+	}else {
+	      // throw up an indeterminate system dialog to indicate radio is
+	      // shutting down.
+	    ProgressDialog pd = new ProgressDialog(context);
+	    pd.setTitle(context.getText(com.android.internal.R.string.power_off));
+	    pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));
+	    pd.setIndeterminate(true);
+	    pd.setCancelable(false);
+	    pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+	    
+	    pd.show();
+	}
         sInstance.mContext = context;
         sInstance.mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
 

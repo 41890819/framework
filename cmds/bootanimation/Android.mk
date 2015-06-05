@@ -3,7 +3,8 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
 	bootanimation_main.cpp \
-	BootAnimation.cpp
+	BootAnimation.cpp \
+	MusicThread.cpp
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 
@@ -17,8 +18,8 @@ LOCAL_SHARED_LIBRARIES := \
 	libskia \
     libEGL \
     libGLESv1_CM \
-    libgui
-
+    libgui \
+   libmedia
 LOCAL_C_INCLUDES := \
 	$(call include-path-for, corecg graphics)
 
