@@ -65,7 +65,22 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 		if (mVoiceRecognizer != null) {
 			try {
 				mRecStoped = false;
-				mVoiceRecognizer.trigger(client);
+				mVoiceRecognizer.start(client, false);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+        /**
+	 * 开始语音识别，为异步开启，执行完此方法后，真正开启动作为异步执行
+	 */
+	@Override
+	public void startRecognizeForce(RecognizeClient client) {
+		if (mVoiceRecognizer != null) {
+			try {
+				mRecStoped = false;
+				mVoiceRecognizer.start(client, true);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}

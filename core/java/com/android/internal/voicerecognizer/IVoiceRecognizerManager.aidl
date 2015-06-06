@@ -11,6 +11,7 @@ interface IVoiceRecognizerManager
 	void registerClient(in RecognizeClient client);
 	void unRegisterClient(in RecognizeClient client);
 	void startRecognize(in RecognizeClient client);
+	void startRecognizeForce(in RecognizeClient client);
 	void stopRecognize(in RecognizeClient client);
 	void stopRecognizeImmediate(in RecognizeClient client);
 

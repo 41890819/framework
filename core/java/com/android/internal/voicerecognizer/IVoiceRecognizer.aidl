@@ -6,7 +6,7 @@ interface IVoiceRecognizer {
     boolean register(in RecognizeClient client);
     boolean unRegister(in RecognizeClient client);
     
-    boolean trigger(in RecognizeClient client);
+    boolean start(in RecognizeClient client, boolean force);
     boolean stop(in RecognizeClient client);
     boolean stopImmediate(in RecognizeClient client);
 
