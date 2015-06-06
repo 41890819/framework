@@ -13,6 +13,7 @@ public class RecognizeClient implements Parcelable {
         public static final String CMD_EXIT = "退出";
 	public static final int REC_TYPE_COMMAND = 0;
 	public static final int REC_TYPE_DICTATION = 1;
+	public static final int REC_TYPE_DIAL = 2;
 
 	private long mId;
 	private String mPackageName = null;
@@ -33,7 +34,8 @@ public class RecognizeClient implements Parcelable {
 		mUserId = userId;
 		mType = type;
 		mListener = listener;
-		mCommands.add(CMD_EXIT);
+		if (type == REC_TYPE_COMMAND)
+			mCommands.add(CMD_EXIT);
 	}
 
 	public RecognizeClient(long id, int userId, int type,
