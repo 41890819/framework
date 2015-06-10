@@ -212,6 +212,7 @@ public final class ShutdownThread extends Thread {
 	File f = new File("/system/media/shutdownanimation.zip");
 	if (f.exists()) {
 	    Log.d(TAG, "----start shutdownanim");
+            android.os.SystemProperties.set("service.bootanim.exit", "0");
 	    android.os.SystemProperties.set("ctl.start", "shutdownanim");
 	}else {
 	      // throw up an indeterminate system dialog to indicate radio is
