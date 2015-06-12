@@ -148,4 +148,32 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 		}	
 		return null;
 	}
+
+	/**
+	 * 开始语音播报
+	 */	
+	@Override
+	public void playTTS(String tts) {
+		if (mVoiceRecognizer != null) {
+			try {
+				mVoiceRecognizer.playTTS(tts);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 停止语音播报
+	 */	
+	@Override
+	public void stopTTS() {
+		if (mVoiceRecognizer != null) {
+			try {
+				mVoiceRecognizer.stopTTS();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
