@@ -71,7 +71,9 @@ BootAnimation::BootAnimation(bool isShutdown) : Thread(false)
     mSession = new SurfaceComposerClient();
     mThread = new MusicThread();
     mThread->isShutdown(isShutdown);
-    mThread->run("musicthread", ANDROID_PRIORITY_AUDIO);
+    if(isShutdown == false)
+	mThread->run("musicthread", ANDROID_PRIORITY_AUDIO);
+
     mShutdown = isShutdown;
 }
 
@@ -283,23 +285,23 @@ status_t BootAnimation::readyToRun() {
 
     bool encryptedAnimation = atoi(decrypt) != 0 || !strcmp("trigger_restart_min_framework", decrypt);
     if(mShutdown == false) {
-    if ((encryptedAnimation &&
-            (access(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, R_OK) == 0) &&
-            (mZip.open(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE) == NO_ERROR)) ||
+	if ((encryptedAnimation &&
+	     (access(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, R_OK) == 0) &&
+	     (mZip.open(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE) == NO_ERROR)) ||
 
             ((access(USER_BOOTANIMATION_FILE, R_OK) == 0) &&
-            (mZip.open(USER_BOOTANIMATION_FILE) == NO_ERROR)) ||
+	     (mZip.open(USER_BOOTANIMATION_FILE) == NO_ERROR)) ||
 
             ((access(SYSTEM_BOOTANIMATION_FILE, R_OK) == 0) &&
-            (mZip.open(SYSTEM_BOOTANIMATION_FILE) == NO_ERROR))) {
-        mAndroidAnimation = false;
-    }
+	     (mZip.open(SYSTEM_BOOTANIMATION_FILE) == NO_ERROR))) {
+	    mAndroidAnimation = false;
+	}
     }else{
 	status_t err = mZip.open(SYSTEM_SHOTDOWNANIMATION_FILE);
 	if (err == NO_ERROR) {
 	    mAndroidAnimation = false;	
 	}
-	mShutdown = false;
+	// mShutdown = false;
     }
     return NO_ERROR;
 }
@@ -307,6 +309,8 @@ status_t BootAnimation::readyToRun() {
 bool BootAnimation::threadLoop()
 {
     ALOGD("threadLoop----");
+    if(mShutdown)
+	mThread->run("musicthread", ANDROID_PRIORITY_AUDIO);
     bool r;
     if (mAndroidAnimation) {
         r = android();
