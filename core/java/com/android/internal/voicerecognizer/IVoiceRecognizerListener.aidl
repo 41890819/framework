@@ -15,4 +15,8 @@ interface IVoiceRecognizerListener {
     boolean onCanceled();
     
     boolean onRecordingStop();
+
+    void onTTSPlayBegin();
+
+    void onTTSPlayEnd();
 }

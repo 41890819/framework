@@ -17,4 +17,7 @@ interface IVoiceRecognizerManager
 
 	boolean setParameter(String key, String value);
     	String getParameter(String key);
+
+     	void playTTS(String tts);
+    	void stopTTS();
 }
