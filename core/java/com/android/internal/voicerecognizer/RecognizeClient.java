@@ -28,6 +28,12 @@ public class RecognizeClient implements Parcelable {
 	private boolean mShowWidget = true;
 	private boolean mUseTimeout = true;
 
+	// for voice dictation
+	private String mTitle = null;
+	private String mSubTitle = null;
+	private String mCommit = null;
+	private boolean mCustomLayout = false;
+
 	public RecognizeClient(long id, int userId, int type,
 			IVoiceRecognizerListener listener) {
 		mId = id;
@@ -49,6 +55,18 @@ public class RecognizeClient implements Parcelable {
 		mUseTimeout = useTimeout;
 		if (cmds != null)
 		    mCommands.addAll(cmds);
+	}
+
+	// for voice dictation
+	public RecognizeClient(long id, String title, String subTitle,
+			String commit, boolean customLayout, IVoiceRecognizerListener listener) {
+		mId = id;
+		mType = REC_TYPE_DICTATION;
+		mTitle = title;
+		mSubTitle = subTitle;
+		mCommit = commit;
+		mCustomLayout = customLayout;
+		mListener = listener;
 	}
 
 	public RecognizeClient(Parcel in) {
@@ -173,6 +191,38 @@ public class RecognizeClient implements Parcelable {
 			return mDisplayCommands;
 	}
 
+	public void setTitle(String title) {
+		mTitle = title;
+	}
+
+	public final String getTitle() {
+		return mTitle;
+	}
+
+	public void setSubTitle(String subTitle) {
+		mSubTitle = subTitle;
+	}
+
+	public final String getSubTitle() {
+		return mSubTitle;
+	}
+
+	public void setCommit(String commit) {
+		mCommit = commit;
+	}
+
+	public final String getCommit() {
+		return mCommit;
+	}
+
+	public void setCustomLayout(boolean customLayout) {
+		customLayout = mCustomLayout;
+	}
+	
+	public final boolean getCustomLayout() {
+		return mCustomLayout;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -200,13 +250,27 @@ public class RecognizeClient implements Parcelable {
 		}
 		if (source.readInt() != 0)
 			mDisplayStr = source.readString();
+		  // for voice dictation
+		if (source.readInt() != 0)
+			mTitle = source.readString();
+		if (source.readInt() != 0)
+			mSubTitle = source.readString();
+		if (source.readInt() != 0)
+			mCommit = source.readString();		
+		mCustomLayout = (source.readInt() == 1);
 	}
 
 	@Override
 	public String toString() {
-		return "[id:"+mId+" packageName:"+mPackageName
-			+" appName:"+mAppName+" commands:"+mCommands
-			+" displayCmds:"+mDisplayCommands+" displayStr:"+mDisplayStr+"]";
+		if (mType == REC_TYPE_COMMAND || mType == REC_TYPE_DIAL)
+			return "[id:"+mId+" packageName:"+mPackageName
+				+" appName:"+mAppName+" commands:"+mCommands
+				+" displayCmds:"+mDisplayCommands+" displayStr:"+mDisplayStr+"]";
+		else if (mType == REC_TYPE_DICTATION)
+			return "[id:"+mId+" title:"+mTitle+" subTitle:"+mSubTitle
+				+" commit:"+mCommit+" customLayout:"+mCustomLayout+"]";
+		else
+			return "[id:"+mId+" type:"+mType+"]";
 	}
 
 	@Override
@@ -243,6 +307,23 @@ public class RecognizeClient implements Parcelable {
 			dest.writeString(mDisplayStr);
 		} else
 			dest.writeInt(0);
+		  // for voice dictation
+		if (mTitle != null) {
+			dest.writeInt(1);
+			dest.writeString(mTitle);
+		} else
+			dest.writeInt(0);
+		if (mSubTitle != null) {
+			dest.writeInt(1);
+			dest.writeString(mSubTitle);
+		} else
+			dest.writeInt(0);
+		if (mCommit != null) {
+			dest.writeInt(1);
+			dest.writeString(mCommit);
+		} else
+			dest.writeInt(0);
+		dest.writeInt(mCustomLayout ? 1 : 0);
 	}
 
 	public static final Parcelable.Creator<RecognizeClient> CREATOR = new Parcelable.Creator<RecognizeClient>() {
