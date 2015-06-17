@@ -49,7 +49,6 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 	public void unRegisterClient(RecognizeClient client) {
 		if (mVoiceRecognizer != null) {
 			try {
-				stopRecognize(client);
 				mVoiceRecognizer.unRegister(client);
 			} catch (RemoteException e) {
 				e.printStackTrace();
