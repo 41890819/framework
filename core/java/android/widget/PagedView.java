@@ -907,7 +907,8 @@ public class PagedView extends ViewGroup {
 //	       Log.e("sn", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 	      // Skip touch handling if there are no pages to swipe
 	    mGestureDetector.onTouchEvent(event);
-	    if ((!mIsDataReady || getChildCount() <= 0 || mPageWidth <= 0) && event.getAction()!=20)
+	    if(event.getAction() == 20) return true;
+	    if ((!mIsDataReady || getChildCount() <= 0 || mPageWidth <= 0))
 		return super.onTouchEvent(event);
 	      // Skip touch handling if there are no pages to swipe
 	    acquireVelocityTrackerAndAddMovement(event);
