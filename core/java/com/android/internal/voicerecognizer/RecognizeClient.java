@@ -216,7 +216,7 @@ public class RecognizeClient implements Parcelable {
 	}
 
 	public void setCustomLayout(boolean customLayout) {
-		customLayout = mCustomLayout;
+		mCustomLayout = customLayout;
 	}
 	
 	public final boolean getCustomLayout() {
