@@ -23,7 +23,7 @@ import android.os.Message;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
-
+import android.view.WindowManager;
 public class GestureDetector {
 
     private static String TAG="GestureDetector";
@@ -32,6 +32,15 @@ public class GestureDetector {
     private static final int TOUCH_SLOP = 7;
     private static final int MAXIMUM_FLING_VELOCITY = 8000;
     private OnDoubleTapListener mDoubleTapListener = null;
+    private Context mContext;
+    public static final int GESTURE_SINGLE_TAP = 0;
+    public static final int GESTURE_DOUBLE_TAP = 1;
+    public static final int GESTURE_LONG_PRESS = 2;
+    public static final int GESTURE_SLIDE_UP = 3;
+    public static final int GESTURE_SLIDE_DOWN = 4;
+    public static final int GESTURE_SLIDE_LEFT = 5;
+    public static final int GESTURE_SLIDE_RIGHT = 6;
+
     public interface OnGestureListener {
 
         boolean onDown(boolean fromPhone);
@@ -173,6 +182,7 @@ public class GestureDetector {
    
     public GestureDetector(Context context, OnGestureListener listener) {
 	mListener = listener;
+	mContext = context;
         init(context);
 	mHandler = new GestureHandler();
         if (listener instanceof OnDoubleTapListener) {
@@ -360,9 +370,8 @@ public class GestureDetector {
     }
 
     private boolean isConsiderDoubleTapOrTap(){
-	Log.d(TAG,"mDoubleTapListener:"+mDoubleTapListener);
 	if(mDoubleTapListener == null){
-	    Log.d(TAG,"user do'nt need doubleTap,so onTap() immediately");
+	    if(DEBUG)Log.d(TAG,"user do'nt need doubleTap,so onTap() immediately");
 	    return  mListener.onTap(false);
 	}else{
 	    if(mHandler.hasMessages(TAP) == false){
@@ -416,27 +425,29 @@ public class GestureDetector {
 	if (mListener == null)
 	    return false;
 	// the gesture save as event.x
-	int gesture = (int) event.getX();
-	switch(gesture) {
-	case 0:
+	 int x =  (int) event.getX();
+	 int y = (int)event.getY();
+	 int halfScreenWidth = mContext.getResources().getDisplayMetrics().widthPixels/2;
+	 int gesture = x - halfScreenWidth;
+	if(gesture == GESTURE_SINGLE_TAP){
 	    return mListener.onTap(true);
-	case 1:
+	}else if(gesture == GESTURE_DOUBLE_TAP){
 	    if(mDoubleTapListener == null){
 		return false;
 	    }else{
-	    return mDoubleTapListener.onDoubleTap(true);
+		return mDoubleTapListener.onDoubleTap(true);
 	    }
-	case 2:
+	}else if(gesture == GESTURE_LONG_PRESS){
 	    return mListener.onLongPress(true);
-	case 3:
+	}else if(gesture == GESTURE_SLIDE_UP){
 	    return mListener.onSlideUp(true);
-	case 4:
+	}else if(gesture == GESTURE_SLIDE_DOWN){
 	    return mListener.onSlideDown(true);
-	case 5:
+	}else if(gesture == GESTURE_SLIDE_LEFT){
 	    return mListener.onSlideLeft(true);
-	case 6:
+	}else if(gesture == GESTURE_SLIDE_RIGHT){
 	    return mListener.onSlideRight(true);
-	default:
+	}else{
 	    return false;
 	}
     }

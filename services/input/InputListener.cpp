@@ -176,6 +176,7 @@ void QueuedInputListener::flush() {
         delete args;
     }
     mArgsQueue.clear();
+    mInnerListener->updateScreenValue(mWidth, mHeight);
 }
 
 

@@ -2460,6 +2460,7 @@ void CursorInputMapper::configure(nsecs_t when,
 	    mDisplayWidth = 360;
 	    mDisplayHeight = 240;
 	}
+	getListener()->updateScreenValue(mDisplayWidth, mDisplayHeight);
         bumpGeneration();
     }
 }
