@@ -3764,8 +3764,8 @@ void InputDispatcher::notifyGestureMotion(int gesture) {
 	
     PointerCoords pointerCoords;
     pointerCoords.clear();
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, gesture);
-    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, positionY);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, gesture+mWidth/2);
+    pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, positionY+mHeight/2);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_PRESSURE, 1.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_SIZE, 0.0f);
     pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_TOUCH_MAJOR, 20.0f);

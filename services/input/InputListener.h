@@ -157,6 +157,8 @@ class InputListenerInterface : public virtual RefBase {
 protected:
     InputListenerInterface() { }
     virtual ~InputListenerInterface() { }
+    float mWidth;//the width of screen
+    float mHeight;//the height of screen
 
 public:
     virtual void notifyConfigurationChanged(const NotifyConfigurationChangedArgs* args) = 0;
@@ -164,6 +166,8 @@ public:
     virtual void notifyMotion(const NotifyMotionArgs* args) = 0;
     virtual void notifySwitch(const NotifySwitchArgs* args) = 0;
     virtual void notifyDeviceReset(const NotifyDeviceResetArgs* args) = 0;
+
+    void updateScreenValue(int width, int height) { mWidth = width; mHeight = height; }
 };
 
 
