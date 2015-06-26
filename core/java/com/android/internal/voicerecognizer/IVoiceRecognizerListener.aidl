@@ -16,7 +16,11 @@ interface IVoiceRecognizerListener {
     
     boolean onRecordingStop();
 
+    void onPreempted();
+
     void onTTSPlayBegin();
 
     void onTTSPlayEnd();
+
+    void onTTSPlayCanceled();
 }
