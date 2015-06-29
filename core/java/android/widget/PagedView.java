@@ -167,6 +167,7 @@ public class PagedView extends ViewGroup {
 	protected static final int sScrollIndicatorFlashDuration = 650;
 	private boolean mScrollingPaused = false;
 	protected static final int PAGE_SNAP_ANIMATION_DURATION = 550;
+        protected static final int PAGE_BACK_ANIMATION_DURATION = 950;
 	private final Object mLock = new Object();
 	private boolean mIsDataReady = false;
 	private Animation mInAnim = null;
@@ -1977,6 +1978,10 @@ public class PagedView extends ViewGroup {
 	 * Set the current page.
 	 */
         public void setCurrentScreen(int currentScreen) {
+	    setCurrentScreen(currentScreen,false);
+        }
+
+        public void setCurrentScreen(int currentScreen,boolean animate) {
 	    if (!mScroller.isFinished()) {
 		mScroller.abortAnimation();
 	    }
@@ -1993,7 +1998,10 @@ public class PagedView extends ViewGroup {
 	    	mCurScreen = Math.max(0, Math.min(currentScreen, mPagedViewList.size() - 1));
 
 	    requestLayout();
-	    scrollTo((int) getChildAt(mCurScreen).getX(), 0);
+	    if(animate)
+		mScroller.startScroll(getScrollX(), 0, ((int)getChildAt(mCurScreen).getX())-getScrollX(), 0, PAGE_BACK_ANIMATION_DURATION);
+	    else
+		scrollTo((int) getChildAt(mCurScreen).getX(), 0);
 	    updateScrollingIndicator();
 	    invalidate();
 	    Log.e("sn", "call onPageSelected mCurScreen="+mCurScreen+" mNextScreen="+mNextScreen+" --3");
