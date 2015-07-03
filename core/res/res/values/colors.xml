@@ -196,7 +196,7 @@
     <color name="keyguard_avatar_frame_pressed_color">#ff35b5e5</color>
     <!-- application  color-->
     <color name="background">#ff000000</color>
-    <color name="background_two">#ff1a742b</color>
+    <color name="background_two">#ff000000</color>
     <color name="text">#ffa0a0a0</color>
 </resources>
 

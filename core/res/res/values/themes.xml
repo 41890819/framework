@@ -403,7 +403,7 @@ please see themes_device_defaults.xml.
     <style name="Theme.NoTitleBar.Fullscreen">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="windowBackground">@android:color/background_two</item>
+        <item name="windowBackground">@android:color/background</item>
     </style>
     
     <!-- Theme for a light background with dark text on top.  Set your activity

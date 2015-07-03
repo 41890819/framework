@@ -29981,6 +29981,13 @@ package android.widget {
     method public boolean onTouchEvent(android.view.MotionEvent);
     method public void setIsLongpressEnabled(boolean);
     method public void setOnDoubleTapListener(android.widget.GestureDetector.OnDoubleTapListener);
+    field public static final int GESTURE_DOUBLE_TAP = 1; // 0x1
+    field public static final int GESTURE_LONG_PRESS = 2; // 0x2
+    field public static final int GESTURE_SINGLE_TAP = 0; // 0x0
+    field public static final int GESTURE_SLIDE_DOWN = 4; // 0x4
+    field public static final int GESTURE_SLIDE_LEFT = 5; // 0x5
+    field public static final int GESTURE_SLIDE_RIGHT = 6; // 0x6
+    field public static final int GESTURE_SLIDE_UP = 3; // 0x3
   }
 
   public static class GestureDetector.CompleteOnGestureListener extends android.widget.GestureDetector.SimpleOnGestureListener implements android.widget.GestureDetector.OnDoubleTapListener {
@@ -31786,11 +31793,13 @@ package com.android.internal.voicerecognizer {
 
   public abstract interface IVoiceRecognizer implements android.os.IInterface {
     method public abstract java.lang.String getParameter(java.lang.String) throws android.os.RemoteException;
+    method public abstract void playTTS(java.lang.String) throws android.os.RemoteException;
     method public abstract boolean register(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
     method public abstract boolean setParameter(java.lang.String, java.lang.String) throws android.os.RemoteException;
+    method public abstract boolean start(com.android.internal.voicerecognizer.RecognizeClient, boolean) throws android.os.RemoteException;
     method public abstract boolean stop(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
     method public abstract boolean stopImmediate(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
-    method public abstract boolean trigger(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
+    method public abstract void stopTTS() throws android.os.RemoteException;
     method public abstract boolean unRegister(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
   }
 
@@ -31804,9 +31813,13 @@ package com.android.internal.voicerecognizer {
   public abstract interface IVoiceRecognizerListener implements android.os.IInterface {
     method public abstract boolean onCanceled() throws android.os.RemoteException;
     method public abstract boolean onEnd(java.lang.String) throws android.os.RemoteException;
+    method public abstract void onPreempted() throws android.os.RemoteException;
     method public abstract void onReadyForSpeaking() throws android.os.RemoteException;
     method public abstract boolean onRecordingStop() throws android.os.RemoteException;
     method public abstract boolean onResult(java.lang.String, float) throws android.os.RemoteException;
+    method public abstract void onTTSPlayBegin() throws android.os.RemoteException;
+    method public abstract void onTTSPlayCanceled() throws android.os.RemoteException;
+    method public abstract void onTTSPlayEnd() throws android.os.RemoteException;
     method public abstract void onUpdateVolume(int) throws android.os.RemoteException;
     method public abstract void onWakeup() throws android.os.RemoteException;
   }
@@ -31821,6 +31834,7 @@ package com.android.internal.voicerecognizer {
   public class RecognizeClient implements android.os.Parcelable {
     ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener, java.lang.String, java.lang.String, java.util.ArrayList<java.lang.String>, int, boolean, boolean);
+    ctor public RecognizeClient(long, java.lang.String, java.lang.String, java.lang.String, boolean, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     ctor public RecognizeClient(android.os.Parcel);
     method public void addCommand(java.lang.String);
     method public void addCommands(java.util.ArrayList<java.lang.String>);
@@ -31830,6 +31844,8 @@ package com.android.internal.voicerecognizer {
     method public java.lang.String findCommand(java.lang.String);
     method public final java.lang.String getAppName();
     method public final java.util.ArrayList<java.lang.String> getCommands();
+    method public final java.lang.String getCommit();
+    method public final boolean getCustomLayout();
     method public final java.util.ArrayList<java.lang.String> getDisplayCommands();
     method public java.lang.String getDisplayStr();
     method public final int getIcon();
@@ -31837,23 +31853,29 @@ package com.android.internal.voicerecognizer {
     method public final com.android.internal.voicerecognizer.IVoiceRecognizerListener getListener();
     method public final java.lang.String getPackageName();
     method public boolean getShowWidget();
+    method public final java.lang.String getSubTitle();
+    method public final java.lang.String getTitle();
     method public final int getType();
     method public boolean getUseTimeout();
     method public final int getUserId();
     method public void setAppName(java.lang.String);
     method public void setCommands(java.util.ArrayList<java.lang.String>);
+    method public void setCommit(java.lang.String);
+    method public void setCustomLayout(boolean);
     method public void setDisplayCommands(java.util.ArrayList<java.lang.String>);
     method public void setDisplayStr(java.lang.String);
     method public void setIcon(int);
     method public void setListener(com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     method public void setPackageName(java.lang.String);
     method public void setShowWidget(boolean);
+    method public void setSubTitle(java.lang.String);
+    method public void setTitle(java.lang.String);
     method public void setType(int);
     method public void setUseTimeout(boolean);
     method public void writeToParcel(android.os.Parcel, int);
-    field public static final java.lang.String CMD_EXIT = "\u9000\u51fa";
     field public static final android.os.Parcelable.Creator CREATOR;
     field public static final int REC_TYPE_COMMAND = 0; // 0x0
+    field public static final int REC_TYPE_DIAL = 2; // 0x2
     field public static final int REC_TYPE_DICTATION = 1; // 0x1
   }
 
