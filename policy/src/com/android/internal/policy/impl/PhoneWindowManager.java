@@ -510,9 +510,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 		    if (mIsLongPressOnCameraBehavior == LongPressCameraIDEL)
 			mIsLongPressOnCameraBehavior = LongPressCameraVIDEO1;
 		    Intent intentVideo = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-		    intentVideo.putExtra("from", "PhoneWindowManager");
-		    intentVideo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		    mContext.startActivity(intentVideo);
+		    mContext.sendBroadcast(intentVideo);
 		    break;
             }
         }
