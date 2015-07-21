@@ -18,9 +18,9 @@ interface IVoiceRecognizerListener {
 
     void onPreempted();
 
-    void onTTSPlayBegin();
+    void onTTSPlayBegin(String tts);
 
-    void onTTSPlayEnd();
+    void onTTSPlayEnd(String tts);
 
-    void onTTSPlayCanceled();
+    void onTTSPlayCanceled(String tts);
 }
