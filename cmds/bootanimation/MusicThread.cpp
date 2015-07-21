@@ -21,6 +21,7 @@ namespace android {
 // ---------------------------------------------------------------------------
     MusicThread::MusicThread()
     {
+       mPlayer = new MediaPlayer();
     }
 
     MusicThread::~MusicThread() {
@@ -31,30 +32,29 @@ namespace android {
 	mShutdown = shutdown;
     }
     bool MusicThread::threadLoop() {
-	MediaPlayer* mp = new MediaPlayer();
 	if(mShutdown){
 	    if(access(POWEROFF_FILE, R_OK) != 0){
 		ALOGE("---read file=%s error",POWEROFF_FILE);
 		return false;
 	    }
-	    if (mp->setDataSource(POWEROFF_FILE, NULL) != NO_ERROR)
+	    if (mPlayer->setDataSource(POWEROFF_FILE, NULL) != NO_ERROR)
 		return false;
 	}else{
 	    if(access(POWERON_FILE, R_OK) != 0){
 		ALOGE("---read file=%s error",POWERON_FILE);
 		return false;
 	    }
-	    if (mp->setDataSource(POWERON_FILE, NULL) != NO_ERROR)
+	    if (mPlayer->setDataSource(POWERON_FILE, NULL) != NO_ERROR)
 		return false;
 	}
 
 	ALOGD("---bootMusic");
-	mp->setAudioStreamType(AUDIO_STREAM_ENFORCED_AUDIBLE);
-	mp->prepare();
+	mPlayer->setAudioStreamType(AUDIO_STREAM_ENFORCED_AUDIBLE);
+	mPlayer->prepare();
 	audio_devices_t device = AudioSystem::getDevicesForStream(AUDIO_STREAM_ENFORCED_AUDIBLE); 
 	AudioSystem::setStreamVolumeIndex(AUDIO_STREAM_ENFORCED_AUDIBLE,1,device);
-	mp->seekTo(0);
-	mp->start();
+	mPlayer->seekTo(0);
+	mPlayer->start();
 	return false;
     }
 // ---------------------------------------------------------------------------

@@ -18,6 +18,7 @@ namespace android {
 
     private:
 	bool mShutdown;
+	sp<MediaPlayer> mPlayer;
         bool threadLoop();
     };
 }; // namespace android
