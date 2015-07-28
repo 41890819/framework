@@ -13,6 +13,7 @@ public class RecognizeClient implements Parcelable {
 	public static final int REC_TYPE_COMMAND = 0;
 	public static final int REC_TYPE_DICTATION = 1;
 	public static final int REC_TYPE_DIAL = 2;
+	public static final int REC_TYPE_GRAMMAR = 3;
 
 	private long mId;
 	private String mPackageName = null;
@@ -26,6 +27,9 @@ public class RecognizeClient implements Parcelable {
 	private int mType = REC_TYPE_COMMAND;
 	private boolean mShowWidget = true;
 	private boolean mUseTimeout = true;
+
+	// for voice grammar
+	private String mGrammar = null;
 
 	// for voice dictation
 	private String mTitle = null;
@@ -63,6 +67,14 @@ public class RecognizeClient implements Parcelable {
 		mSubTitle = subTitle;
 		mCommit = commit;
 		mCustomLayout = customLayout;
+		mListener = listener;
+	}
+
+        // for voice grammar
+	public RecognizeClient(long id, String grammar, IVoiceRecognizerListener listener) {
+		mId = id;
+		mType = REC_TYPE_GRAMMAR;
+		mGrammar = grammar;
 		mListener = listener;
 	}
 
@@ -220,6 +232,14 @@ public class RecognizeClient implements Parcelable {
 		return mCustomLayout;
 	}
 
+	public void setGrammar(String grammar) {
+		mGrammar = grammar;
+	}
+
+	public final String getGrammar() {
+		return mGrammar;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -255,6 +275,9 @@ public class RecognizeClient implements Parcelable {
 		if (source.readInt() != 0)
 			mCommit = source.readString();		
 		mCustomLayout = (source.readInt() == 1);
+		  // for voice grammar
+		if (source.readInt() != 0)
+			mGrammar = source.readString();	
 	}
 
 	@Override
@@ -321,6 +344,12 @@ public class RecognizeClient implements Parcelable {
 		} else
 			dest.writeInt(0);
 		dest.writeInt(mCustomLayout ? 1 : 0);
+		  // for voice grammar
+		if (mGrammar != null) {
+			dest.writeInt(1);
+			dest.writeString(mGrammar);
+		} else
+			dest.writeInt(0);
 	}
 
 	public static final Parcelable.Creator<RecognizeClient> CREATOR = new Parcelable.Creator<RecognizeClient>() {
