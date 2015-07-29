@@ -1181,7 +1181,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		mHandler.removeMessages(0);
 
 		final int action = event.getAction();
-		final float x = event.getX();
+		float xTmp = event.getX();
+		final float x = scrollDirection?(-xTmp):xTmp;
 		final float y = event.getY();
 
 		switch (action & MotionEvent.ACTION_MASK) {
@@ -1253,8 +1254,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				} else {
 					awakenScrollBars();
 				}
-				if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
-				else scrollBy(deltaX, 0);
+				scrollBy(deltaX, 0);
 			} else if (mTouchState == TOUCH_STATE_FLYING_SCROLLING) {
 				int deltaX = (int) (mLastMotionX - x);
 				mLastMotionX = x;
@@ -1263,8 +1263,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				} else {
 					awakenScrollBars();
 				}
-				if(scrollDirection) scrollBy(-deltaX, 0); //相反方向滚动
-				else scrollBy(deltaX, 0);
+				scrollBy(deltaX, 0);
 			} else {
 				determineScrollingStart(event);
 				if (mCanVerticalOverScroll) {
@@ -1292,6 +1291,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000);
 				int velocityX = (int) velocityTracker.getXVelocity();
+				velocityX = scrollDirection?(-velocityX):velocityX;
 				int velocityY = (int) velocityTracker.getYVelocity();
 				final int deltaX = (int) (mDownMotionX - x);
 				if (mCanCycleFlip) {
@@ -1350,12 +1350,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 							if (mPageCountInScreen > 1
 									&& velocityX > FAST_SNAP_VELOCITY)
-							    if(scrollDirection) tmpScreen += velocityX / FAST_SNAP_VELOCITY;
-							    else tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
+							    tmpScreen -= velocityX / FAST_SNAP_VELOCITY;
 							else
-							    if(scrollDirection)
-								tmpScreen++;
-							    else tmpScreen--;
+							    tmpScreen--;
 							snapToScreenNoCircle(tmpScreen, mPageWidth);
 						}
 					} else if (velocityX < -SNAP_VELOCITY
@@ -1373,37 +1370,21 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						} else {
 							int tmpScreen = mCurScreen
 							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-							if(scrollDirection){
-							    if (mPageCountInScreen > 1 && velocityX < -FAST_SNAP_VELOCITY)
-								tmpScreen -= (-velocityX) / FAST_SNAP_VELOCITY;
-							    else
-								tmpScreen--;
-							}else{
 							    if (mPageCountInScreen > 1
 								&& velocityX < -FAST_SNAP_VELOCITY)
 								tmpScreen += (-velocityX) / FAST_SNAP_VELOCITY;
 							    else
 								tmpScreen++;
-							}
 							snapToScreenNoCircle(tmpScreen, mPageWidth);
 						}
 					} else {
 						int tmpScreen = mCurScreen;
-						if(scrollDirection){
-						    if (deltaX > 0)
-							tmpScreen = mCurScreen
-							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-						    else 
-							tmpScreen = mCurScreen
-							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-						}else{
 						    if (deltaX > 0)
 							tmpScreen = mCurScreen
 							    + (Math.abs(deltaX) / (mPageWidth+mPageMargin));
 						    else
 							tmpScreen = mCurScreen
 							    - (Math.abs(deltaX) / (mPageWidth+mPageMargin));
-						}
 						Log.e("sn", "............................. tmpScreen="
 								+ tmpScreen);
 						snapToDestinationNoCircle(tmpScreen, mPageWidth);
@@ -1413,6 +1394,7 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000);
 				int velocityX = (int) velocityTracker.getXVelocity();
+				velocityX = scrollDirection?(-velocityX):velocityX;
 				getVisiblePages(mTempVisiblePagesRange);
 				int tmpScreen = mCurScreen = mTempVisiblePagesRange[0];
 				int width = (int) (mPageWidth * mFlyPageSizeScale);
@@ -1665,7 +1647,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 	}
 
 	protected void determineScrollingStart(MotionEvent e) {
-		float deltaX = Math.abs(e.getX() - mDownMotionX);
+	        float x = scrollDirection?(-(e.getX())):e.getX();
+	        float deltaX = Math.abs(x - mDownMotionX);
 		float deltaY = Math.abs(e.getY() - mDownMotionY);
 
 		if (Float.compare(deltaX, 0f) == 0)
@@ -1708,7 +1691,8 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 		 * Locally do absolute value. mLastMotionX is set to the y value of the
 		 * down event.
 		 */
-		final float x = e.getX();
+	        float xTmp = scrollDirection?(-(e.getX())):e.getX();
+	        final float x = xTmp;
 		// final float y = e.getY();
 		final int xDiff = (int) Math.abs(x - mDownMotionX);
 		// final int yDiff = (int) Math.abs(y - mDownMotionY);
