@@ -24,15 +24,18 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
+import android.os.SystemProperties;
 public class GestureDetector {
 
     private static String TAG="GestureDetector";
     private boolean DEBUG = false;
     private static final int MINIMUM_FLING_VELOCITY = 100;
-    private static final int TOUCH_SLOP = 7;
+    private static final int TOUCH_SLOP1 = 7;
+    private static final int TOUCH_SLOP2 = 20;
     private static final int MAXIMUM_FLING_VELOCITY = 8000;
     private OnDoubleTapListener mDoubleTapListener = null;
     private Context mContext;
+    private String mTouchBoardId;
     public static final int GESTURE_SINGLE_TAP = 0;
     public static final int GESTURE_DOUBLE_TAP = 1;
     public static final int GESTURE_LONG_PRESS = 2;
@@ -196,18 +199,17 @@ public class GestureDetector {
         mIsLongpressEnabled = true;
 
         // Fallback to support pre-donuts releases
-        int touchSlop;
         if (context == null) {
-            touchSlop = TOUCH_SLOP;
             mMinimumFlingVelocity = MINIMUM_FLING_VELOCITY;//wConfiguration.getMinimumFlingVelocity();
             mMaximumFlingVelocity = MAXIMUM_FLING_VELOCITY;
         } else {
 	    final ViewConfiguration configuration = ViewConfiguration.get(context);
-            touchSlop = TOUCH_SLOP;
             mMinimumFlingVelocity = MINIMUM_FLING_VELOCITY;
             mMaximumFlingVelocity = MAXIMUM_FLING_VELOCITY;//configuration.getScaledMaximumFlingVelocity()
         }
-        mTouchSlopSquare = touchSlop * touchSlop;
+	mTouchBoardId = SystemProperties.get("ro.touchboard.id","");
+	if(DEBUG)Log.d(TAG,"TOUCHBOARD_ID="+mTouchBoardId);
+	mTouchSlopSquare = mTouchBoardId.equals("ITE7236")?TOUCH_SLOP2 * TOUCH_SLOP2 : TOUCH_SLOP1 * TOUCH_SLOP1;
     }
 
     public void setIsLongpressEnabled(boolean isLongpressEnabled) {
@@ -281,9 +283,9 @@ public class GestureDetector {
                 final int deltaX = (int) (focusX - mDownFocusX);
                 final int deltaY = (int) (focusY - mDownFocusY);
                 int distance = (deltaX * deltaX) + (deltaY * deltaY);
-		if(DEBUG)Log.d(TAG,"distance="+distance);
+		if(DEBUG)Log.d(TAG,"distance="+distance+"  mTouchSlopSquare="+mTouchSlopSquare);
                 if (distance > mTouchSlopSquare ) {
-		    if(DEBUG)Log.d(TAG,"remove longpress and TAP mTouchSlopSquare="+mTouchSlopSquare);
+		    if(DEBUG)Log.d(TAG,"remove longpress and TAP");
                     handled = mListener.onScroll(mCurrentDownEvent, ev, scrollX, scrollY,false);
                     mLastFocusX = focusX;
                     mLastFocusY = focusY;
@@ -320,10 +322,7 @@ public class GestureDetector {
 		    if ((Math.abs(velocityY) > mMinimumFlingVelocity)
 			|| (Math.abs(velocityX) > mMinimumFlingVelocity)){
 			handled |= onFling(mCurrentDownEvent,ev,velocityX,velocityY);
-		    }// else{
-		    // 	if(DEBUG)Log.d(TAG,"between tap and fling--->isConsiderDoubleTap()");
-		    // 	isConsiderDoubleTapOrTap();
-		    // }
+		    }
 		}
             }
             if (mPreviousUpEvent != null) {
