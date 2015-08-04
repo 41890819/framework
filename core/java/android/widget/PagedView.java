@@ -620,7 +620,7 @@ public class PagedView extends ViewGroup {
 	 */
 	protected void snapToScreen(int currentScreen, int velocityX) {
 		int offsetScreen = mPageCountInScreen > 1 ? (velocityX / FAST_SNAP_VELOCITY)
-				: 1;
+			: velocityX / Math.abs(velocityX);
 		int maxScrollScreens = mPagedViewList.size() - mPageCountInScreen > 1
 				&& mPageCountInScreen > 1 ? mPagedViewList.size()
 				- mPageCountInScreen : (currentScreen == mCurScreen ? 1 : 0);
