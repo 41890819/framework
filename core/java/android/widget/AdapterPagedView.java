@@ -1302,8 +1302,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 					tmpScreen = mScreenQueue
 							.getScreenAt(getCenterPage()).childId;// mTempVisiblePagesRange[0];
 					if (tmpScreen == 0) {
+						// make sure finish scroll before restorePages
 						mScroller.startScroll(getScrollX(), 0, mMinScrollX
-								- getScrollX(), 0);
+								- getScrollX(), 0, TIMEOUT_DELAY / 2);
 						invalidate();
 					}
 					mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1320,8 +1321,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 						(int) (mPageWidth * mFlyPageSizeScale));
 			} else {
 				if (tmpScreen == 0) {
+					// make sure finish scroll before restorePages
 					mScroller.startScroll(getScrollX(), 0, mMinScrollX
-							- getScrollX(), 0);
+							- getScrollX(), 0, TIMEOUT_DELAY / 2);
 					invalidate();
 				}
 				mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1480,8 +1482,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							(int) (mPageWidth * mFlyPageSizeScale));
 				else {
 					if (tmpScreen == 0) {
+						// make sure finish scroll before restorePages
 						mScroller.startScroll(getScrollX(), 0, mMinScrollX
-								- getScrollX(), 0);
+								- getScrollX(), 0, TIMEOUT_DELAY / 2);
 						invalidate();
 					}
 					mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1497,8 +1500,9 @@ public class AdapterPagedView extends AdapterView<BaseAdapter> {
 							(int) (mPageWidth * mFlyPageSizeScale));
 				} else {
 					if (tmpScreen == 0) {
+						// make sure finish scroll before restorePages
 						mScroller.startScroll(getScrollX(), 0, mMinScrollX
-								- getScrollX(), 0);
+								- getScrollX(), 0, TIMEOUT_DELAY / 2);
 						invalidate();
 					}
 					mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);

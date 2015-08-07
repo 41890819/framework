@@ -1051,7 +1051,8 @@ public class PagedView extends ViewGroup {
 			    snapToScreenNoCircle(tmpScreen, width);
 		    	else {
 			    if (tmpScreen == 0) {
-				mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0);
+				// make sure finish scroll before restorePages
+				mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0, TIMEOUT_DELAY / 2);
 				invalidate();
 			    }
 			    mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1068,7 +1069,8 @@ public class PagedView extends ViewGroup {
 	    		snapToScreenNoCircle(tmpScreen, (int) (mPageWidth * mFlyPageSizeScale));
 		    } else {
 	    		if (tmpScreen == 0) {
-			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0);
+			    // make sure finish scroll before restorePages
+			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0, TIMEOUT_DELAY / 2);
 			    invalidate();
 	    		}
 	    		mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1210,7 +1212,8 @@ public class PagedView extends ViewGroup {
 	    		snapToScreenNoCircle(tmpScreen, (int) (mPageWidth * mFlyPageSizeScale));
 		    else {	    		
 	    		if (tmpScreen == 0) {
-			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0);
+			    // make sure finish scroll before restorePages
+			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0, TIMEOUT_DELAY / 2);
 			    invalidate();
 	    		}
 	    		mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
@@ -1225,7 +1228,8 @@ public class PagedView extends ViewGroup {
 	    		snapToScreenNoCircle(tmpScreen, (int) (mPageWidth * mFlyPageSizeScale));
 		    } else {
 	    		if (tmpScreen == 0) {
-			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0);
+			    // make sure finish scroll before restorePages
+			    mScroller.startScroll(getScrollX(), 0, mMinScrollX - getScrollX(), 0, TIMEOUT_DELAY / 2);
 			    invalidate();
 	    		}
 	    		mHandler.sendEmptyMessageDelayed(0, TIMEOUT_DELAY);
