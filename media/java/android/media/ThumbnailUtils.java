@@ -180,8 +180,8 @@ public class ThumbnailUtils {
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
             int max = Math.max(width, height);
-            if (max > 512) {
-                float scale = 512f / max;
+            if (max > 800) {
+                float scale = 800f / max;
                 int w = Math.round(scale * width);
                 int h = Math.round(scale * height);
                 bitmap = Bitmap.createScaledBitmap(bitmap, w, h, true);
@@ -488,40 +488,17 @@ public class ThumbnailUtils {
             Log.w(TAG, ex);
         }
 
-        BitmapFactory.Options fullOptions = new BitmapFactory.Options();
         BitmapFactory.Options exifOptions = new BitmapFactory.Options();
-        int exifThumbWidth = 0;
-        int fullThumbWidth = 0;
 
-        // Compute exifThumbWidth.
         if (thumbData != null) {
-            exifOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeByteArray(thumbData, 0, thumbData.length, exifOptions);
-            exifOptions.inSampleSize = computeSampleSize(exifOptions, targetSize, maxPixels);
-            exifThumbWidth = exifOptions.outWidth / exifOptions.inSampleSize;
-        }
-
-        // Compute fullThumbWidth.
-        fullOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, fullOptions);
-        fullOptions.inSampleSize = computeSampleSize(fullOptions, targetSize, maxPixels);
-        fullThumbWidth = fullOptions.outWidth / fullOptions.inSampleSize;
-
-        // Choose the larger thumbnail as the returning sizedThumbBitmap.
-        if (thumbData != null && exifThumbWidth >= fullThumbWidth) {
-            int width = exifOptions.outWidth;
-            int height = exifOptions.outHeight;
-            exifOptions.inJustDecodeBounds = false;
-            sizedThumbBitmap.mBitmap = BitmapFactory.decodeByteArray(thumbData, 0,
-                    thumbData.length, exifOptions);
-            if (sizedThumbBitmap.mBitmap != null) {
-                sizedThumbBitmap.mThumbnailData = thumbData;
-                sizedThumbBitmap.mThumbnailWidth = width;
-                sizedThumbBitmap.mThumbnailHeight = height;
-            }
-        } else {
-            fullOptions.inJustDecodeBounds = false;
-            sizedThumbBitmap.mBitmap = BitmapFactory.decodeFile(filePath, fullOptions);
+	    exifOptions.inJustDecodeBounds = false;
+	    sizedThumbBitmap.mBitmap = BitmapFactory.decodeByteArray(thumbData, 0,
+								     thumbData.length, exifOptions);
+	    if (sizedThumbBitmap.mBitmap != null) {
+		sizedThumbBitmap.mThumbnailData = thumbData;
+		sizedThumbBitmap.mThumbnailWidth = exifOptions.outWidth;
+		sizedThumbBitmap.mThumbnailHeight = exifOptions.outHeight;
+	    }
         }
     }
 }
