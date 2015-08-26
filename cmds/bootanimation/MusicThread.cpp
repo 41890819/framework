@@ -52,7 +52,12 @@ namespace android {
 	mPlayer->setAudioStreamType(AUDIO_STREAM_ENFORCED_AUDIBLE);
 	mPlayer->prepare();
 	audio_devices_t device = AudioSystem::getDevicesForStream(AUDIO_STREAM_ENFORCED_AUDIBLE); 
-	AudioSystem::setStreamVolumeIndex(AUDIO_STREAM_ENFORCED_AUDIBLE,1,device);
+
+	if(mShutdown)
+	    AudioSystem::setStreamVolumeIndex(AUDIO_STREAM_ENFORCED_AUDIBLE,2,device);
+	else
+	    AudioSystem::setStreamVolumeIndex(AUDIO_STREAM_ENFORCED_AUDIBLE,1,device);
+
 	mPlayer->seekTo(0);
 	mPlayer->start();
 	return false;
