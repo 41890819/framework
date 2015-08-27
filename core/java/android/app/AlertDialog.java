@@ -193,6 +193,8 @@ public class AlertDialog extends Dialog implements DialogInterface {
   	}
 
 	public void onCoverSlideDown(){
+	    Log.d("AlertDialog","mOrderedButtonList.size()="+getOrderedButtons().size());
+	    if(getOrderedButtons().size() == 0)
 		dismiss();
 	}
 
