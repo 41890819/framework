@@ -18,6 +18,6 @@ interface IVoiceRecognizerManager
 	boolean setParameter(String key, String value);
     	String getParameter(String key);
 
-     	void playTTS(String tts);
+     	void playTTS(String tts, boolean canBePreempted);
     	void stopTTS();
 }
