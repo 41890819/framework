@@ -857,11 +857,6 @@ public class MediaRecorder
     /**
      * {@hide}
      */
-    public static final int MEDIA_RECORDER_TRACK_INFO_LIVE_SERVER_START = 1010;
-    public static final int MEDIA_RECORDER_TRACK_INFO_LIVE_SERVER_STOP  = 1011;
-    /**
-     * {@hide}
-     */
     public static final int MEDIA_RECORDER_TRACK_INFO_LIST_END          = 2000;
 
 
