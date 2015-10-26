@@ -243,7 +243,7 @@ static jobject android_media_MediaMetadataRetriever_getFrameAtTime(JNIEnv *env, 
     jobject config = env->CallStaticObjectMethod(
                         fields.configClazz,
                         fields.createConfigMethod,
-                        SkBitmap::kRGB_565_Config);
+                        SkBitmap::kARGB_8888_Config);
 
     size_t width, height;
     bool swapWidthAndHeight = false;
@@ -267,8 +267,8 @@ static jobject android_media_MediaMetadataRetriever_getFrameAtTime(JNIEnv *env, 
             (SkBitmap *) env->GetIntField(jBitmap, fields.nativeBitmap);
 
     bitmap->lockPixels();
-    rotate((uint16_t*)bitmap->getPixels(),
-           (uint16_t*)((char*)videoFrame + sizeof(VideoFrame)),
+    rotate((uint32_t*)bitmap->getPixels(),
+           (uint32_t*)((char*)videoFrame + sizeof(VideoFrame)),
            videoFrame->mWidth,
            videoFrame->mHeight,
            videoFrame->mRotationAngle);
