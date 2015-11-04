@@ -367,7 +367,7 @@ public class WifiNative {
     }
 
     public void setScanInterval(int scanInterval) {
-        doBooleanCommand("SCAN_INTERVAL " + scanInterval);
+        //doBooleanCommand("SCAN_INTERVAL " + scanInterval);
     }
 
     /** Example output:
