@@ -2826,20 +2826,20 @@ int16 getDirection(unsigned int *sub_os_data, struct gs_params *p_gs){
 				if( p_gs->diff_max_x >= p_gs->diff_max_y){
 					if(p_gs->x_plus == 1){
 						direction_res = DIR_RIGHT;
-						ALOGE("->->->->->->->->->->->->->->->->->right");
+						ALOGD("->->->->->->->->->->->->->->->->->right");
 					}else {
 						direction_res = DIR_LEFT;
-						ALOGE("<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-left");
+						ALOGD("<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-left");
 					}
 					clearGSparams(p_gs);
 					return direction_res;
 				}else{
 					if(p_gs->y_plus == 1){
 						direction_res = DIR_TOP;
-						ALOGE("**********************************up");
+						ALOGD("**********************************up");
 					}else {
 						direction_res = DIR_BOTTOM;
-						ALOGE("##################################down");
+						ALOGD("##################################down");
 					}
 					clearGSparams(p_gs);
 					return direction_res;
@@ -3097,7 +3097,7 @@ void CursorInputMapper::sync(nsecs_t when) {
     
       int ret = getGP2AP050Gesture(rdata);
       if (ret)
-	ALOGE("ret:%d", ret);
+	ALOGD("ret:%d", ret);
       if (ret != 0){
 	if (ret == DIR_RIGHT)
 	  guest = 4;
@@ -3179,7 +3179,7 @@ void CursorInputMapper::sync(nsecs_t when) {
     }
 
     if (guest != 256){
-      ALOGE("guest");
+      ALOGD("guest");
 
       pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_X, guest);
 
@@ -3201,24 +3201,32 @@ void CursorInputMapper::sync(nsecs_t when) {
         int32_t motionEventAction;
         if (downChanged) {
             motionEventAction = down ? AMOTION_EVENT_ACTION_DOWN : AMOTION_EVENT_ACTION_UP;
-	    ALOGE("motionEventAction is %s", down ? "AMOTION_EVENT_ACTION_DOWN" : "AMOTION_EVENT_ACTION_UP");
+	    ALOGD("motionEventAction is %s", down ? "AMOTION_EVENT_ACTION_DOWN" : "AMOTION_EVENT_ACTION_UP");
         } else {
             motionEventAction = AMOTION_EVENT_ACTION_MOVE;
-	    ALOGE("motionEventAction is AMOTION_EVENT_ACTION_MOVE");
+	    ALOGD("motionEventAction is AMOTION_EVENT_ACTION_MOVE");
         } 
 
 #if defined(INPUT_CP2615)
     	if (upaction){
-    		ALOGE("upaction");
+    		ALOGD("upaction");
     		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, 0);
     	}else if (downaction){
-    		ALOGE("downaction");
+    		ALOGD("downaction");
     		pointerCoords.setAxisValue(AMOTION_EVENT_AXIS_Y, mDisplayHeight);
     	}
 #endif
 
     	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
     			      motionEventAction, 0, 0, 0, 0,
+    			      displayId, 1, &pointerProperties, &pointerCoords,
+    			      mXPrecision, mYPrecision, downTime);
+    	getListener()->notifyMotion(&args);
+    }else if(!downChanged && !wasDown && !down){
+	//just for wakeup 
+	ALOGD("just for wakeup");
+    	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
+    			      AMOTION_EVENT_ACTION_UP, 0, 0, 0, 0,
     			      displayId, 1, &pointerProperties, &pointerCoords,
     			      mXPrecision, mYPrecision, downTime);
     	getListener()->notifyMotion(&args);
