@@ -48,6 +48,7 @@ import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.WorkSource;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.Slog;
@@ -273,7 +274,11 @@ public final class WifiService extends IWifiManager.Stub {
 
         // If we are already disabled (could be due to airplane mode), avoid changing persist
         // state here
-        if (wifiEnabled) setWifiEnabled(wifiEnabled);
+
+	if ("cruise".equalsIgnoreCase(Build.BOARD)) {
+	    // Do nothing for cruise save power
+	} else if (wifiEnabled)
+	    setWifiEnabled(wifiEnabled);
 
         mWifiWatchdogStateMachine = WifiWatchdogStateMachine.
                makeWifiWatchdogStateMachine(mContext);
