@@ -3340,8 +3340,8 @@ public class WifiStateMachine extends StateMachine {
              * Note that these are not wake up scans.
              */
             if (!mP2pConnected.get() && mWifiConfigStore.getConfiguredNetworks().size() == 0) {
-                //sendMessageDelayed(obtainMessage(CMD_NO_NETWORKS_PERIODIC_SCAN,
-		//++mPeriodicScanToken, 0), mSupplicantScanIntervalMs);
+                sendMessageDelayed(obtainMessage(CMD_NO_NETWORKS_PERIODIC_SCAN,
+						 ++mPeriodicScanToken, 0), mSupplicantScanIntervalMs);
             }
         }
         @Override
@@ -3353,8 +3353,8 @@ public class WifiStateMachine extends StateMachine {
                     if (message.arg1 == mPeriodicScanToken &&
                             mWifiConfigStore.getConfiguredNetworks().size() == 0) {
                         sendMessage(CMD_START_SCAN, UNKNOWN_SCAN_SOURCE);
-                        //sendMessageDelayed(obtainMessage(CMD_NO_NETWORKS_PERIODIC_SCAN,
-			//++mPeriodicScanToken, 0), mSupplicantScanIntervalMs);
+                        sendMessageDelayed(obtainMessage(CMD_NO_NETWORKS_PERIODIC_SCAN,
+							 ++mPeriodicScanToken, 0), mSupplicantScanIntervalMs);
                     }
                     break;
                 case WifiManager.FORGET_NETWORK:
