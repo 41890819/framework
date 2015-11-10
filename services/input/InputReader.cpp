@@ -3222,7 +3222,7 @@ void CursorInputMapper::sync(nsecs_t when) {
     			      displayId, 1, &pointerProperties, &pointerCoords,
     			      mXPrecision, mYPrecision, downTime);
     	getListener()->notifyMotion(&args);
-    }else if(!downChanged && !wasDown && !down){
+    }else if(currentButtonState == 0x80 && !wasDown && !down){
 	//just for wakeup 
 	ALOGD("just for wakeup");
     	NotifyMotionArgs args(when, getDeviceId(), AINPUT_SOURCE_TOUCHSCREEN, policyFlags,
