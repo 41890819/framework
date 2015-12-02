@@ -13,6 +13,6 @@ interface IVoiceRecognizer {
     boolean setParameter(String key, String value);
     String getParameter(String key);
 
-    void playTTS(String tts, boolean canBePreempted);
+    void playTTS(in RecognizeClient client, String tts, boolean canBePreempted);
     void stopTTS();
 }

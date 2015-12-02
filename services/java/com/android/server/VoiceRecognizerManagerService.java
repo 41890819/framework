@@ -152,12 +152,12 @@ public class VoiceRecognizerManagerService extends IVoiceRecognizerManager.Stub
 	 * 开始语音播报
 	 * @param canBePreempted
 	 *        播放的这条tts语音是否可以被其他语音抢占播报
-	 */	
+	 */
 	@Override
-	public void playTTS(String tts, boolean canBePreempted) {
+	public void playTTS(RecognizeClient client, String tts, boolean canBePreempted) {
 		if (mVoiceRecognizer != null) {
 			try {
-				mVoiceRecognizer.playTTS(tts, canBePreempted);
+				mVoiceRecognizer.playTTS(client, tts, canBePreempted);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
