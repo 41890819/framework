@@ -1256,9 +1256,12 @@ public class PagedView extends ViewGroup {
 		public boolean onDoubleTap(boolean fromPhone) {
 			if (!mIsDownWhenFlaying && mNextScreen == INVALID_SCREEN
 					&& mTouchState == TOUCH_STATE_REST
-					&& mOnItemDoubleClickListener != null)
-				mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
+			    && mOnItemDoubleClickListener != null){
+				if (mPagedViewList.size() != 0){
+					mOnItemDoubleClickListener.onItemDoubleClick(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
+				}
+			}
 			return true;
 		}
 	}
@@ -1279,9 +1282,11 @@ public class PagedView extends ViewGroup {
 		public boolean onLongPress(boolean fromPhone) {
 			if (!mIsDownWhenFlaying && mNextScreen == INVALID_SCREEN
 					&& mOnItemLongPressListener != null) {
-				mOnItemLongPressListener.onItemLongPress(PagedView.this,
+				if (mPagedViewList.size() != 0){
+					mOnItemLongPressListener.onItemLongPress(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
-				mIsDefinedGesture = true;
+					mIsDefinedGesture = true;
+				}
 			}
 			return true;
 		}
@@ -1292,11 +1297,15 @@ public class PagedView extends ViewGroup {
 					&& mTouchState == TOUCH_STATE_REST
 					&& mOnItemClickListener != null) {
 				Log.e("sn", "onSingleTapConfirmed " + getCurScreen());
-				if (mUseSoundEffect)
+				if (mUseSoundEffect){
 					playSoundEffect(SoundEffectConstants.CLICK);
-				mOnItemClickListener.onItemClick(PagedView.this,
+				}
+
+				if (mPagedViewList.size() != 0){
+					mOnItemClickListener.onItemClick(PagedView.this,
 						mPagedViewList.get(getCurScreen()), getCurScreen());
-				mIsDefinedGesture = true;
+					mIsDefinedGesture = true;
+				}			   
 			}
 			return true;
 		}
@@ -1816,7 +1825,7 @@ public class PagedView extends ViewGroup {
 		int N = mPagedViewList.size();
 		for (int i = 0; i < N; i++) {
 			if (v == mPagedViewList.get(i)) {
-				mPagedViewList.remove(i);
+			    	mPagedViewList.remove(i);
 				mFirstMeasure = true;
 				mFirstLayout = true;
 				removeView(v);
