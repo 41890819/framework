@@ -179,6 +179,9 @@ public class MediaRecorder
          *  is applied.
          */
         public static final int VOICE_COMMUNICATION = 7;
+
+	public static final int REMOTE_SUBMIX = 8;
+        public static final int BLUETOOTH_A2DP = 9;
     }
 
     /**
@@ -294,7 +297,11 @@ public class MediaRecorder
      * @see android.media.MediaRecorder.AudioSource
      */
     public static final int getAudioSourceMax() {
-        return AudioSource.VOICE_COMMUNICATION;
+        if (AudioSystem.isA2dpSinkEnabled()) {
+            return AudioSource.BLUETOOTH_A2DP;
+        } else {
+            return AudioSource.REMOTE_SUBMIX;
+        }
     }
 
     /**

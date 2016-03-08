@@ -1311,11 +1311,20 @@ public class AudioManager {
      *         false if otherwise
      */
     public boolean isBluetoothA2dpOn() {
-        if (AudioSystem.getDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP,"")
-            == AudioSystem.DEVICE_STATE_UNAVAILABLE) {
-            return false;
+        if (AudioSystem.isA2dpSinkEnabled()) {
+            if (AudioSystem.getDeviceConnectionState(DEVICE_IN_BLUETOOTH_A2DP,"")
+                == AudioSystem.DEVICE_STATE_UNAVAILABLE) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
-            return true;
+            if (AudioSystem.getDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP,"")
+                == AudioSystem.DEVICE_STATE_UNAVAILABLE) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 
@@ -2413,6 +2422,7 @@ public class AudioManager {
             AudioSystem.DEVICE_OUT_BLUETOOTH_SCO_CARKIT;
     /** {@hide} The audio output device code for generic Bluetooth A2DP, for music */
     public static final int DEVICE_OUT_BLUETOOTH_A2DP = AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP;
+    public static final int DEVICE_IN_BLUETOOTH_A2DP = AudioSystem.DEVICE_IN_BLUETOOTH_A2DP;
     /** {@hide} The audio output device code for Bluetooth A2DP headphones, for music */
     public static final int DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES =
             AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES;
