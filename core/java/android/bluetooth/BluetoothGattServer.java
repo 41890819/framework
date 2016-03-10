@@ -285,6 +285,23 @@ public final class BluetoothGattServer implements BluetoothProfile {
                     Log.w(TAG, "Unhandled exception in callback", ex);
                 }
             }
+/**
+			* added by cljiang acc.to android5.1
+			*@hide
+			*/
+			public void onNotificationSent(String address, int status) {
+				if (DBG) Log.d(TAG, "onNotificationSent() - "
+						+ "device=" + address + ", status=" + status);
+
+				BluetoothDevice device = mAdapter.getRemoteDevice(address);
+				if (device == null) return;
+
+				try {
+					mCallback.onNotificationSent(device, status);
+				} catch (Exception ex) {
+					Log.w(TAG, "Unhandled exception: " + ex);
+				}
+			}
         };
 
     /**
@@ -745,29 +762,37 @@ public final class BluetoothGattServer implements BluetoothProfile {
      * @param maxInterval Maximum desired scan interval (optional)
      * @param appearance The appearance flags for the device (optional)
      */
-     public void setAdvDataEx(boolean advData, boolean includeName, boolean includeTxPower,
-                           Integer minInterval, Integer maxInterval,
-                           Integer appearance, char[] reserveData) {
-        char[] data = new char[0];
-        if (mService == null || mServerIf == 0) {
-            if (DBG) Log.d(TAG, " setAdvDataEx is not supported");
-            return;
-        }
-        if (reserveData != null) {
-            data = new char[reserveData.length];
-            for(int i = 0; i != reserveData.length; ++i) {
-                data[i] = reserveData[i];
-            }
-        }
+public void setAdvDataEx(boolean advData, boolean includeName, boolean includeTxPower,
+			Integer minInterval, Integer maxInterval,
+			Integer appearance, char[] reserveData, char[] manuData) {
+		char[] data = new char[0];
+		char[] mdata = new char[0];
+		if (mService == null || mServerIf == 0) {
+			if (DBG) Log.d(TAG, " setAdvDataEx is not supported");
+			return;
+		}
+		if (reserveData != null) {
+			data = new char[reserveData.length];
+			for(int i = 0; i != reserveData.length; ++i) {
+				data[i] = reserveData[i];
+			}
+		}
 
-        try {
-            mService.setAdvDataEx(mServerIf, !advData,
-                includeName, includeTxPower,
-                minInterval != null ? minInterval : 0,
-                maxInterval != null ? maxInterval : 0,
-                appearance != null ? appearance : 0, data);
-        } catch (RemoteException e) {
-            Log.e(TAG,"",e);
-        }
-    }
+		if(manuData != null){
+			mdata = new char[manuData.length];
+			for(int i = 0;i != manuData.length;i++){
+				mdata[i] = manuData[i];
+			}
+		}
+
+		try {
+			mService.setAdvDataEx(mServerIf, !advData,
+					includeName, includeTxPower,
+					minInterval != null ? minInterval : 0,
+					maxInterval != null ? maxInterval : 0,
+					appearance != null ? appearance : 0, data, mdata);
+		} catch (RemoteException e) {
+			Log.e(TAG,"",e);
+		}
+	}
 }

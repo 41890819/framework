@@ -44,7 +44,7 @@ interface IBluetoothGatt {
                             in int appearance, in byte[] manufacturerData);
     void setAdvDataEx(in int clientIf, in boolean setScanRsp, in boolean inclName,
                             in boolean inclTxPower, in int minInterval, in int maxInterval,
-                            in int appearance, in char[] data);
+                            in int appearance, in char[] data, in char[] manudata);
     void refreshDevice(in int clientIf, in String address);
     void discoverServices(in int clientIf, in String address);
     void discoverServicesByUuid(in int clientIf, in String address, in ParcelUuid uuid);

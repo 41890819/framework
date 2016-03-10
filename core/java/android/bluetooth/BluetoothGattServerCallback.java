@@ -136,4 +136,19 @@ public abstract class BluetoothGattServerCallback {
      */
     public void onExecuteWrite(BluetoothDevice device, int requestId, boolean execute) {
     }
+
+/**
+	 * Callback invoked when a notification or indication has been sent to
+	 * a remote device.
+	 *
+	 * <p>When multiple notifications are to be sent, an application must
+	 * wait for this callback to be received before sending additional
+	 * notifications.
+	 *
+	 * @param device The remote device the notification has been sent to
+	 * @param status {@link BluetoothGatt#GATT_SUCCESS} if the operation was successful
+	 *added by cljiang acc.to android5.1
+	 */
+	public void onNotificationSent(BluetoothDevice device, int status) {
+	}
 }
