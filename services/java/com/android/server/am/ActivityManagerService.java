@@ -2057,13 +2057,14 @@ public final class ActivityManagerService  extends ActivityManagerNative
                 // If we are in the background, then check to see if this process
                 // is bad.  If so, we will just silently fail.
 
-		if ("cruise".equalsIgnoreCase(Build.BOARD)) {
-		      //do nothing for cruise
-		}else if (mBadProcesses.get(info.processName, info.uid) != null) {
-                    if (DEBUG_PROCESSES) Slog.v(TAG, "Bad process: " + info.uid
-                            + "/" + info.processName);
-                    return null;
-                }
+		/*make sure app can be restart any time*/
+		// if ("cruise".equalsIgnoreCase(Build.BOARD)) {
+		//       //do nothing for cruise
+		// }else if (mBadProcesses.get(info.processName, info.uid) != null) {
+                //     if (DEBUG_PROCESSES) Slog.v(TAG, "Bad process: " + info.uid
+                //             + "/" + info.processName);
+                //     return null;
+                // }
             } else {
                 // When the user is explicitly starting a process, then clear its
                 // crash count so that we won't make it bad until they see at
