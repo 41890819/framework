@@ -5310,6 +5310,16 @@ public class PackageManagerService extends IPackageManager.Stub {
             // changed.
             ps.permissionsFixed = true;
         }
+
+	
+	if(gp != null && gp.gids != null){
+	      /*remove android.permission.INTERNET for this process*/
+	    if(pkg != null && pkg.packageName.equals("com.ingenic.glass.voicerecognizer")){
+		int net_gid = Process.getGidForName("inet");
+		Log.i(TAG,"remove inet gid("+net_gid+") for com.ingenic.glass.voicerecognizer");
+		gp.gids = removeInt(gp.gids, net_gid);
+	    }
+	}
         ps.haveGids = true;
     }
 
