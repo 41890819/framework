@@ -760,13 +760,12 @@ public class IngenicVolumePanel extends Handler implements View.OnClickListener
 	int currentVolume = audioManager.getStreamVolume(streamType);
 	int maxVolume = audioManager.getStreamMaxVolume(streamType);
 
-	updateUI(streamType,currentVolume,maxVolume);
-
         if ((flags & AudioManager.FLAG_SHOW_UI) != 0) {
             synchronized (this) {
                 if (mActiveStreamType != streamType) {
                     //reorderSliders(streamType);
                 }
+		updateUI(streamType,currentVolume,maxVolume);
                 onShowVolumeChanged(streamType, flags);
             }
         }
