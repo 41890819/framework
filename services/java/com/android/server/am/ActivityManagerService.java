@@ -3078,6 +3078,11 @@ public final class ActivityManagerService  extends ActivityManagerNative
         if (app.pid == pid && app.thread != null &&
                 app.thread.asBinder() == thread.asBinder()) {
             if (!app.killedBackground) {
+		Intent intent = new Intent("process.has.died");
+		intent.putExtra("processName", app.processName);
+		intent.putExtra("pid", app.pid);
+		broadcastIntentInPackage("android", Process.SYSTEM_UID, intent,
+					 null, null, 0, null, null, null, false, false, app.userId);
                 Slog.i(TAG, "Process " + app.processName + " (pid " + pid
                         + ") has died.");
             }
