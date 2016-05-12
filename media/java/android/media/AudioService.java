@@ -2558,7 +2558,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 Log.w(TAG, "Couldn't connect to phone service", e);
             }
         }
-        return (isOffhook || getMode() == AudioManager.MODE_IN_COMMUNICATION);
+        return (isOffhook || getMode() == AudioManager.MODE_IN_COMMUNICATION || getMode() == AudioManager.MODE_IN_CALL);
     }
 
     private int getActiveStreamType(int suggestedStreamType) {
@@ -2620,12 +2620,21 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     // volume can have priority over STREAM_MUSIC
                     if (DEBUG_VOL) Log.v(TAG, "getActiveStreamType: Forcing STREAM_REMOTE_MUSIC");
                     return STREAM_REMOTE_MUSIC;
+		} else if (AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC,
+						      DEFAULT_STREAM_TYPE_OVERRIDE_DELAY_MS)) {
+			if (DEBUG_VOL)
+				Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC stream active");
+			return AudioSystem.STREAM_MUSIC;
                 } else {
-                    if (DEBUG_VOL)
-                        Log.v(TAG, "getActiveStreamType: using STREAM_MUSIC as default");
-                    return AudioSystem.STREAM_MUSIC;
+			if (DEBUG_VOL)
+				Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING stream default");
+			return AudioSystem.STREAM_RING;
                 }
-            } else {
+            } else if (AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC, 0)) {
+		    if (DEBUG_VOL)
+			    Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC stream");
+		    return AudioSystem.STREAM_MUSIC;
+	    } else {
                 if (DEBUG_VOL) Log.v(TAG, "getActiveStreamType: Returning suggested type "
                         + suggestedStreamType);
                 return suggestedStreamType;

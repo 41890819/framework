@@ -1148,6 +1148,7 @@ public class IngenicVolumePanel extends Handler implements View.OnClickListener
 		    mWM.removeView(mView);
 		    mIsAddedView = false;
                     mActiveStreamType = -1;
+		    mAudioManager.forceVolumeControlStream(mActiveStreamType);
                 }
                 synchronized (sConfirmSafeVolumeLock) {
                     if (sConfirmSafeVolumeDialog != null) {
