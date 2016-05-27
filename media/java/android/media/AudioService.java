@@ -885,17 +885,17 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
         // If either the client forces allowing ringer modes for this adjustment,
         // or the stream type is one that is affected by ringer modes
-        if (((flags & AudioManager.FLAG_ALLOW_RINGER_MODES) != 0) ||
-                (streamTypeAlias == getMasterStreamType())) {
-            int ringerMode = getRingerMode();
-            // do not vibrate if already in vibrate mode
-            if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
-                flags &= ~AudioManager.FLAG_VIBRATE;
-            }
-            // Check if the ringer mode changes with this volume adjustment. If
-            // it does, it will handle adjusting the volume, so we won't below
-            adjustVolume = checkForRingerModeChange(aliasIndex, direction, step);
-        }
+        // if (((flags & AudioManager.FLAG_ALLOW_RINGER_MODES) != 0) ||
+        //         (streamTypeAlias == getMasterStreamType())) {
+        //     int ringerMode = getRingerMode();
+        //     // do not vibrate if already in vibrate mode
+        //     if (ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
+        //         flags &= ~AudioManager.FLAG_VIBRATE;
+        //     }
+        //     // Check if the ringer mode changes with this volume adjustment. If
+        //     // it does, it will handle adjusting the volume, so we won't below
+        //     adjustVolume = checkForRingerModeChange(aliasIndex, direction, step);
+        // }
 
         int oldIndex = mStreamStates[streamType].getIndex(device);
 
