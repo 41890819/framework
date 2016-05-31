@@ -1,7 +1,10 @@
 package android.widget;
 
-public class LedIntentUtil {
-
+public final class LedIntentUtil {
+	/**
+	 * Led PackageName.
+	 */
+	public static final String LED_PKGNAME = "cn.ingenic.glasssync";
 	/**
 	 * Broadcast Action: CameraDevice startPreview.
 	 */
