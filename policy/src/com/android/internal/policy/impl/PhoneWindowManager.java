@@ -2425,23 +2425,25 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * given the situation with the keyguard.
      */
     void launchHomeFromHotKey() {
-        if (mKeyguardMediator != null && mKeyguardMediator.isShowingAndNotHidden()) {
-            // don't launch home if keyguard showing
-        } else if (!mHideLockScreen && mKeyguardMediator.isInputRestricted()) {
-            // when in keyguard restricted mode, must first verify unlock
-            // before launching home
-            mKeyguardMediator.verifyUnlock(new OnKeyguardExitResult() {
-                public void onKeyguardExitResult(boolean success) {
-                    if (success) {
-                        try {
-                            ActivityManagerNative.getDefault().stopAppSwitches();
-                        } catch (RemoteException e) {
-                        }
-                        sendCloseSystemWindows(SYSTEM_DIALOG_REASON_HOME_KEY);
-                        startDockOrHome();
-                    }
-                }
-            });
+	if (mKeyguardMediator != null) {
+	    if (mKeyguardMediator.isShowingAndNotHidden()) {
+	        // don't launch home if keyguard showing
+	    } else if (!mHideLockScreen && mKeyguardMediator.isInputRestricted()) {
+	        // when in keyguard restricted mode, must first verify unlock
+		// before launching home
+		mKeyguardMediator.verifyUnlock(new OnKeyguardExitResult() {
+		    public void onKeyguardExitResult(boolean success) {
+		        if (success) {
+			    try {
+			        ActivityManagerNative.getDefault().stopAppSwitches();
+			    } catch (RemoteException e) {
+			    }
+			    sendCloseSystemWindows(SYSTEM_DIALOG_REASON_HOME_KEY);
+			    startDockOrHome();
+			}
+		    }
+		});
+	    }
         } else {
             // no keyguard stuff to worry about, just launch home!
             try {
