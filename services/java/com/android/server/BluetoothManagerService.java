@@ -990,7 +990,7 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
                                 mContext.unbindService(mConnection);
                             }
                         }
-                        SystemClock.sleep(100);
+                        SystemClock.sleep(300);
 
                         mHandler.removeMessages(MESSAGE_BLUETOOTH_STATE_CHANGE);
                         mState = BluetoothAdapter.STATE_OFF;
