@@ -1622,9 +1622,13 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 // here handle remote media playback the same way as local playback
                 streamType = AudioManager.STREAM_MUSIC;
             }
-            int device = getDeviceForStream(streamType);
-            int index = mStreamStates[mStreamVolumeAlias[streamType]].getIndex(device);
-            setStreamVolumeInt(mStreamVolumeAlias[streamType], index, device, true);
+	      /*
+	      * delete by gysun
+	      * AudioManager.STREAM_VOICE_CALL can modify base_volume in kernal .so not used
+	      */
+            // int device = getDeviceForStream(streamType);
+            // int index = mStreamStates[mStreamVolumeAlias[streamType]].getIndex(device);
+            // setStreamVolumeInt(mStreamVolumeAlias[streamType], index, device, true);
 
             updateStreamVolumeAlias(true /*updateVolumes*/);
         }
