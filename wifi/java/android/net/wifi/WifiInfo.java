@@ -64,6 +64,7 @@ public class WifiInfo implements Parcelable {
     private boolean mHiddenSSID;
     /** Received Signal Strength Indicator */
     private int mRssi;
+    private int mReason;
 
     /** Link speed in Mbps */
     public static final String LINK_SPEED_UNITS = "Mbps";
@@ -86,6 +87,7 @@ public class WifiInfo implements Parcelable {
         mRssi = -9999;
         mLinkSpeed = -1;
         mHiddenSSID = false;
+        mReason = -1;
     }
 
     /**
@@ -104,6 +106,7 @@ public class WifiInfo implements Parcelable {
             mIpAddress = source.mIpAddress;
             mMacAddress = source.mMacAddress;
             mMeteredHint = source.mMeteredHint;
+            mReason = source.mReason;
         }
     }
 
@@ -251,7 +254,15 @@ public class WifiInfo implements Parcelable {
         mHiddenSSID = hiddenSSID;
     }
 
-   /**
+    public int getReason() {
+        return mReason;
+    }
+
+    public void setReason(int reason) {
+        this.mReason = reason;
+    }
+
+/**
      * Map a supplicant state into a fine-grained network connectivity state.
      * @param suppState the supplicant state
      * @return the corresponding {@link DetailedState}
@@ -305,7 +316,8 @@ public class WifiInfo implements Parcelable {
             append(", RSSI: ").append(mRssi).
             append(", Link speed: ").append(mLinkSpeed).
             append(", Net ID: ").append(mNetworkId).
-            append(", Metered hint: ").append(mMeteredHint);
+            append(", Metered hint: ").append(mMeteredHint).
+            append(", Reason: ").append(mReason);
 
         return sb.toString();
     }
@@ -335,6 +347,7 @@ public class WifiInfo implements Parcelable {
         dest.writeString(mBSSID);
         dest.writeString(mMacAddress);
         dest.writeInt(mMeteredHint ? 1 : 0);
+        dest.writeInt(mReason);
         mSupplicantState.writeToParcel(dest, flags);
     }
 
@@ -357,6 +370,7 @@ public class WifiInfo implements Parcelable {
                 info.mBSSID = in.readString();
                 info.mMacAddress = in.readString();
                 info.mMeteredHint = in.readInt() != 0;
+                info.mReason = in.readInt();
                 info.mSupplicantState = SupplicantState.CREATOR.createFromParcel(in);
                 return info;
             }

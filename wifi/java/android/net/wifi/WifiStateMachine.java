@@ -358,6 +358,10 @@ public class WifiStateMachine extends StateMachine {
     private static final int SUCCESS = 1;
     private static final int FAILURE = -1;
 
+    private static final int REASON_SUCCESS = 0;
+    private static final int REASON_FAIL_OTHERS = 1;
+    private static final int REASON_FAIL_AUTH = 2;
+
     /**
      * The maximum number of times we will retry a connection to an access point
      * for which we have failed in acquiring an IP address from DHCP. A value of
@@ -1625,10 +1629,7 @@ public class WifiStateMachine extends StateMachine {
         intent.putExtra(WifiManager.EXTRA_LINK_PROPERTIES, new LinkProperties (mLinkProperties));
         if (bssid != null)
             intent.putExtra(WifiManager.EXTRA_BSSID, bssid);
-        if (mNetworkInfo.getDetailedState() == DetailedState.VERIFYING_POOR_LINK ||
-                mNetworkInfo.getDetailedState() == DetailedState.CONNECTED) {
-            intent.putExtra(WifiManager.EXTRA_WIFI_INFO, new WifiInfo(mWifiInfo));
-        }
+        intent.putExtra(WifiManager.EXTRA_WIFI_INFO, new WifiInfo(mWifiInfo));
         mContext.sendStickyBroadcastAsUser(intent, UserHandle.ALL);
     }
 
@@ -1705,6 +1706,12 @@ public class WifiStateMachine extends StateMachine {
             loge("Failed to clear addresses or disable ipv6" + e);
         }
 
+        setNetworkDetailedState(DetailedState.DISCONNECTED);
+        mWifiConfigStore.updateStatus(mLastNetworkId, DetailedState.DISCONNECTED);
+
+        /* send event to CM & network change broadcast */
+        sendNetworkStateChangeBroadcast(mLastBssid);
+
         /* Reset data structures */
         mWifiInfo.setInetAddress(null);
         mWifiInfo.setBSSID(null);
@@ -1713,15 +1720,10 @@ public class WifiStateMachine extends StateMachine {
         mWifiInfo.setRssi(MIN_RSSI);
         mWifiInfo.setLinkSpeed(-1);
         mWifiInfo.setMeteredHint(false);
-
-        setNetworkDetailedState(DetailedState.DISCONNECTED);
-        mWifiConfigStore.updateStatus(mLastNetworkId, DetailedState.DISCONNECTED);
+        mWifiInfo.setReason(-1);
 
         /* Clear network properties */
         mLinkProperties.clear();
-
-        /* send event to CM & network change broadcast */
-        sendNetworkStateChangeBroadcast(mLastBssid);
 
         /* Clear IP settings if the network used DHCP */
         if (!mWifiConfigStore.isUsingStaticIp(mLastNetworkId)) {
@@ -3384,6 +3386,11 @@ public class WifiStateMachine extends StateMachine {
                     break;
                     /* Ignore network disconnect */
                 case WifiMonitor.NETWORK_DISCONNECTION_EVENT:
+                        if (DBG) log(" disconnected obj=" + message.obj + ", BSSID=" + mWifiInfo.getBSSID());
+                        if ("Authentication".equals(message.obj)) {
+                                mWifiInfo.setReason(REASON_FAIL_AUTH);
+                                handleNetworkDisconnect();
+                        }
                     break;
                 case WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT:
                     StateChangeResult stateChangeResult = (StateChangeResult) message.obj;

@@ -40,6 +40,9 @@ public class WifiAdmin {
 	
     /** Interface for current action state callback */
     public interface StateListener {
+            public static final int SUCCESS = 0;
+        public static final int F_OTHERS = 1;
+        public static final int F_AUTH = 2;
         /** The operation succeeded */
         public void onCurrent(String ssid);
         /**
@@ -249,7 +252,7 @@ public class WifiAdmin {
 		    NetworkInfo netInfo = (NetworkInfo) intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 		    if(DEBUG) Log.d(TAG, " netInfo= "+netInfo);
 		    if(netInfo.getState() == NetworkInfo.State.CONNECTED){
-			notifyState();
+			notifyState(StateListener.SUCCESS);
 			mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
 			if(mWakeLock == null && mNeedWakeLock == true){
 			    PowerManager pm = (PowerManager)mContext.getSystemService(Context.POWER_SERVICE);
@@ -258,7 +261,12 @@ public class WifiAdmin {
 			}
 
 		    }else if(netInfo.getState() == NetworkInfo.State.DISCONNECTED){
-			notifyState();
+		        WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+		        if (2 == wifiInfo.getReason()) {
+		                notifyState(StateListener.F_AUTH);
+		        } else {
+		                notifyState(StateListener.F_OTHERS);
+		        }
 			mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,TIMEOUT_MS);
 			if(mWakeLock != null){
 			    mWakeLock.release();
@@ -280,7 +288,7 @@ public class WifiAdmin {
 
 
       /*callback current ssid state to listener*/
-    private void notifyState(){
+    private void notifyState(int reason){
 	if(mStateListener == null){
 	    Log.w(TAG,"mStateListener is null");
 	    return;
@@ -297,7 +305,7 @@ public class WifiAdmin {
 		if(config.status == WifiConfiguration.Status.CURRENT)
 		    mStateListener.onCurrent(mCurrentSSID);
 		else
-		    mStateListener.onFailure(mCurrentSSID,0);
+		    mStateListener.onFailure(mCurrentSSID, reason);
 
 		break;
 	    }

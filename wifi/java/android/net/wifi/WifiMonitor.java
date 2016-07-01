@@ -373,6 +373,7 @@ public class WifiMonitor {
                 return;
             }
 
+            String lastEventStr = "";
             //noinspection InfiniteLoopStatement
             for (;;) {
                 String eventStr = mWifiNative.waitForEvent();
@@ -398,6 +399,7 @@ public class WifiMonitor {
                     } else if (eventStr.startsWith(HOST_AP_EVENT_PREFIX_STR)) {
                         handleHostApEvents(eventStr);
                     }
+                    lastEventStr = eventStr;
                     continue;
                 }
 
@@ -474,6 +476,9 @@ public class WifiMonitor {
                         mStateMachine.sendMessage(AUTHENTICATION_FAILURE_EVENT);
                     }
                 } else {
+                        if ((DISCONNECTED == event) && (lastEventStr.startsWith("Authentication"))) {
+                                eventData = lastEventStr;
+                        }
                     handleEvent(event, eventData);
                 }
                 mRecvErrors = 0;
@@ -728,6 +733,15 @@ public class WifiMonitor {
                     networkId = -1;
                 }
             }
+        } else if (newState == NetworkInfo.DetailedState.DISCONNECTED) {
+                if (data.startsWith("Authentication")) {
+                        Log.d(TAG, "DISCONNECTED = Authentication");
+                        // data == "Authentication with xx:xx:xx:xx:xx:xx timed out."
+                        String [] parts = data.split(" ");
+                        if (parts.length > 0) {
+                                BSSID = parts[0]; // Authentication
+                        }
+                }
         }
         notifyNetworkStateChange(newState, BSSID, networkId);
     }
