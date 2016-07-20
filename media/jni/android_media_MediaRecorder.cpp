@@ -284,6 +284,19 @@ android_media_MediaRecorder_setVideoFrameRate(JNIEnv *env, jobject thiz, jint ra
 }
 
 static void
+android_media_MediaRecorder_setVideoDropFrameInterval(JNIEnv *env, jobject thiz, jint interval)
+{
+    ALOGV("setVideoDropFrameInterval(%d)", interval);
+    if (interval <= 0) {
+        jniThrowException(env, "java/lang/IllegalArgumentException", "invalid drop frame interval");
+        return;
+    }
+    sp<MediaRecorder> mr = getMediaRecorder(env, thiz);
+    process_media_recorder_call(env, mr->setVideoDropFrameInterval(interval), "java/lang/RuntimeException", "setVideoDropFrameInterval failed.");
+}
+
+
+static void
 android_media_MediaRecorder_setMaxDuration(JNIEnv *env, jobject thiz, jint max_duration_ms)
 {
     ALOGV("setMaxDuration(%d)", max_duration_ms);
@@ -467,6 +480,7 @@ static JNINativeMethod gMethods[] = {
     {"_setOutputFile",       "(Ljava/io/FileDescriptor;JJ)V",   (void *)android_media_MediaRecorder_setOutputFileFD},
     {"setVideoSize",         "(II)V",                           (void *)android_media_MediaRecorder_setVideoSize},
     {"setVideoFrameRate",    "(I)V",                            (void *)android_media_MediaRecorder_setVideoFrameRate},
+    {"setVideoDropFrameInterval",        "(I)V",                            (void *)android_media_MediaRecorder_setVideoDropFrameInterval},
     {"setMaxDuration",       "(I)V",                            (void *)android_media_MediaRecorder_setMaxDuration},
     {"setMaxFileSize",       "(J)V",                            (void *)android_media_MediaRecorder_setMaxFileSize},
     {"_prepare",             "()V",                             (void *)android_media_MediaRecorder_prepare},

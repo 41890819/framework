@@ -1003,4 +1003,11 @@ public class MediaRecorder
 
     @Override
     protected void finalize() { native_finalize(); }
+
+    /**
+     * Sets the drop frames interval of the video to be encode.  
+     * Must be called after prepare().
+     *  @param interval must be between of 2 to videoFrameRate
+     */
+    public native void setVideoDropFrameInterval(int interval) throws IllegalStateException;
 }

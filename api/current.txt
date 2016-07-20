@@ -5207,7 +5207,7 @@ package android.bluetooth {
     method public boolean notifyCharacteristicChanged(android.bluetooth.BluetoothDevice, android.bluetooth.BluetoothGattCharacteristic, boolean);
     method public boolean removeService(android.bluetooth.BluetoothGattService);
     method public boolean sendResponse(android.bluetooth.BluetoothDevice, int, int, int, byte[]);
-    method public void setAdvDataEx(boolean, boolean, boolean, java.lang.Integer, java.lang.Integer, java.lang.Integer, char[]);
+    method public void setAdvDataEx(boolean, boolean, boolean, java.lang.Integer, java.lang.Integer, java.lang.Integer, char[], char[]);
     method public void startAdvertising();
     method public void stopAdvertising();
   }
@@ -5221,6 +5221,7 @@ package android.bluetooth {
     method public void onDescriptorWriteRequest(android.bluetooth.BluetoothDevice, int, android.bluetooth.BluetoothGattDescriptor, boolean, boolean, int, byte[]);
     method public void onExecuteWrite(android.bluetooth.BluetoothDevice, int, boolean);
     method public void onMtuReceived(android.bluetooth.BluetoothDevice, int);
+    method public void onNotificationSent(android.bluetooth.BluetoothDevice, int);
     method public void onServiceAdded(int, android.bluetooth.BluetoothGattService);
   }
 
@@ -11677,6 +11678,7 @@ package android.media {
     field public static final int AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK = -3; // 0xfffffffd
     field public static final int AUDIOFOCUS_REQUEST_FAILED = 0; // 0x0
     field public static final int AUDIOFOCUS_REQUEST_GRANTED = 1; // 0x1
+    field public static final int DEVICE_IN_BLUETOOTH_A2DP = -2147475456; // 0x80002000
     field public static final java.lang.String EXTRA_RINGER_MODE = "android.media.EXTRA_RINGER_MODE";
     field public static final java.lang.String EXTRA_SCO_AUDIO_PREVIOUS_STATE = "android.media.extra.SCO_AUDIO_PREVIOUS_STATE";
     field public static final java.lang.String EXTRA_SCO_AUDIO_STATE = "android.media.extra.SCO_AUDIO_STATE";
@@ -12547,9 +12549,11 @@ package android.media {
   }
 
   public final class MediaRecorder.AudioSource {
+    field public static final int BLUETOOTH_A2DP = 9; // 0x9
     field public static final int CAMCORDER = 5; // 0x5
     field public static final int DEFAULT = 0; // 0x0
     field public static final int MIC = 1; // 0x1
+    field public static final int REMOTE_SUBMIX = 8; // 0x8
     field public static final int VOICE_CALL = 4; // 0x4
     field public static final int VOICE_COMMUNICATION = 7; // 0x7
     field public static final int VOICE_DOWNLINK = 3; // 0x3
@@ -29208,6 +29212,7 @@ package android.widget {
     method protected void determineScrollingStart(android.view.MotionEvent);
     method protected void determineScrollingStart(android.view.MotionEvent, float);
     method protected void dumpScreenQueue();
+    method protected void dumpScreenQueue(java.lang.String);
     method public void flashScrollingIndicator(boolean);
     method public android.widget.BaseAdapter getAdapter();
     method protected int getCenterPage();
@@ -30235,6 +30240,13 @@ package android.widget {
     enum_constant public static final android.widget.ImageView.ScaleType MATRIX;
   }
 
+  public final class LedIntentUtil {
+    ctor public LedIntentUtil();
+    field public static final java.lang.String ACTION_START_PREVIEW = "cn.ingenic.glass.ACTION_START_PREVIEW";
+    field public static final java.lang.String ACTION_STOP_PREVIEW = "cn.ingenic.glass.ACTION_STOP_PREVIEW";
+    field public static final java.lang.String LED_PKGNAME = "cn.ingenic.glasssync";
+  }
+
   public class LinearLayout extends android.view.ViewGroup {
     ctor public LinearLayout(android.content.Context);
     ctor public LinearLayout(android.content.Context, android.util.AttributeSet);
@@ -30533,6 +30545,8 @@ package android.widget {
     method protected void dampedOverScroll(float);
     method protected void determineScrollingStart(android.view.MotionEvent);
     method protected void determineScrollingStart(android.view.MotionEvent, float);
+    method protected void dumpScreenQueue();
+    method protected void dumpScreenQueue(java.lang.String);
     method public void flashScrollingIndicator(boolean);
     method protected int getCenterPage();
     method public int getCurScreen();
@@ -30552,6 +30566,7 @@ package android.widget {
     method public void setCanVerticalOverScroll(boolean);
     method public void setCircleFlip(boolean);
     method public void setCurrentScreen(int);
+    method public void setCurrentScreen(int, boolean);
     method public void setDirectonScroll(boolean);
     method public void setFlyFlip(boolean);
     method public void setFlyPageSizeScale(float);
@@ -30575,6 +30590,7 @@ package android.widget {
     method protected void snapToScreen(int, int);
     method protected void snapToScreenNoCircle(int, int);
     method protected void updateScrollingIndicatorPosition();
+    field protected static final int PAGE_BACK_ANIMATION_DURATION = 950; // 0x3b6
     field protected static final int PAGE_SNAP_ANIMATION_DURATION = 550; // 0x226
     field protected static final int TOUCH_STATE_FLYING = 2; // 0x2
     field protected static final int TOUCH_STATE_FLYING_REST = 3; // 0x3
@@ -31734,6 +31750,30 @@ package android.widget {
     method public abstract android.view.View makeView();
   }
 
+  public class WifiAdmin {
+    method public boolean closeWifi();
+    method public boolean connect(java.lang.String, java.lang.String, java.lang.String, android.widget.WifiAdmin.StateListener);
+    method public boolean connect(java.lang.String, java.lang.String, android.widget.WifiAdmin.WifiCipherType, android.widget.WifiAdmin.StateListener);
+    method public static android.widget.WifiAdmin getInstance(android.content.Context, boolean);
+    method public java.lang.String getLocalIpAddress();
+    method public boolean isConnected(java.lang.String);
+  }
+
+  public static abstract interface WifiAdmin.StateListener {
+    method public abstract void onCurrent(java.lang.String);
+    method public abstract void onFailure(java.lang.String, int);
+  }
+
+  public static final class WifiAdmin.WifiCipherType extends java.lang.Enum {
+    method public static android.widget.WifiAdmin.WifiCipherType valueOf(java.lang.String);
+    method public static final android.widget.WifiAdmin.WifiCipherType[] values();
+    enum_constant public static final android.widget.WifiAdmin.WifiCipherType WIFICIPHER_INVALID;
+    enum_constant public static final android.widget.WifiAdmin.WifiCipherType WIFICIPHER_NOPASS;
+    enum_constant public static final android.widget.WifiAdmin.WifiCipherType WIFICIPHER_WEP;
+    enum_constant public static final android.widget.WifiAdmin.WifiCipherType WIFICIPHER_WPA;
+    enum_constant public static final android.widget.WifiAdmin.WifiCipherType WIFICIPHER_WPA2;
+  }
+
   public abstract interface WrapperListAdapter implements android.widget.ListAdapter {
     method public abstract android.widget.ListAdapter getWrappedAdapter();
   }
@@ -31793,7 +31833,7 @@ package com.android.internal.voicerecognizer {
 
   public abstract interface IVoiceRecognizer implements android.os.IInterface {
     method public abstract java.lang.String getParameter(java.lang.String) throws android.os.RemoteException;
-    method public abstract void playTTS(java.lang.String) throws android.os.RemoteException;
+    method public abstract void playTTS(com.android.internal.voicerecognizer.RecognizeClient, java.lang.String, boolean) throws android.os.RemoteException;
     method public abstract boolean register(com.android.internal.voicerecognizer.RecognizeClient) throws android.os.RemoteException;
     method public abstract boolean setParameter(java.lang.String, java.lang.String) throws android.os.RemoteException;
     method public abstract boolean start(com.android.internal.voicerecognizer.RecognizeClient, boolean) throws android.os.RemoteException;
@@ -31817,9 +31857,9 @@ package com.android.internal.voicerecognizer {
     method public abstract void onReadyForSpeaking() throws android.os.RemoteException;
     method public abstract boolean onRecordingStop() throws android.os.RemoteException;
     method public abstract boolean onResult(java.lang.String, float) throws android.os.RemoteException;
-    method public abstract void onTTSPlayBegin() throws android.os.RemoteException;
-    method public abstract void onTTSPlayCanceled() throws android.os.RemoteException;
-    method public abstract void onTTSPlayEnd() throws android.os.RemoteException;
+    method public abstract void onTTSPlayBegin(java.lang.String) throws android.os.RemoteException;
+    method public abstract void onTTSPlayCanceled(java.lang.String) throws android.os.RemoteException;
+    method public abstract void onTTSPlayEnd(java.lang.String) throws android.os.RemoteException;
     method public abstract void onUpdateVolume(int) throws android.os.RemoteException;
     method public abstract void onWakeup() throws android.os.RemoteException;
   }
@@ -31835,6 +31875,7 @@ package com.android.internal.voicerecognizer {
     ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     ctor public RecognizeClient(long, int, int, com.android.internal.voicerecognizer.IVoiceRecognizerListener, java.lang.String, java.lang.String, java.util.ArrayList<java.lang.String>, int, boolean, boolean);
     ctor public RecognizeClient(long, java.lang.String, java.lang.String, java.lang.String, boolean, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
+    ctor public RecognizeClient(long, java.lang.String, com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     ctor public RecognizeClient(android.os.Parcel);
     method public void addCommand(java.lang.String);
     method public void addCommands(java.util.ArrayList<java.lang.String>);
@@ -31848,6 +31889,7 @@ package com.android.internal.voicerecognizer {
     method public final boolean getCustomLayout();
     method public final java.util.ArrayList<java.lang.String> getDisplayCommands();
     method public java.lang.String getDisplayStr();
+    method public final java.lang.String getGrammar();
     method public final int getIcon();
     method public long getId();
     method public final com.android.internal.voicerecognizer.IVoiceRecognizerListener getListener();
@@ -31864,6 +31906,7 @@ package com.android.internal.voicerecognizer {
     method public void setCustomLayout(boolean);
     method public void setDisplayCommands(java.util.ArrayList<java.lang.String>);
     method public void setDisplayStr(java.lang.String);
+    method public void setGrammar(java.lang.String);
     method public void setIcon(int);
     method public void setListener(com.android.internal.voicerecognizer.IVoiceRecognizerListener);
     method public void setPackageName(java.lang.String);
@@ -31877,6 +31920,7 @@ package com.android.internal.voicerecognizer {
     field public static final int REC_TYPE_COMMAND = 0; // 0x0
     field public static final int REC_TYPE_DIAL = 2; // 0x2
     field public static final int REC_TYPE_DICTATION = 1; // 0x1
+    field public static final int REC_TYPE_GRAMMAR = 3; // 0x3
   }
 
 }
