@@ -30,9 +30,6 @@ public class WifiAdmin {
     private Context mContext;
     private static WifiAdmin sInstance;
 
-    private final int TIMEOUT_MS = 60000*3;//3min
-    private final int MSG_WIFI_IDLE_TIMEOUT = 0;
-
     public enum WifiCipherType {
 	WIFICIPHER_NOPASS, WIFICIPHER_WPA, WIFICIPHER_WEP, WIFICIPHER_INVALID, WIFICIPHER_WPA2
 	    }
@@ -76,7 +73,6 @@ public class WifiAdmin {
     public boolean connect(String SSID, String Password, WifiCipherType Type,StateListener listener) {
 	Log.i(TAG, "connect:SSID=" + SSID+" Password="+Password+" Type="+Type+" listener="+listener);
 
-	mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
 	  /*close wifi ap*/
 	int wifiApState = mWifiManager.getWifiApState();
 	if (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED || 
@@ -253,7 +249,6 @@ public class WifiAdmin {
 		    if(DEBUG) Log.d(TAG, " netInfo= "+netInfo);
 		    if(netInfo.getState() == NetworkInfo.State.CONNECTED){
 			notifyState(StateListener.SUCCESS);
-			mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
 			if(mWakeLock == null && mNeedWakeLock == true){
 			    PowerManager pm = (PowerManager)mContext.getSystemService(Context.POWER_SERVICE);
 			    mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, mContext.getClass().getName());
@@ -267,20 +262,10 @@ public class WifiAdmin {
 		        } else {
 		                notifyState(StateListener.F_OTHERS);
 		        }
-			mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,TIMEOUT_MS);
 			if(mWakeLock != null){
 			    mWakeLock.release();
 			    mWakeLock = null;
 			}
-		    }
-		}else if(WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())){
-		    int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
-						   WifiManager.WIFI_STATE_UNKNOWN);
-		    Log.d(TAG,"wifi state change to:"+state);
-		    if(state == WifiManager.WIFI_STATE_ENABLED){
-			mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,TIMEOUT_MS);
-		    }else if(state == WifiManager.WIFI_STATE_DISABLED){
-			mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
 		    }
 		}
 	    }
@@ -312,15 +297,6 @@ public class WifiAdmin {
 	}
     }
 
-    private Handler mHandler = new Handler() {
-	    public void handleMessage(android.os.Message msg) {
-		if (msg.what == MSG_WIFI_IDLE_TIMEOUT) {
-		    Log.e(TAG,"wifi is lost a long time. so close wifi");
-		    closeWifi();
-		}
-	    };
-	};
-
     private WifiAdmin(Context context,boolean needWakeLock) {
 	mContext = context;
 	mNeedWakeLock = needWakeLock;
@@ -338,11 +314,9 @@ public class WifiAdmin {
 		    public void onFailure(int reason) {
 		    Log.e(TAG,"connect wifi ap failed!");
 		    if(mStateListener != null) mStateListener.onFailure(mCurrentSSID,reason);
-		    mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,TIMEOUT_MS);
 		}
 	    };
 	IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-	filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 	mContext.registerReceiver(mWifiStateBroadcastReceiver, filter);
     }
 

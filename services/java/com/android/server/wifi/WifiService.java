@@ -35,6 +35,7 @@ import android.net.wifi.WifiWatchdogStateMachine;
 import android.net.DhcpInfo;
 import android.net.DhcpResults;
 import android.net.LinkAddress;
+import android.net.NetworkInfo;
 import android.net.NetworkUtils;
 import android.net.RouteInfo;
 import android.os.Binder;
@@ -108,6 +109,9 @@ public final class WifiService extends IWifiManager.Stub {
 
     private String mInterfaceName;
 
+    private final int WIFI_IDLE_TIMEOUT_MS = 60000*3;//3min
+    private final int MSG_WIFI_IDLE_TIMEOUT = 0;
+
     /* Tracks the open wi-fi network notification */
     private WifiNotificationController mNotificationController;
     /* Polls traffic stats and notifies clients */
@@ -158,7 +162,10 @@ public final class WifiService extends IWifiManager.Stub {
                     break;
                 }
                 /* Client commands are forwarded to state machine */
-                case WifiManager.CONNECT_NETWORK:
+	        case WifiManager.CONNECT_NETWORK:{
+		    Slog.d(TAG, "WifiService connect network");
+		    mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
+		}
                 case WifiManager.SAVE_NETWORK:
                 case WifiManager.FORGET_NETWORK:
                 case WifiManager.START_WPS:
@@ -796,7 +803,24 @@ public final class WifiService extends IWifiManager.Stub {
             } else if (action.equals(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED)) {
                 boolean emergencyMode = intent.getBooleanExtra("phoneinECMState", false);
                 mWifiController.sendMessage(CMD_EMERGENCY_MODE_CHANGED, emergencyMode ? 1 : 0, 0);
-            }
+            } else if (action.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+		NetworkInfo netInfo = (NetworkInfo) intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+		Slog.d(TAG, " netInfo= "+netInfo);
+		if(netInfo.getState() == NetworkInfo.State.CONNECTED){
+		    mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
+		}else if(netInfo.getState() == NetworkInfo.State.DISCONNECTED){
+		    mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,WIFI_IDLE_TIMEOUT_MS);
+		}
+	    } else if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+		int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
+					       WifiManager.WIFI_STATE_UNKNOWN);
+		Slog.d(TAG,"wifi state change to:"+state);
+		if(state == WifiManager.WIFI_STATE_ENABLED){
+		    mHandler.sendEmptyMessageDelayed(MSG_WIFI_IDLE_TIMEOUT,WIFI_IDLE_TIMEOUT_MS);
+		}else if(state == WifiManager.WIFI_STATE_DISABLED){
+		    mHandler.removeMessages(MSG_WIFI_IDLE_TIMEOUT);
+		}
+	    }
         }
     };
 
@@ -825,6 +849,8 @@ public final class WifiService extends IWifiManager.Stub {
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         intentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         intentFilter.addAction(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
+	intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+	intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mContext.registerReceiver(mReceiver, intentFilter);
     }
 
@@ -1238,4 +1264,13 @@ public final class WifiService extends IWifiManager.Stub {
             return (mMulticasters.size() > 0);
         }
     }
+
+    private Handler mHandler = new Handler() {
+	    public void handleMessage(Message msg) {
+		if (msg.what == MSG_WIFI_IDLE_TIMEOUT) {
+		    Slog.d(TAG,"wifi is lost a long time. so close wifi");
+		    setWifiEnabled(false);
+		}
+	    };
+	};
 }
