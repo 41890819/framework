@@ -556,6 +556,12 @@ public class MediaRecorder
         setParameter("audio-param-sampling-rate=" + samplingRate);
     }
 
+
+	
+    public void setLiveRtmpUrl(String rtmpUrl){
+	 setParameter("rtmp-url=" + rtmpUrl);
+    }
+
     /**
      * Sets the number of audio channels for recording. Call this method before prepare().
      * Prepare() may perform additional checks on the parameter to make sure whether the
