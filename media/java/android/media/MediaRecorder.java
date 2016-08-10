@@ -1016,4 +1016,7 @@ public class MediaRecorder
      *  @param interval must be between of 2 to videoFrameRate
      */
     public native void setVideoDropFrameInterval(int interval) throws IllegalStateException;
+
+      /*just for save file when live module*/
+    public native void saveLiveFile() throws IllegalStateException;
 }

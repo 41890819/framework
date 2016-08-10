@@ -295,6 +295,13 @@ android_media_MediaRecorder_setVideoDropFrameInterval(JNIEnv *env, jobject thiz,
     process_media_recorder_call(env, mr->setVideoDropFrameInterval(interval), "java/lang/RuntimeException", "setVideoDropFrameInterval failed.");
 }
 
+static void
+android_media_MediaRecorder_saveLiveFile(JNIEnv *env, jobject thiz)
+{
+    ALOGV("saveLiveFile");
+    sp<MediaRecorder> mr = getMediaRecorder(env, thiz);
+    process_media_recorder_call(env, mr->saveLiveFile(), "java/lang/RuntimeException", "saveLiveFile failed.");
+}
 
 static void
 android_media_MediaRecorder_setMaxDuration(JNIEnv *env, jobject thiz, jint max_duration_ms)
@@ -481,6 +488,7 @@ static JNINativeMethod gMethods[] = {
     {"setVideoSize",         "(II)V",                           (void *)android_media_MediaRecorder_setVideoSize},
     {"setVideoFrameRate",    "(I)V",                            (void *)android_media_MediaRecorder_setVideoFrameRate},
     {"setVideoDropFrameInterval",        "(I)V",                            (void *)android_media_MediaRecorder_setVideoDropFrameInterval},
+    {"saveLiveFile",        "()V",                            (void *)android_media_MediaRecorder_saveLiveFile},
     {"setMaxDuration",       "(I)V",                            (void *)android_media_MediaRecorder_setMaxDuration},
     {"setMaxFileSize",       "(J)V",                            (void *)android_media_MediaRecorder_setMaxFileSize},
     {"_prepare",             "()V",                             (void *)android_media_MediaRecorder_prepare},
