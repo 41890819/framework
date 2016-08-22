@@ -91,6 +91,7 @@ public class MediaRecorder
     private EventHandler mEventHandler;
     private OnErrorListener mOnErrorListener;
     private OnInfoListener mOnInfoListener;
+    private OnInfoListener2 mOnInfoListener2;
 
     /**
      * Default constructor.
@@ -892,9 +893,13 @@ public class MediaRecorder
          * </ul>
          * @param extra   an extra code, specific to the error type
          */
-        void onInfo(MediaRecorder mr, int what, int extra,String str);
+        void onInfo(MediaRecorder mr, int what, int extra);
     }
 
+    public interface OnInfoListener2
+    {
+        void onInfo(MediaRecorder mr, int what, int extra,String str);
+    }
     /**
      * Register a callback to be invoked when an informational event occurs while
      * recording.
@@ -904,6 +909,11 @@ public class MediaRecorder
     public void setOnInfoListener(OnInfoListener listener)
     {
         mOnInfoListener = listener;
+    }
+
+    public void setOnInfoListener2(OnInfoListener2 listener)
+    {
+        mOnInfoListener2 = listener;
     }
 
     private class EventHandler extends Handler
@@ -948,12 +958,12 @@ public class MediaRecorder
             case MEDIA_RECORDER_EVENT_INFO:
             case MEDIA_RECORDER_TRACK_EVENT_INFO:
                 if (mOnInfoListener != null)
-                    mOnInfoListener.onInfo(mMediaRecorder, msg.arg1, msg.arg2,null);
+                    mOnInfoListener.onInfo(mMediaRecorder, msg.arg1, msg.arg2);
 
                 return;
             case MEDIA_RECORDER_EVENT_SCANFILE:
-                if (mOnInfoListener != null)
-                    mOnInfoListener.onInfo(mMediaRecorder, MEDIA_RECORDER_FILE_NAME, msg.arg2,(String)msg.obj);
+                if (mOnInfoListener2 != null)
+                    mOnInfoListener2.onInfo(mMediaRecorder, MEDIA_RECORDER_FILE_NAME, msg.arg2,(String)msg.obj);
 
                 return;
 
