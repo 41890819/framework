@@ -63,6 +63,7 @@ public:
     JNIMediaRecorderListener(JNIEnv* env, jobject thiz, jobject weak_thiz);
     ~JNIMediaRecorderListener();
     void notify(int msg, int ext1, int ext2);
+    void notify(int msg, int ext1, int ext2,const char* str);
 private:
     JNIMediaRecorderListener();
     jclass      mClass;     // Reference to MediaRecorder class
@@ -103,6 +104,20 @@ void JNIMediaRecorderListener::notify(int msg, int ext1, int ext2)
     env->CallStaticVoidMethod(mClass, fields.post_event, mObject, msg, ext1, ext2, 0);
 }
 
+void JNIMediaRecorderListener::notify(int msg, int ext1, int ext2,const char* str)
+{
+    ALOGV("JNIMediaRecorderListener::notify");
+
+    JNIEnv *env = AndroidRuntime::getJNIEnv();
+    
+        jstring pathStr;
+        if ((pathStr = env->NewStringUTF(str)) == NULL) {
+            env->ExceptionClear();
+        }
+
+    env->CallStaticVoidMethod(mClass, fields.post_event, mObject, msg, ext1, ext2, pathStr);
+    env->DeleteLocalRef(pathStr);
+}
 // ----------------------------------------------------------------------------
 
 static sp<Surface> get_surface(JNIEnv* env, jobject clazz)
@@ -293,6 +308,22 @@ android_media_MediaRecorder_setVideoDropFrameInterval(JNIEnv *env, jobject thiz,
     }
     sp<MediaRecorder> mr = getMediaRecorder(env, thiz);
     process_media_recorder_call(env, mr->setVideoDropFrameInterval(interval), "java/lang/RuntimeException", "setVideoDropFrameInterval failed.");
+}
+
+static void
+android_media_MediaRecorder_setRecorderTimeIntervals(JNIEnv *env, jobject thiz, jint interval,jstring path)
+{
+    ALOGV("setRecorderTimeIntervals(%d)", interval);
+    sp<MediaRecorder> mr = getMediaRecorder(env, thiz);
+    const char* params8 = env->GetStringUTFChars(path, NULL);
+    if (params8 == NULL)
+    {
+        ALOGE("Failed to covert jstring to String8.  This parameter will be ignored.");
+        return;
+    }
+
+    process_media_recorder_call(env, mr->setRecorderTimeIntervals(interval,String8(params8)), "java/lang/RuntimeException", "setRecorderTimeIntervals failed.");
+    env->ReleaseStringUTFChars(path,params8);
 }
 
 static void
@@ -487,7 +518,8 @@ static JNINativeMethod gMethods[] = {
     {"_setOutputFile",       "(Ljava/io/FileDescriptor;JJ)V",   (void *)android_media_MediaRecorder_setOutputFileFD},
     {"setVideoSize",         "(II)V",                           (void *)android_media_MediaRecorder_setVideoSize},
     {"setVideoFrameRate",    "(I)V",                            (void *)android_media_MediaRecorder_setVideoFrameRate},
-    {"setVideoDropFrameInterval",        "(I)V",                            (void *)android_media_MediaRecorder_setVideoDropFrameInterval},
+    {"setVideoDropFrameInterval",        "(I)V",                (void *)android_media_MediaRecorder_setVideoDropFrameInterval},
+    {"setRecorderTimeIntervals",       "(ILjava/lang/String;)V",(void *)android_media_MediaRecorder_setRecorderTimeIntervals},
     {"saveLiveFile",        "()V",                            (void *)android_media_MediaRecorder_saveLiveFile},
     {"setMaxDuration",       "(I)V",                            (void *)android_media_MediaRecorder_setMaxDuration},
     {"setMaxFileSize",       "(J)V",                            (void *)android_media_MediaRecorder_setMaxFileSize},

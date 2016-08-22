@@ -872,6 +872,7 @@ public class MediaRecorder
      */
     public static final int MEDIA_RECORDER_TRACK_INFO_LIST_END          = 2000;
 
+    public static final int MEDIA_RECORDER_FILE_NAME          = 3000;
 
     /**
      * Interface definition for a callback to be invoked when an error
@@ -891,7 +892,7 @@ public class MediaRecorder
          * </ul>
          * @param extra   an extra code, specific to the error type
          */
-        void onInfo(MediaRecorder mr, int what, int extra);
+        void onInfo(MediaRecorder mr, int what, int extra,String str);
     }
 
     /**
@@ -920,6 +921,7 @@ public class MediaRecorder
         private static final int MEDIA_RECORDER_EVENT_LIST_START = 1;
         private static final int MEDIA_RECORDER_EVENT_ERROR      = 1;
         private static final int MEDIA_RECORDER_EVENT_INFO       = 2;
+        private static final int MEDIA_RECORDER_EVENT_SCANFILE   = 3;
         private static final int MEDIA_RECORDER_EVENT_LIST_END   = 99;
 
         /* Events related to individual tracks */
@@ -946,7 +948,12 @@ public class MediaRecorder
             case MEDIA_RECORDER_EVENT_INFO:
             case MEDIA_RECORDER_TRACK_EVENT_INFO:
                 if (mOnInfoListener != null)
-                    mOnInfoListener.onInfo(mMediaRecorder, msg.arg1, msg.arg2);
+                    mOnInfoListener.onInfo(mMediaRecorder, msg.arg1, msg.arg2,null);
+
+                return;
+            case MEDIA_RECORDER_EVENT_SCANFILE:
+                if (mOnInfoListener != null)
+                    mOnInfoListener.onInfo(mMediaRecorder, MEDIA_RECORDER_FILE_NAME, msg.arg2,(String)msg.obj);
 
                 return;
 
@@ -1016,6 +1023,14 @@ public class MediaRecorder
      *  @param interval must be between of 2 to videoFrameRate
      */
     public native void setVideoDropFrameInterval(int interval) throws IllegalStateException;
+
+    /**
+     * set the durations of every segment recorder
+     * Must be called after start()
+     *  @param interval . that must be in seconds
+     * @param path
+     */
+    public native void setRecorderTimeIntervals(int interval,String path) throws IllegalStateException;
 
       /*just for save file when live module*/
     public native void saveLiveFile() throws IllegalStateException;
