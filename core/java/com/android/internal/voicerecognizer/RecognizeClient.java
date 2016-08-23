@@ -298,7 +298,11 @@ public class RecognizeClient implements Parcelable {
 		dest.writeLong(mId);
 		dest.writeInt(mUserId);
 		dest.writeInt(mType);
-		dest.writeStrongBinder(mListener.asBinder());
+		if (mListener != null) {
+		    dest.writeStrongBinder(mListener.asBinder());
+		} else {
+		    dest.writeStrongBinder(null);
+		}
 		dest.writeInt(mIcon);
 		dest.writeInt(mShowWidget ? 1 : 0);
 		dest.writeInt(mUseTimeout ? 1 : 0);
