@@ -436,7 +436,24 @@ public class MediaRecorder
         setParameter("param-geotag-latitude=" + latitudex10000);
         setParameter("param-geotag-longitude=" + longitudex10000);
     }
+    /**
+     * This method should be called after prepare().
+     */
+    public void setCurrentLocation(float latitude, float longitude) {
+        int latitudex10000  = (int) (latitude * 10000 + 0.5);
+        int longitudex10000 = (int) (longitude * 10000 + 0.5);
 
+        if (latitudex10000 > 900000 || latitudex10000 < -900000) {
+            String msg = "Latitude: " + latitude + " out of range.";
+            throw new IllegalArgumentException(msg);
+        }
+        if (longitudex10000 > 1800000 || longitudex10000 < -1800000) {
+            String msg = "Longitude: " + longitude + " out of range";
+            throw new IllegalArgumentException(msg);
+        }
+
+        setParameter("param-geotag-latitude-longitude=" + latitudex10000 + " " +longitudex10000);
+    }
     /**
      * Sets the format of the output file produced during recording. Call this
      * after setAudioSource()/setVideoSource() but before prepare().
