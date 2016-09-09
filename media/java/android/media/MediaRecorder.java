@@ -454,6 +454,17 @@ public class MediaRecorder
 
         setParameter("param-geotag-latitude-longitude=" + latitudex10000 + " " +longitudex10000);
     }
+
+    /**
+     * This method can change recording-file to a new path
+     * Exp: /data/apache/VID-12.mp4 -> /data/media/0/VID-12.mp4
+     */
+    public void changeCurrentSegmentFilePath(String newPath) {
+        if (newPath == null) {
+            throw new IllegalArgumentException("newPath is null");
+        }
+        setParameter("param-repath-segment=" + newPath);
+    }
     /**
      * Sets the format of the output file produced during recording. Call this
      * after setAudioSource()/setVideoSource() but before prepare().
