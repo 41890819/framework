@@ -26,6 +26,12 @@ LOCAL_PATH := $(call my-dir)
 # TODO: find a more appropriate way to do this.
 framework_res_source_path := APPS/framework-res_intermediates/src
 
+FILE := $(shell test -f $(LOCAL_PATH)/../../device/ingenic/$(TARGET_PRODUCT)/config/AlertDialog.java && echo yes)
+ifeq ($(FILE),yes)
+#$(warning "link PhoneWindowManager.java file $(TARGET_PRODUCT)")
+$(shell ln -f $(LOCAL_PATH)/../../device/ingenic/$(TARGET_PRODUCT)/config/AlertDialog.java $(LOCAL_PATH)/core/java/android/app/AlertDialog.java)
+endif
+
 # the library
 # ============================================================
 include $(CLEAR_VARS)
