@@ -137,7 +137,7 @@ public class UsbDeviceManager {
     private final UEventObserver mUEventObserver = new UEventObserver() {
         @Override
         public void onUEvent(UEventObserver.UEvent event) {
-            if (DEBUG) Slog.v(TAG, "USB UEVENT: " + event.toString());
+	    Slog.i(TAG, "USB UEVENT: " + event.toString());
 
             String state = event.get("USB_STATE");
             String accessory = event.get("ACCESSORY");
