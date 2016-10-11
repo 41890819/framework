@@ -71,7 +71,7 @@ static jstring nativeWaitForNextEvent(JNIEnv *env, jclass clazz) {
         }
         buffer[length] = '\0';
 
-        ALOGI("Received uevent message: %s", buffer);
+        ALOGV("Received uevent message: %s", buffer);
 
         if (isMatch(buffer, length)) {
             // Assume the message is ASCII.
