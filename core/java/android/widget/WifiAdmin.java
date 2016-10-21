@@ -289,7 +289,7 @@ public class WifiAdmin {
 	    if (mCurrentSSID.equals(ssid)) {
 		if(config.status == WifiConfiguration.Status.CURRENT)
 		    mStateListener.onCurrent(mCurrentSSID);
-		else
+		else if(config.status == WifiConfiguration.Status.DISABLED)
 		    mStateListener.onFailure(mCurrentSSID, reason);
 
 		break;
