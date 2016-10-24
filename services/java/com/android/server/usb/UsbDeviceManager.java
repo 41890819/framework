@@ -563,7 +563,7 @@ public class UsbDeviceManager {
             intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
             intent.putExtra(UsbManager.USB_CONNECTED, mConnected);
             intent.putExtra(UsbManager.USB_CONFIGURED, mConfigured);
-
+	    Slog.w(TAG, "updateUsbState mConnected=" + mConnected);
             if (mCurrentFunctions != null) {
                 String[] functions = mCurrentFunctions.split(",");
                 for (int i = 0; i < functions.length; i++) {
