@@ -620,6 +620,7 @@ public class UsbDeviceManager {
                         // restore defaults when USB is disconnected
                         setEnabledFunctions(mDefaultFunctions, false);
                     }
+                    mCurrentFunctions = SystemProperties.get("sys.usb.config", mCurrentFunctions);
                     if (mBootCompleted) {
                         updateUsbState();
                         updateAudioSourceFunction();
