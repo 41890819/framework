@@ -872,6 +872,11 @@ public class MediaPlayer
         disableProxyListener();
 
         String scheme = uri.getScheme();
+	if(scheme.equals("socket") ){
+            _setDataSource(uri.toString(), null, null);
+            return;
+	}
+
         if(scheme == null || scheme.equals("file")) {
             setDataSource(uri.getPath());
             return;
