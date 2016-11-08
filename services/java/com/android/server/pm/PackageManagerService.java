@@ -8437,7 +8437,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         String pkgName = res.name = pkg.packageName;
 	Slog.v(TAG, "packageName = "+pkgName);
 	
-	if("user".equals(SystemProperties.get("ro.build.type"))){
+	if("user".equals(SystemProperties.get("ro.build.type")) 
+	   || "m200s_zbrzfy".equals(SystemProperties.get("ro.product.mode"))){
 
 	    if(!pkgName.contains("ingenic.glass") && !pkgName.contains("com.smartglass.")){
 		Slog.e(TAG, "Please install the software based on the development of glass");
