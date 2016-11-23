@@ -492,9 +492,10 @@ public class WifiMonitor {
                 if (mWifiNative.connectToSupplicant()) {
                     return true;
                 }
-                if (connectTries++ < 5) {
+                if (connectTries++ < 20) {
                     nap(1);
                 } else {
+		    Log.e(TAG,"connectToSupplicant timeout (20s)");
                     break;
                 }
             }
