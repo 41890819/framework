@@ -241,6 +241,10 @@ public class MediaRecorder
 
         /** @hide H.264/AAC data encapsulated in MPEG2/TS */
         public static final int OUTPUT_FORMAT_MPEG2TS = 8;
+
+	  /**WAV file format
+	   * include raw PCM data**/
+	public static final int WAV = 13;
     };
 
     /**
@@ -263,6 +267,7 @@ public class MediaRecorder
         public static final int HE_AAC = 4;
         /** Enhanced Low Delay AAC (AAC-ELD) audio codec */
         public static final int AAC_ELD = 5;
+        public static final int PCM = 6;
     }
 
     /**
@@ -987,6 +992,9 @@ public class MediaRecorder
             case MEDIA_RECORDER_TRACK_EVENT_INFO:
                 if (mOnInfoListener != null)
                     mOnInfoListener.onInfo(mMediaRecorder, msg.arg1, msg.arg2);
+
+		if (mOnInfoListener2 != null)
+                    mOnInfoListener2.onInfo(mMediaRecorder, msg.arg1, msg.arg2,(String)msg.obj);
 
                 return;
             case MEDIA_RECORDER_EVENT_SCANFILE:
