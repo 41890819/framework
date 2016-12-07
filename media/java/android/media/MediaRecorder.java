@@ -1065,19 +1065,21 @@ public class MediaRecorder
 
     /**
      * Sets the drop frames interval of the video to be encode.  
-     * Must be called after prepare().
+     * Must be called after of prepare()
      *  @param interval must be between of 2 to videoFrameRate
      */
     public native void setVideoDropFrameInterval(int interval) throws IllegalStateException;
 
     /**
      * set the durations of every segment recorder
-     * Must be called after start()
+     * Must be called before of start()
      *  @param interval . that must be in seconds
      * @param path
      */
     public native void setRecorderTimeIntervals(int interval,String path) throws IllegalStateException;
 
-      /*just for save file when live module*/
+      /*just for save file when live module\
+       * Must be called after start()
+       */
     public native void saveLiveFile() throws IllegalStateException;
 }
