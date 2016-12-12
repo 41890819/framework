@@ -641,7 +641,7 @@ public class UsbDeviceManager {
 			updateAdbNotification();
 		    }
 		   
-                    updateUsbState();
+		    // updateUsbState();
                     updateAudioSourceFunction();
                     break;
                 case MSG_BOOT_COMPLETED:
