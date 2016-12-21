@@ -323,7 +323,6 @@ public class MediaScanner
 
     // used when scanning the image database so we know whether we have to prune
     // old thumbnail files
-    private int mOriginalCount;
     /** Whether the database had any entries in it before the scan started */
     private boolean mWasEmptyPriorToScan = false;
     /** Whether the scanner has set a default sound for the ringer ringtone. */
@@ -1083,7 +1082,7 @@ public class MediaScanner
         // accidentally deleting files that are really there (this may happen if the
         // filesystem is mounted and unmounted while the scanner is running).
         Uri.Builder builder = mFilesUri.buildUpon();
-        builder.appendQueryParameter(MediaStore.PARAM_DELETE_DATA, "false");
+        builder.appendQueryParameter(MediaStore.PARAM_DELETE_DATA, null);
         MediaBulkDeleter deleter = new MediaBulkDeleter(mMediaProvider, mPackageName,
                 builder.build());
 
@@ -1162,13 +1161,6 @@ public class MediaScanner
             deleter.flush();
         }
 
-        // compute original size of images
-        mOriginalCount = 0;
-        c = mMediaProvider.query(mPackageName, mImagesUri, ID_PROJECTION, null, null, null, null);
-        if (c != null) {
-            mOriginalCount = c.getCount();
-            c.close();
-        }
     }
 
     private boolean inScanDirectory(String path, String[] directories) {
@@ -1179,52 +1171,6 @@ public class MediaScanner
             }
         }
         return false;
-    }
-
-    private void pruneDeadThumbnailFiles() {
-        HashSet<String> existingFiles = new HashSet<String>();
-        String directory = "/sdcard/DCIM/.thumbnails";
-        String [] files = (new File(directory)).list();
-        if (files == null)
-            files = new String[0];
-
-        for (int i = 0; i < files.length; i++) {
-            String fullPathString = directory + "/" + files[i];
-            existingFiles.add(fullPathString);
-        }
-
-        try {
-            Cursor c = mMediaProvider.query(
-                    mPackageName,
-                    mThumbsUri,
-                    new String [] { "_data" },
-                    null,
-                    null,
-                    null, null);
-            Log.v(TAG, "pruneDeadThumbnailFiles... " + c);
-            if (c != null && c.moveToFirst()) {
-                do {
-                    String fullPathString = c.getString(0);
-                    existingFiles.remove(fullPathString);
-                } while (c.moveToNext());
-            }
-
-            for (String fileToDelete : existingFiles) {
-                if (false)
-                    Log.v(TAG, "fileToDelete is " + fileToDelete);
-                try {
-                    (new File(fileToDelete)).delete();
-                } catch (SecurityException ex) {
-                }
-            }
-
-            Log.v(TAG, "/pruneDeadThumbnailFiles... " + c);
-            if (c != null) {
-                c.close();
-            }
-        } catch (RemoteException e) {
-            // We will soon be killed...
-        }
     }
 
     static class MediaBulkDeleter {
@@ -1271,9 +1217,6 @@ public class MediaScanner
         if (mProcessPlaylists) {
             processPlayLists();
         }
-
-        if (mOriginalCount == 0 && mImagesUri.equals(Images.Media.getContentUri("external")))
-            pruneDeadThumbnailFiles();
 
         // allow GC to clean up
         mPlayLists = null;
