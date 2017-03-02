@@ -32,6 +32,12 @@ ifeq ($(FILE),yes)
 $(shell ln -f $(LOCAL_PATH)/../../device/ingenic/$(TARGET_PRODUCT)/config/AlertDialog.java $(LOCAL_PATH)/core/java/android/app/AlertDialog.java)
 endif
 
+FILE := $(shell test -f $(LOCAL_PATH)/../../device/ingenic/$(TARGET_PRODUCT)/config/PackageManagerService.java && echo yes)
+ifeq ($(FILE),yes)
+#$(warning "link PackageManagerService.java file $(TARGET_PRODUCT)")
+$(shell ln -f $(LOCAL_PATH)/../../device/ingenic/$(TARGET_PRODUCT)/config/PackageManagerService.java $(LOCAL_PATH)/services/java/com/android/server/pm/PackageManagerService.java)
+endif
+
 # the library
 # ============================================================
 include $(CLEAR_VARS)
