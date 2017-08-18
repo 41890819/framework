@@ -69,7 +69,7 @@ final class DisplayPowerController {
     private static final String TAG = "DisplayPowerController";
 
     private static boolean DEBUG = false;
-    private static final boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = false;
+    private static final boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = true;
     private static final boolean DEBUG_PRETEND_LIGHT_SENSOR_ABSENT = false;
 
     // If true, uses the electron beam on animation.
@@ -143,15 +143,15 @@ final class DisplayPowerController {
     // The short term average gives us a filtered but relatively low latency measurement.
     // The long term average informs us about the overall trend.
     private static final long SHORT_TERM_AVERAGE_LIGHT_TIME_CONSTANT = 1000;
-    private static final long LONG_TERM_AVERAGE_LIGHT_TIME_CONSTANT = 5000;
+    private static final long LONG_TERM_AVERAGE_LIGHT_TIME_CONSTANT = 3000;//5000
 
     // Stability requirements in milliseconds for accepting a new brightness
     // level.  This is used for debouncing the light sensor.  Different constants
     // are used to debounce the light sensor when adapting to brighter or darker environments.
     // This parameter controls how quickly brightness changes occur in response to
     // an observed change in light level that exceeds the hysteresis threshold.
-    private static final long BRIGHTENING_LIGHT_DEBOUNCE = 4000;
-    private static final long DARKENING_LIGHT_DEBOUNCE = 8000;
+    private static final long BRIGHTENING_LIGHT_DEBOUNCE = 3500;//4000
+    private static final long DARKENING_LIGHT_DEBOUNCE = 5000;//8000
 
     // Hysteresis constraints for brightening or darkening.
     // The recent lux must have changed by at least this fraction relative to the
@@ -348,6 +348,8 @@ final class DisplayPowerController {
             DisplayManagerService displayManager,
             DisplayBlanker displayBlanker,
             Callbacks callbacks, Handler callbackHandler) {
+
+
         mHandler = new DisplayControllerHandler(looper);
         mNotifier = notifier;
         mDisplayBlanker = displayBlanker;
@@ -1038,6 +1040,7 @@ final class DisplayPowerController {
 
     private void updateAutoBrightness(boolean sendUpdate) {
         if (!mAmbientLuxValid) {
+            // Slog.d("danny","danny mAmbientLuxValid is false");
             return;
         }
 
@@ -1308,6 +1311,7 @@ final class DisplayPowerController {
             if (mLightSensorEnabled) {
                 final long time = SystemClock.uptimeMillis();
                 final float lux = event.values[0];
+                // Slog.d("danny", "danny mLightSensorListener lux = " + lux);
                 handleLightSensorEvent(time, lux);
             }
         }
